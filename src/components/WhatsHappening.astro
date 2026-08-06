@@ -1,0 +1,227 @@
+---
+import { brand, nextEvent, calls, openCalls, showOpenCalls } from '../data/site';
+
+const toneMap: Record<string, string> = {
+  yellow: 'bg-ec-yellow text-ec-ink',
+  red: 'bg-ec-red text-ec-bone',
+  bone: 'bg-ec-bone text-ec-ink',
+};
+
+// The lead promises convocatorias, so it has to follow the section in and out.
+const lead = showOpenCalls
+  ? 'Eventos presenciales, llamadas abiertas cada semana y convocatorias donde tu nombre puede entrar hoy mismo.'
+  : 'Eventos presenciales y llamadas abiertas cada semana, con espacio para que tu nombre entre hoy mismo.';
+---
+
+<section
+  id="eventos"
+  data-nav-theme="blue"
+  class="relative isolate overflow-hidden bg-ec-blue py-24 text-ec-bone sm:py-32"
+>
+  <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+    <div class="blob absolute -right-[10%] top-[6%] h-[40vw] w-[40vw] bg-ec-blue-deep/70 blur-3xl"></div>
+    <div class="blob absolute -left-[14%] bottom-[4%] h-[34vw] w-[34vw] bg-ec-yellow/12 blur-3xl" style="animation-delay:-8s"></div>
+  </div>
+
+  <div class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10">
+    <!-- Section head -->
+    <div class="flex flex-wrap items-end justify-between gap-8">
+      <div>
+        <h2 class="display text-[clamp(2.5rem,7.5vw,6.5rem)]" data-reveal style="--reveal-delay:80ms">
+          Lo que viene
+        </h2>
+      </div>
+      <p class="max-w-md leading-relaxed text-ec-bone/65" data-reveal style="--reveal-delay:160ms">
+        {lead}
+      </p>
+    </div>
+
+    <!-- ===== Next event: ticket ===== -->
+    <div class="mt-16 grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:items-center">
+      <div data-reveal="scale" class="relative">
+        <span
+          class="sticker absolute -top-4 left-8 z-10 bg-ec-red text-ec-bone"
+          style="transform: rotate(-6deg)"
+        >
+          Próximo evento
+        </span>
+
+        <!-- Notches anchor to the card bottom, not a percentage: the stub below
+             the perforation keeps a fixed height while the body above reflows.
+             The taller mobile value accounts for the CTA row wrapping. -->
+        <div
+          class="ticket relative overflow-hidden rounded-[2rem] bg-ec-bone text-ec-ink [--notch-y:calc(100%-178px)] sm:[--notch-y:calc(100%-115px)]"
+        >
+          <div class="p-8 sm:p-12">
+            <div class="flex items-start justify-between gap-4">
+              <span class="kicker text-ec-ink/45">{nextEvent.code}</span>
+              <span class="kicker text-ec-red">{nextEvent.seats}</span>
+            </div>
+
+            <h3 class="display mt-8 text-[clamp(2.2rem,5.5vw,4.5rem)] leading-[0.86]">
+              {nextEvent.title}
+              <span class="block text-ec-blue">{nextEvent.year}</span>
+            </h3>
+
+            <p class="mt-6 max-w-md leading-relaxed text-ec-ink/65">{nextEvent.body}</p>
+
+            <dl class="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-4">
+              {
+                [
+                  ['Fecha', nextEvent.dateShort],
+                  ['Hora', nextEvent.time],
+                  ['Ciudad', nextEvent.city],
+                  ['Lugar', nextEvent.venue],
+                ].map(([label, value]) => (
+                  <div>
+                    <dt class="kicker text-ec-ink/40">{label}</dt>
+                    <dd class="display-wide mt-2 text-lg">{value}</dd>
+                  </div>
+                ))
+              }
+            </dl>
+          </div>
+
+          <!-- Perforation, aligned with the punched notches -->
+          <div class="dashed-rule mx-8 h-[2px] text-ec-ink/25" aria-hidden="true"></div>
+
+          <div class="flex flex-wrap items-center justify-between gap-4 p-8 sm:px-12">
+            <div>
+              <div class="kicker text-ec-ink/40">Admite</div>
+              <div class="display-wide mt-1 text-lg">1 persona · entrada libre</div>
+            </div>
+            <a
+              href={nextEvent.cta.href}
+              class="btn bg-ec-ink text-ec-bone hover:bg-ec-red"
+              data-magnetic="0.2"
+            >
+              {nextEvent.cta.label}
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Date block -->
+      <div class="relative" data-reveal style="--reveal-delay:140ms">
+        <div class="relative mx-auto aspect-square w-full max-w-md">
+          <div class="spin-slow absolute inset-0" aria-hidden="true">
+            <svg viewBox="0 0 200 200" class="h-full w-full">
+              <defs>
+                <path id="ring" d="M100,100 m-78,0 a78,78 0 1,1 156,0 a78,78 0 1,1 -156,0" />
+              </defs>
+              <text class="fill-ec-yellow" style="font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase;">
+                <textPath href="#ring">
+                  Ecuador Web3 · Mitad del Mundo · 0°0'0" · Ecuador Web3 ·
+                </textPath>
+              </text>
+            </svg>
+          </div>
+
+          <div class="absolute inset-[18%] grid place-items-center rounded-full border border-ec-bone/25 text-center">
+            <div>
+              <div class="display text-[clamp(3rem,9vw,5.5rem)] text-ec-bone">14</div>
+              <div class="kicker mt-1 text-ec-yellow">Marzo 2026</div>
+              <div class="kicker mt-4 text-ec-bone/45">Quito · 09:00</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Equator hairline -->
+    <div class="mt-28" data-reveal>
+      <div class="dashed-rule h-[2px] w-full text-ec-bone/25" aria-hidden="true"></div>
+      <div class="flex justify-end">
+        <span class="kicker -mt-3 bg-ec-blue pl-3 text-ec-bone/45">
+          {brand.place} · Lat {brand.coords}
+        </span>
+      </div>
+    </div>
+
+    <!-- ===== Community calls ===== -->
+    <div class="mt-20">
+      <div class="flex flex-wrap items-end justify-between gap-4" data-reveal>
+        <h3 class="display text-[clamp(1.75rem,4vw,3rem)]">Community Calls</h3>
+        <span class="kicker text-ec-bone/45">Desliza para ver todas →</span>
+      </div>
+
+      <!-- scroll-pl must mirror px at every breakpoint. Mandatory snapping
+           aligns the first card to the padding-box edge, which otherwise eats
+           the padding and pulls the card out of line with the heading. -->
+      <div
+        class="rail mt-8 -mx-4 px-4 scroll-pl-4 sm:-mx-6 sm:px-6 sm:scroll-pl-6 lg:-mx-10 lg:px-10 lg:scroll-pl-10"
+      >
+        {
+          calls.map((call, i) => (
+            <article
+              class="card-lift group relative flex w-[min(85vw,22rem)] flex-col overflow-hidden rounded-[1.75rem] border border-ec-bone/15 bg-ec-blue-deep/50 p-7 backdrop-blur-sm"
+              data-reveal
+              style={`--reveal-delay:${i * 90}ms`}
+              data-hot
+            >
+              <div class="flex items-center justify-between gap-3">
+                <span class={`sticker ${toneMap[call.tone]}`} style={`transform: rotate(${i % 2 ? 2 : -2}deg)`}>
+                  {call.cadence}
+                </span>
+                <span
+                  class="grid h-9 w-9 place-items-center rounded-full border border-ec-bone/25 transition-all duration-500 group-hover:rotate-45 group-hover:border-ec-yellow group-hover:text-ec-yellow"
+                  aria-hidden="true"
+                >
+                  <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+                    <path d="M1 13L13 1M13 1H4M13 1v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+              </div>
+
+              <h4 class="display-wide mt-6 text-2xl">{call.title}</h4>
+              <p class="mt-3 flex-1 text-sm leading-relaxed text-ec-bone/60">{call.body}</p>
+
+              <div class="mt-6 space-y-1 border-t border-ec-bone/12 pt-5">
+                <div class="kicker text-ec-yellow">{call.when}</div>
+                <div class="kicker text-ec-bone/45">{call.where}</div>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- ===== Open calls — hidden behind showOpenCalls in src/data/site.ts ===== -->
+    {showOpenCalls && (
+    <div id="convocatorias" class="mt-24 scroll-mt-28">
+      <h3 class="display text-[clamp(1.75rem,4vw,3rem)]" data-reveal>Convocatorias abiertas</h3>
+
+      <ul class="mt-8 border-t border-ec-bone/15">
+        {
+          openCalls.map((item, i) => (
+            <li data-reveal style={`--reveal-delay:${i * 70}ms`}>
+              <a
+                href="#unete"
+                class="group flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-ec-bone/15 py-6 transition-colors duration-400 hover:bg-ec-bone hover:text-ec-ink"
+              >
+                <span class="kicker w-10 shrink-0 text-ec-yellow group-hover:text-ec-red">
+                  0{i + 1}
+                </span>
+                <span class="display-wide flex-1 text-[clamp(1.15rem,2.6vw,1.85rem)] transition-transform duration-500 [transition-timing-function:var(--ease-out-expo)] group-hover:translate-x-3">
+                  {item.title}
+                </span>
+                <span class="kicker text-ec-bone/45 group-hover:text-ec-ink/50">{item.meta}</span>
+                <span
+                  class={`sticker ${
+                    item.status === 'Abierta' ? 'bg-ec-yellow text-ec-ink' : 'bg-ec-red text-ec-bone'
+                  }`}
+                >
+                  {item.status}
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    )}
+  </div>
+</section>
