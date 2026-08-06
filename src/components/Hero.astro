@@ -6,7 +6,7 @@ import Marquee from './Marquee.astro';
 <section
   id="top"
   data-nav-theme="dark"
-  class="relative isolate min-h-[100svh] overflow-hidden bg-ec-ink pt-28 pb-0 sm:pt-32"
+  class="relative isolate overflow-hidden bg-ec-ink pt-28 sm:pt-32"
 >
   <!-- Ambient colour fields -->
   <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
@@ -15,7 +15,7 @@ import Marquee from './Marquee.astro';
     <div class="blob absolute left-[38%] -top-[18%] h-[32vw] w-[32vw] bg-ec-yellow/20 opacity-60 blur-3xl" style="animation-delay:-11s"></div>
   </div>
 
-  <div class="relative mx-auto flex min-h-[calc(100svh-9rem)] max-w-[1400px] flex-col justify-center px-4 sm:px-6 lg:px-10">
+  <div class="relative mx-auto flex w-full max-w-[1400px] flex-col justify-center px-4 sm:px-6 lg:px-10">
     <!-- Eyebrow -->
     <div class="mb-8 flex flex-wrap items-center gap-3" data-reveal>
       <span class="sticker bg-ec-bone text-ec-ink">
@@ -71,7 +71,7 @@ import Marquee from './Marquee.astro';
     </div>
 
     <!-- Scroll hint -->
-    <div class="mt-14 flex items-center gap-3 pb-10 text-ec-bone/35" data-reveal style="--reveal-delay:560ms">
+    <div class="mt-6 flex items-center gap-3 pb-6 text-ec-bone/35" data-reveal style="--reveal-delay:560ms">
       <svg width="18" height="26" viewBox="0 0 18 26" fill="none" class="shrink-0" aria-hidden="true">
         <rect x="1" y="1" width="16" height="24" rx="8" stroke="currentColor" stroke-width="1.5"/>
         <circle cx="9" cy="8" r="2" fill="currentColor" class="float-slow"/>
