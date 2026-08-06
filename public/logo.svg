@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="1000"
+   height="999.99988"
+   viewBox="0 0 1000 999.99988"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <!-- ================= Ecuador Web3 - construction standard =================
+       Mark centre .............. (500.0, 450.0)   canvas 1000 x 1000
+       Frame ............ REGULAR pointy-top hexagon, circumradius 296.0
+                          flat-to-flat 512.69
+       Arm width ................ 100.0  (uniform on all three arms)
+       Arm span ................. exactly 2 hexagon edges = 120 deg
+       Ends ..................... cut on the radial bisector at each vertex,
+                                  gap 46.0 across the cut
+       Corner radii ............. outer elbow 50.0 (= true round join)
+                                  inner elbow 25.0
+                                  outer end (60 deg) 6.0
+                                  inner end (120 deg) 22.0
+       Cube ..................... regular hexagon, half flat-to-flat 140.0,
+                                  concentric with the frame, sharp corners
+       Wordmark ................. Horizon Bold 59.4px, tracking -3.8px
+
+       The blue and red arms are EXACT 120 deg / 240 deg rotations of the
+       yellow arm about the mark centre.
+       ====================================================================== -->
+  <g
+     id="logo"
+     transform="translate(1368.4087,-1282.7687)">
+    <g
+       id="g54"
+       transform="matrix(0.5,0,0,0.5,1314.9055,533.83501)">
+      <rect
+         style="opacity:0;fill:#ffffff;fill-opacity:1;stroke-width:2;stroke-linecap:round"
+         id="rect29"
+         width="2000"
+         height="2000"
+         x="-5366.6284"
+         y="1497.8673" />
+      <g
+         id="g35"
+         transform="matrix(1.1629693,0,0,1.1629693,505.08765,2754.2195)">
+        <g
+           id="g31"
+           transform="matrix(2,0,0,2,-5189.0323,-1110.4931)"
+           style="opacity:1">
+          <path
+             id="path29"
+             fill="#fdba0f"
+             d="M 225.656,254.657 475,110.699 a 50,50 0 0 1 50,0 l 249.344,143.958 a 6,6 0 0 1 0,10.393 l -80,46.188 a 22,22 0 0 1 -22,0 L 512.5,218.952 a 25,25 0 0 0 -25,0 l -159.844,92.286 a 22,22 0 0 1 -22,0 l -80,-46.188 a 6,6 0 0 1 0,-10.393 z" />
+          <path
+             id="path30"
+             fill="#0544b0"
+             d="M 468,785.26 218.656,641.301 A 50,50 0 0 1 193.656,598 V 310.083 a 6,6 0 0 1 9,-5.196 l 80,46.188 a 22,22 0 0 1 11,19.052 v 184.572 a 25,25 0 0 0 12.5,21.65 L 466,668.635 a 22,22 0 0 1 11,19.053 v 92.376 a 6,6 0 0 1 -9,5.196 z" />
+          <path
+             id="path31"
+             fill="#db2227"
+             d="M 806.344,310.083 V 598 a 50,50 0 0 1 -25,43.301 L 532,785.26 a 6,6 0 0 1 -9,-5.196 v -92.376 a 22,22 0 0 1 11,-19.053 l 159.844,-92.286 a 25,25 0 0 0 12.5,-21.65 V 370.127 a 22,22 0 0 1 11,-19.052 l 80,-46.188 a 6,6 0 0 1 9,5.196 z" />
+        </g>
+        <g
+           id="g34"
+           transform="matrix(2,0,0,2,-5189.0323,-1110.4931)"
+           style="opacity:1">
+          <path
+             id="path32"
+             fill="#fdba0f"
+             d="M 360,369.171 500,288.342 640,369.171 500,450 Z" />
+          <path
+             id="path33"
+             fill="#0544b0"
+             d="M 360,369.171 500,450 V 611.658 L 360,530.829 Z" />
+          <path
+             id="path34"
+             fill="#db2227"
+             d="M 640,369.171 V 530.829 L 500,611.658 V 450 Z" />
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
