@@ -1,0 +1,286 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#080c18" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content="es_EC" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Space+Grotesk:wght@400..700&family=Space+Mono:wght@400;700&display=swap"
+    />
+  </head>
+
+  <body class="grain">
+    <a
+      href="#contenido"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[80] focus:rounded-full focus:bg-ec-yellow focus:px-5 focus:py-3 focus:font-bold focus:text-ec-ink"
+    >
+      Saltar al contenido
+    </a>
+
+    {/* Scroll progress in flag order: yellow, blue, red */}
+    <div class="pointer-events-none fixed inset-x-0 top-0 z-[70] h-1">
+      <div
+        id="progress"
+        class="h-full w-0 origin-left"
+        style="background: linear-gradient(90deg, #fdba0f 0 33.33%, #0544b0 33.33% 66.66%, #db2227 66.66% 100%); background-size: 100vw 100%; background-attachment: fixed;"
+      >
+      </div>
+    </div>
+
+    <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
+    <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
+
+    <slot />
+
+    <script>
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* --- Scroll reveal ------------------------------------------------
+         A position sweep rather than an IntersectionObserver. The observer
+         only fires on a state *change*, so an instant jump — anchor link,
+         browser back, restored scroll position — moves an element from
+         not-intersecting straight back to not-intersecting and no callback
+         ever arrives, leaving whole sections stuck at opacity 0. Comparing
+         positions has no such gap: anything at or above the viewport bottom
+         is revealed, including everything already scrolled past.
+         The pending list shrinks to empty, then the listeners detach. */
+      let pending = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));
+
+      if (reduced) {
+        pending.forEach((el) => el.classList.add('is-in'));
+        pending = [];
+      } else {
+        let sweepQueued = false;
+
+        const sweep = () => {
+          sweepQueued = false;
+          const limit = window.innerHeight;
+          pending = pending.filter((el) => {
+            if (el.getBoundingClientRect().top >= limit) return true;
+            el.classList.add('is-in');
+            return false;
+          });
+          if (!pending.length) {
+            window.removeEventListener('scroll', queueSweep);
+            window.removeEventListener('resize', queueSweep);
+          }
+        };
+
+        const queueSweep = () => {
+          if (sweepQueued) return;
+          sweepQueued = true;
+          requestAnimationFrame(sweep);
+        };
+
+        window.addEventListener('scroll', queueSweep, { passive: true });
+        window.addEventListener('resize', queueSweep);
+        sweep();
+      }
+
+      /* --- Scroll progress bar ------------------------------------------ */
+      const progress = document.getElementById('progress');
+      let progressQueued = false;
+
+      const paintProgress = () => {
+        progressQueued = false;
+        if (!progress) return;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const pct = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
+        progress.style.width = `${pct * 100}%`;
+      };
+
+      const queueProgress = () => {
+        if (progressQueued) return;
+        progressQueued = true;
+        requestAnimationFrame(paintProgress);
+      };
+
+      window.addEventListener('scroll', queueProgress, { passive: true });
+      window.addEventListener('resize', queueProgress);
+      paintProgress();
+
+      /* --- Nav colour follows the section underneath it ------------------ */
+      const navEl = document.getElementById('site-nav');
+      const themed = document.querySelectorAll<HTMLElement>('[data-nav-theme]');
+
+      const NAV_THEMES: Record<string, { fg: string; bg: string; border: string }> = {
+        dark: { fg: '#f7f2e7', bg: 'rgb(8 12 24 / 0.6)', border: 'rgb(247 242 231 / 0.18)' },
+        light: { fg: '#080c18', bg: 'rgb(247 242 231 / 0.72)', border: 'rgb(8 12 24 / 0.14)' },
+        blue: { fg: '#f7f2e7', bg: 'rgb(3 42 107 / 0.6)', border: 'rgb(247 242 231 / 0.24)' },
+        red: { fg: '#f7f2e7', bg: 'rgb(168 22 27 / 0.6)', border: 'rgb(247 242 231 / 0.28)' },
+      };
+
+      const applyNavTheme = (name: string) => {
+        const theme = NAV_THEMES[name] ?? NAV_THEMES.dark;
+        const root = document.documentElement;
+        root.style.setProperty('--nav-fg', theme.fg);
+        root.style.setProperty('--nav-bg', theme.bg);
+        root.style.setProperty('--nav-border', theme.border);
+      };
+
+      if (themed.length) {
+        const navObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              applyNavTheme(entry.target.getAttribute('data-nav-theme') ?? 'dark');
+            });
+          },
+          /* A thin band pinned just below the nav decides the winner. */
+          { rootMargin: '-80px 0px -92% 0px' },
+        );
+        themed.forEach((el) => navObserver.observe(el));
+      }
+
+      /* Nav hides on the way down, comes back on the way up */
+      let lastY = window.scrollY;
+      window.addEventListener(
+        'scroll',
+        () => {
+          if (!navEl) return;
+          const y = window.scrollY;
+          const goingDown = y > lastY && y > 320;
+          navEl.style.transform = goingDown ? 'translateY(-140%)' : 'translateY(0)';
+          navEl.dataset.scrolled = y > 40 ? 'true' : 'false';
+          lastY = y;
+        },
+        { passive: true },
+      );
+
+      /* --- Count-up statistics ------------------------------------------ */
+      const counters = document.querySelectorAll<HTMLElement>('[data-count]');
+      const formatter = new Intl.NumberFormat('es-EC');
+
+      const runCount = (el: HTMLElement) => {
+        const target = Number(el.dataset.count ?? '0');
+        if (reduced) {
+          el.textContent = formatter.format(target);
+          return;
+        }
+        const duration = 1400;
+        const start = performance.now();
+        const tick = (now: number) => {
+          const t = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - t, 4);
+          el.textContent = formatter.format(Math.round(target * eased));
+          if (t < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      };
+
+      if (counters.length) {
+        const countObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              runCount(entry.target as HTMLElement);
+              countObserver.unobserve(entry.target);
+            });
+          },
+          { threshold: 0.6 },
+        );
+        counters.forEach((el) => countObserver.observe(el));
+      }
+
+      /* --- Custom cursor ------------------------------------------------- */
+      const finePointer = window.matchMedia('(pointer: fine)').matches;
+      const ring = document.getElementById('cursor-ring');
+      const dot = document.getElementById('cursor-dot');
+
+      if (finePointer && !reduced && ring && dot) {
+        let mx = window.innerWidth / 2;
+        let my = window.innerHeight / 2;
+        let rx = mx;
+        let ry = my;
+
+        window.addEventListener(
+          'pointermove',
+          (e) => {
+            mx = e.clientX;
+            my = e.clientY;
+            dot.style.transform = `translate3d(${mx}px, ${my}px, 0)`;
+          },
+          { passive: true },
+        );
+
+        const trail = () => {
+          rx += (mx - rx) * 0.16;
+          ry += (my - ry) * 0.16;
+          ring.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
+          requestAnimationFrame(trail);
+        };
+        requestAnimationFrame(trail);
+
+        document.querySelectorAll('a, button, [data-hot]').forEach((el) => {
+          el.addEventListener('pointerenter', () => ring.classList.add('is-hot'));
+          el.addEventListener('pointerleave', () => ring.classList.remove('is-hot'));
+        });
+      } else if (ring && dot) {
+        ring.style.display = 'none';
+        dot.style.display = 'none';
+      }
+
+      /* --- Magnetic buttons ---------------------------------------------- */
+      if (finePointer && !reduced) {
+        document.querySelectorAll<HTMLElement>('[data-magnetic]').forEach((el) => {
+          const strength = Number(el.dataset.magnetic || '0.28');
+          el.addEventListener('pointermove', (e) => {
+            const r = el.getBoundingClientRect();
+            const dx = e.clientX - (r.left + r.width / 2);
+            const dy = e.clientY - (r.top + r.height / 2);
+            el.style.transform = `translate3d(${dx * strength}px, ${dy * strength}px, 0)`;
+          });
+          el.addEventListener('pointerleave', () => {
+            el.style.transform = '';
+          });
+        });
+      }
+
+      /* --- Pointer parallax for hero decoration -------------------------- */
+      if (finePointer && !reduced) {
+        const floaters = document.querySelectorAll<HTMLElement>('[data-parallax]');
+        if (floaters.length) {
+          window.addEventListener(
+            'pointermove',
+            (e) => {
+              const nx = e.clientX / window.innerWidth - 0.5;
+              const ny = e.clientY / window.innerHeight - 0.5;
+              floaters.forEach((el) => {
+                const depth = Number(el.dataset.parallax || '10');
+                el.style.setProperty('--px', `${-nx * depth}px`);
+                el.style.setProperty('--py', `${-ny * depth}px`);
+              });
+            },
+            { passive: true },
+          );
+        }
+      }
+    </script>
+  </body>
+</html>
