@@ -1,0 +1,39 @@
+---
+interface Props {
+  items: string[];
+  /** Seconds for one full loop. Lower = faster. */
+  duration?: number;
+  reverse?: boolean;
+  separator?: string;
+  class?: string;
+}
+
+const {
+  items,
+  duration = 34,
+  reverse = false,
+  separator = '✦',
+  class: className = '',
+} = Astro.props;
+
+// Duplicated once so the -50% keyframe loops without a visible seam.
+const track = [...items, ...items];
+---
+
+<div class={`marquee-host relative overflow-hidden ${className}`}>
+  <div
+    class="marquee"
+    style={`--marquee-duration:${duration}s; --marquee-direction:${reverse ? 'reverse' : 'normal'}`}
+    aria-hidden="true"
+  >
+    {
+      track.map((item) => (
+        <span class="flex shrink-0 items-center gap-[clamp(1rem,3vw,2.5rem)] pr-[clamp(1rem,3vw,2.5rem)]">
+          <span>{item}</span>
+          <span class="opacity-45">{separator}</span>
+        </span>
+      ))
+    }
+  </div>
+  <span class="sr-only">{items.join(', ')}</span>
+</div>

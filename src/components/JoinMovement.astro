@@ -1,0 +1,118 @@
+---
+import { paths, brand } from '../data/site';
+
+const toneMap: Record<string, { card: string; body: string; num: string; btn: string }> = {
+  yellow: {
+    card: 'bg-ec-yellow text-ec-ink',
+    body: 'text-ec-ink/70',
+    num: 'text-ec-ink/35',
+    btn: 'bg-ec-ink text-ec-bone hover:bg-ec-red',
+  },
+  bone: {
+    card: 'bg-ec-bone text-ec-ink',
+    body: 'text-ec-ink/65',
+    num: 'text-ec-ink/30',
+    btn: 'bg-ec-ink text-ec-bone hover:bg-ec-blue',
+  },
+  blue: {
+    card: 'bg-ec-blue text-ec-bone',
+    body: 'text-ec-bone/70',
+    num: 'text-ec-bone/35',
+    btn: 'bg-ec-yellow text-ec-ink hover:bg-ec-bone',
+  },
+  ink: {
+    card: 'bg-ec-ink text-ec-bone',
+    body: 'text-ec-bone/65',
+    num: 'text-ec-bone/30',
+    btn: 'bg-ec-yellow text-ec-ink hover:bg-ec-bone',
+  },
+};
+---
+
+<section
+  id="unete"
+  data-nav-theme="red"
+  class="relative isolate overflow-hidden bg-ec-red py-24 text-ec-bone sm:py-32"
+>
+  <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+    <div class="blob absolute -left-[12%] top-[10%] h-[42vw] w-[42vw] bg-ec-red-deep/70 blur-3xl"></div>
+    <div class="blob absolute -right-[8%] bottom-[8%] h-[36vw] w-[36vw] bg-ec-yellow/15 blur-3xl" style="animation-delay:-9s"></div>
+  </div>
+
+  <div class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10">
+    <div class="flex flex-wrap items-end justify-between gap-8">
+      <div>
+        <h2 class="display text-[clamp(2.5rem,8vw,7rem)]" data-reveal style="--reveal-delay:80ms">
+          Únete al<br /><span class="text-ec-yellow">movimiento</span>
+        </h2>
+      </div>
+
+      <p class="max-w-md text-[clamp(1.05rem,1.5vw,1.25rem)] leading-relaxed text-ec-bone/75" data-reveal style="--reveal-delay:160ms">
+        {brand.promise} No importa si llevas años en esto o si hoy es tu primer día. Hay cuatro
+        formas de entrar.
+      </p>
+    </div>
+
+    <!-- Four paths -->
+    <div class="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        paths.map((path, i) => {
+          const tone = toneMap[path.tone];
+          return (
+            <article
+              class={`card-lift group relative flex flex-col overflow-hidden rounded-[2rem] p-8 ${tone.card}`}
+              data-reveal
+              style={`--reveal-delay:${i * 110}ms`}
+              data-hot
+            >
+              <span class={`display absolute right-5 top-4 text-[4.5rem] leading-none ${tone.num}`} aria-hidden="true">
+                {path.num}
+              </span>
+
+              <h3 class="display-wide relative mt-16 text-[1.65rem] leading-tight">{path.title}</h3>
+              <p class={`relative mt-4 flex-1 text-[0.95rem] leading-relaxed ${tone.body}`}>
+                {path.body}
+              </p>
+
+              <a
+                href={path.href}
+                class={`btn mt-8 justify-between px-6 py-3.5 text-sm ${tone.btn}`}
+              >
+                {path.cta}
+                <svg
+                  width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"
+                  class="transition-transform duration-500 [transition-timing-function:var(--ease-out-expo)] group-hover:translate-x-1"
+                >
+                  <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            </article>
+          );
+        })
+      }
+    </div>
+
+    <!-- Closing statement -->
+    <div class="mt-24 text-center" data-reveal="mask">
+      <p class="display mx-auto max-w-5xl text-[clamp(1.75rem,5.5vw,4.5rem)]">
+        Construimos con propósito,<br />
+        <span class="text-ec-yellow">crecemos juntos.</span>
+      </p>
+    </div>
+
+    <div class="mt-12 flex flex-wrap justify-center gap-3" data-reveal style="--reveal-delay:180ms">
+      <a href="#" class="btn bg-ec-bone text-ec-ink hover:bg-ec-yellow" data-magnetic="0.24">
+        Entrar a la comunidad
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a
+        href="#eventos"
+        class="btn border border-ec-bone/35 text-ec-bone hover:border-ec-bone hover:bg-ec-bone hover:text-ec-red"
+      >
+        Ver el calendario
+      </a>
+    </div>
+  </div>
+</section>

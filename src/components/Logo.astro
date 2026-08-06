@@ -1,0 +1,59 @@
+---
+/**
+ * Ecuador Web3 mark, inlined from public/logo.svg.
+ *
+ * Path data and the nested group transforms are copied verbatim so the
+ * construction standard in the source file still holds (arms are exact 120°
+ * rotations about the mark centre). Only two things changed: the hidden
+ * 2000x2000 backing rect is dropped, and the root viewBox is tightened to the
+ * ink bounds so the mark sizes predictably instead of carrying ~14% padding.
+ * Element ids are stripped — this renders more than once per page.
+ *
+ * Aspect ratio is 712.53 : 793.21 (taller than wide), so size it by height.
+ */
+interface Props {
+  class?: string;
+  title?: string;
+}
+
+const { class: className = 'h-10 w-auto', title } = Astro.props;
+---
+
+<svg
+  viewBox="143.73 103.39 712.53 793.21"
+  fill="none"
+  class={className}
+  role={title ? 'img' : 'presentation'}
+  aria-label={title}
+  aria-hidden={title ? undefined : 'true'}
+  xmlns="http://www.w3.org/2000/svg"
+>
+  {title && <title>{title}</title>}
+  <g transform="translate(1368.4087,-1282.7687)">
+    <g transform="matrix(0.5,0,0,0.5,1314.9055,533.83501)">
+      <g transform="matrix(1.1629693,0,0,1.1629693,505.08765,2754.2195)">
+        {/* Hexagonal frame — three arms */}
+        <g transform="matrix(2,0,0,2,-5189.0323,-1110.4931)">
+          <path
+            fill="#fdba0f"
+            d="M 225.656,254.657 475,110.699 a 50,50 0 0 1 50,0 l 249.344,143.958 a 6,6 0 0 1 0,10.393 l -80,46.188 a 22,22 0 0 1 -22,0 L 512.5,218.952 a 25,25 0 0 0 -25,0 l -159.844,92.286 a 22,22 0 0 1 -22,0 l -80,-46.188 a 6,6 0 0 1 0,-10.393 z"
+          />
+          <path
+            fill="#0544b0"
+            d="M 468,785.26 218.656,641.301 A 50,50 0 0 1 193.656,598 V 310.083 a 6,6 0 0 1 9,-5.196 l 80,46.188 a 22,22 0 0 1 11,19.052 v 184.572 a 25,25 0 0 0 12.5,21.65 L 466,668.635 a 22,22 0 0 1 11,19.053 v 92.376 a 6,6 0 0 1 -9,5.196 z"
+          />
+          <path
+            fill="#db2227"
+            d="M 806.344,310.083 V 598 a 50,50 0 0 1 -25,43.301 L 532,785.26 a 6,6 0 0 1 -9,-5.196 v -92.376 a 22,22 0 0 1 11,-19.053 l 159.844,-92.286 a 25,25 0 0 0 12.5,-21.65 V 370.127 a 22,22 0 0 1 11,-19.052 l 80,-46.188 a 6,6 0 0 1 9,5.196 z"
+          />
+        </g>
+        {/* Isometric cube */}
+        <g transform="matrix(2,0,0,2,-5189.0323,-1110.4931)">
+          <path fill="#fdba0f" d="M 360,369.171 500,288.342 640,369.171 500,450 Z" />
+          <path fill="#0544b0" d="M 360,369.171 500,450 V 611.658 L 360,530.829 Z" />
+          <path fill="#db2227" d="M 640,369.171 V 530.829 L 500,611.658 V 450 Z" />
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

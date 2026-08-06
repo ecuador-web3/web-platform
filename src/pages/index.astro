@@ -1,17 +1,28 @@
 ---
-
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import HappeningNow from '../components/HappeningNow.astro';
+import WhatsHappening from '../components/WhatsHappening.astro';
+import Ecosystem from '../components/Ecosystem.astro';
+import JoinMovement from '../components/JoinMovement.astro';
+import Footer from '../components/Footer.astro';
+import { brand } from '../data/site';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Base
+  title="Ecuador Web3 — El hogar del Ecosistema Web3 Ecuatoriano"
+  description={`${brand.promise} ${brand.motto}`}
+>
+  <Nav />
+
+  <main id="contenido">
+    <Hero />
+    <HappeningNow />
+    <WhatsHappening />
+    <Ecosystem />
+    <JoinMovement />
+  </main>
+
+  <Footer />
+</Base>

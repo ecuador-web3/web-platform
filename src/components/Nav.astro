@@ -1,0 +1,143 @@
+---
+import { nav, brand } from '../data/site';
+import Logo from './Logo.astro';
+---
+
+<header
+  id="site-nav"
+  class="fixed inset-x-0 top-0 z-50 transition-transform duration-500 [transition-timing-function:var(--ease-out-expo)]"
+  style="color: var(--nav-fg)"
+>
+  <div class="mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-10">
+    <!-- Wordmark -->
+    <!-- Whole lockup in one glass pill, same recipe as the links pill. Below sm
+         the wordmark drops out and the padding collapses it to a 44px circle,
+         matching the mobile menu trigger. -->
+    <a
+      href="#top"
+      class="group flex h-11 w-11 items-center justify-center gap-2.5 rounded-full border px-2 backdrop-blur-xl transition-transform duration-700 [transition-timing-function:var(--ease-spring)] hover:scale-[1.03] sm:h-[54px] sm:w-auto sm:justify-start sm:px-5"
+      style="background: var(--nav-bg); border-color: var(--nav-border)"
+      aria-label={`${brand.name} — inicio`}
+    >
+      <Logo class="h-7 w-auto shrink-0 sm:h-9" />
+      <span class="hidden leading-none sm:block">
+        <span class="display block text-[15px] tracking-[0.02em]">Ecuador</span>
+        <span class="display block text-[15px] tracking-[0.02em] opacity-60">Web3</span>
+      </span>
+    </a>
+
+    <!-- Desktop links -->
+    <nav
+      class="hidden items-center gap-1 rounded-full border px-2 py-2 backdrop-blur-xl lg:flex"
+      style="background: var(--nav-bg); border-color: var(--nav-border)"
+      aria-label="Principal"
+    >
+      {
+        nav.map((item) => (
+          <a
+            href={item.href}
+            class="rounded-full px-4 py-2 text-sm font-medium transition-colors duration-300 hover:bg-current/10"
+          >
+            <span class="link-wipe relative">{item.label}</span>
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a
+        href="#unete"
+        class="btn hidden bg-ec-yellow py-3 text-ec-ink hover:bg-ec-bone sm:inline-flex"
+        data-magnetic="0.2"
+      >
+        Únete
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M1 13L13 1M13 1H4M13 1v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+
+      <!-- Mobile trigger -->
+      <button
+        id="menu-open"
+        type="button"
+        class="grid h-11 w-11 place-items-center rounded-full border backdrop-blur-xl lg:hidden"
+        style="background: var(--nav-bg); border-color: var(--nav-border)"
+        aria-label="Abrir menú"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+      >
+        <span class="flex flex-col gap-[5px]">
+          <span class="block h-[2px] w-5 bg-current"></span>
+          <span class="block h-[2px] w-5 bg-current"></span>
+        </span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile overlay -->
+<div
+  id="mobile-menu"
+  class="invisible fixed inset-0 z-[65] flex flex-col bg-ec-ink opacity-0 transition-[opacity,visibility] duration-400 lg:hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Menú"
+>
+  <div class="flex items-center justify-between px-4 py-4 sm:px-6">
+    <span class="kicker text-ec-yellow">{brand.coords} · Menú</span>
+    <button
+      id="menu-close"
+      type="button"
+      class="grid h-11 w-11 place-items-center rounded-full border border-ec-bone/20 text-ec-bone"
+      aria-label="Cerrar menú"
+    >
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M1 1l14 14M15 1L1 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <nav class="flex flex-1 flex-col justify-center gap-2 px-6 pb-24" aria-label="Menú móvil">
+    {
+      nav.map((item, i) => (
+        <a
+          href={item.href}
+          data-menu-link
+          class="display border-b border-ec-bone/10 py-5 text-[clamp(2.25rem,10vw,3.5rem)] text-ec-bone transition-colors hover:text-ec-yellow"
+          style={`--i:${i}`}
+        >
+          <span class="kicker mr-3 align-super text-ec-yellow">0{i + 1}</span>
+          {item.label}
+        </a>
+      ))
+    }
+    <a href="#unete" data-menu-link class="btn mt-8 justify-center bg-ec-yellow text-ec-ink">
+      Únete al movimiento
+    </a>
+  </nav>
+</div>
+
+<script>
+  const menu = document.getElementById('mobile-menu');
+  const openBtn = document.getElementById('menu-open');
+  const closeBtn = document.getElementById('menu-close');
+
+  const setMenu = (open: boolean) => {
+    if (!menu || !openBtn) return;
+    menu.classList.toggle('invisible', !open);
+    menu.classList.toggle('opacity-0', !open);
+    openBtn.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+    if (open) closeBtn?.focus();
+    else openBtn.focus();
+  };
+
+  openBtn?.addEventListener('click', () => setMenu(true));
+  closeBtn?.addEventListener('click', () => setMenu(false));
+  menu?.querySelectorAll('[data-menu-link]').forEach((el) =>
+    el.addEventListener('click', () => setMenu(false)),
+  );
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !menu?.classList.contains('invisible')) setMenu(false);
+  });
+</script>

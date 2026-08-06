@@ -1,0 +1,80 @@
+---
+import { brand, footerLinks, socials, showOpenCalls } from '../data/site';
+import Logo from './Logo.astro';
+
+const year = new Date().getFullYear();
+
+// Drop the Convocatorias link while its section is hidden, otherwise it points
+// at an anchor that is no longer in the document.
+const columns = footerLinks.map((col) => ({
+  ...col,
+  links: col.links.filter((link) => showOpenCalls || link.href !== '#convocatorias'),
+}));
+---
+
+<footer data-nav-theme="dark" class="relative isolate overflow-hidden bg-ec-ink pt-24 text-ec-bone">
+  <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+    <div class="blob absolute left-[28%] -bottom-[45%] h-[32vw] w-[32vw] bg-ec-blue/25 blur-3xl"></div>
+  </div>
+
+  <div class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10">
+    <div class="grid gap-16 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1.4fr)]">
+      <!-- Identity -->
+      <div data-reveal>
+        <div class="flex items-center gap-4">
+          <Logo class="h-16 w-auto shrink-0" title="Ecuador Web3" />
+          <span class="display text-2xl leading-none">
+            Ecuador<br />Web3
+          </span>
+        </div>
+
+        <p class="mt-8 max-w-sm text-lg leading-relaxed text-ec-bone/65">
+          {brand.tagline}<br />
+          <span class="text-ec-bone">{brand.motto}</span>
+        </p>
+
+        <ul class="mt-8 flex flex-wrap gap-2">
+          {
+            socials.map((s) => (
+              <li>
+                <a
+                  href={s.href}
+                  class="inline-flex rounded-full border border-ec-bone/20 px-4 py-2 text-sm transition-all duration-400 hover:-translate-y-0.5 hover:border-ec-yellow hover:bg-ec-yellow hover:text-ec-ink"
+                >
+                  {s.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <!-- Link columns -->
+      <div class="grid gap-10 sm:grid-cols-3">
+        {
+          columns.map((col, i) => (
+            <div data-reveal style={`--reveal-delay:${i * 90}ms`}>
+              <h3 class="kicker text-ec-yellow">{col.title}</h3>
+              <ul class="mt-5 space-y-3">
+                {col.links.map((link) => (
+                  <li>
+                    <a href={link.href} class="link-wipe relative text-ec-bone/60 transition-colors hover:text-ec-bone">
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="mt-20 flex flex-col items-center justify-between gap-4 border-t border-ec-bone/10 py-8 sm:flex-row">
+      <span class="kicker text-ec-bone/40">
+        Hecho en la mitad del mundo · Lat {brand.coords}
+      </span>
+      <span class="kicker text-ec-bone/40">© {year} {brand.name}</span>
+    </div>
+  </div>
+</footer>
