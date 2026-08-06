@@ -8,7 +8,7 @@ import Marquee from './Marquee.astro';
   data-nav-theme="dark"
   class="bg-ec-ink"
 >
-  <div class="relative isolate flex flex-col justify-center min-h-[100svh] overflow-hidden pt-28 sm:pt-32 pb-16">
+  <div class="relative isolate flex flex-col min-h-[100svh] overflow-hidden pt-[max(5rem,12vh)] pb-[max(2rem,6vh)]">
     <!-- Ambient colour fields -->
     <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
       <div class="blob absolute -left-[15%] top-[8%] h-[46vw] w-[46vw] bg-ec-blue/35 opacity-70 blur-3xl"></div>
@@ -16,7 +16,7 @@ import Marquee from './Marquee.astro';
       <div class="blob absolute left-[38%] -top-[18%] h-[32vw] w-[32vw] bg-ec-yellow/20 opacity-60 blur-3xl" style="animation-delay:-11s"></div>
     </div>
 
-    <div class="relative mx-auto flex w-full max-w-[1400px] flex-col justify-center px-4 sm:px-6 lg:px-10">
+    <div class="my-auto relative mx-auto flex w-full max-w-[1400px] flex-col justify-center px-4 sm:px-6 lg:px-10">
       <!-- Eyebrow -->
       <div class="mb-8 flex flex-wrap items-center gap-3" data-reveal>
         <span class="sticker bg-ec-bone text-ec-ink">
