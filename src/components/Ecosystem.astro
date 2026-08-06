@@ -1,0 +1,80 @@
+---
+import { ecosystem } from '../data/site';
+
+const toneMap: Record<string, { chip: string; hover: string; dot: string }> = {
+  yellow: {
+    chip: 'bg-ec-yellow text-ec-ink',
+    hover: 'hover:border-ec-yellow hover:bg-ec-yellow hover:text-ec-ink',
+    dot: 'bg-ec-yellow',
+  },
+  blue: {
+    chip: 'bg-ec-blue text-ec-bone',
+    hover: 'hover:border-ec-blue hover:bg-ec-blue hover:text-ec-bone',
+    dot: 'bg-ec-blue',
+  },
+  red: {
+    chip: 'bg-ec-red text-ec-bone',
+    hover: 'hover:border-ec-red hover:bg-ec-red hover:text-ec-bone',
+    dot: 'bg-ec-red',
+  },
+  ink: {
+    chip: 'bg-ec-ink text-ec-bone',
+    hover: 'hover:border-ec-ink hover:bg-ec-ink hover:text-ec-bone',
+    dot: 'bg-ec-ink',
+  },
+};
+---
+
+<section
+  id="ecosistema"
+  data-nav-theme="light"
+  class="relative isolate overflow-hidden bg-ec-bone py-24 text-ec-ink sm:py-32"
+>
+  <div class="pointer-events-none absolute inset-0 -z-10 text-ec-ink/[0.05] grid-lines" aria-hidden="true"></div>
+
+  <div class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10">
+    <div>
+      <h2 class="display text-[clamp(2.5rem,7.5vw,6.5rem)]" data-reveal>
+        Quiénes<br /><span class="text-ec-red">construyen</span>
+      </h2>
+      <p class="mt-8 max-w-2xl text-[clamp(1.05rem,1.5vw,1.3rem)] leading-relaxed text-ec-ink/70" data-reveal style="--reveal-delay:120ms">
+        Nadie hace esto solo. Estas son las comunidades, universidades, cadenas y equipos que
+        sostienen el ecosistema y le ponen el hombro cada mes.
+      </p>
+    </div>
+
+    <!-- Category groups -->
+    <div class="mt-20 space-y-14">
+      {
+        ecosystem.map((group, gi) => {
+          const tone = toneMap[group.tone];
+          return (
+            <div data-reveal style={`--reveal-delay:${gi * 80}ms`}>
+              <div class="flex items-center gap-4">
+                <span class={`h-2.5 w-2.5 rounded-full ${tone.dot}`} aria-hidden="true" />
+                <h3 class="display-wide text-[clamp(1.15rem,2.2vw,1.6rem)]">{group.label}</h3>
+                <span class="kicker text-ec-ink/30">{String(group.items.length).padStart(2, '0')}</span>
+                <span class="h-px flex-1 bg-ec-ink/12" aria-hidden="true" />
+              </div>
+
+              <ul class="mt-6 flex flex-wrap gap-3">
+                {group.items.map((item) => (
+                  <li>
+                    <span
+                      class={`inline-flex items-center gap-2.5 rounded-2xl border border-ec-ink/15 bg-white/70 px-5 py-3.5 text-[0.95rem] font-medium transition-all duration-400 [transition-timing-function:var(--ease-out-expo)] hover:-translate-y-1 ${tone.hover}`}
+                      data-hot
+                    >
+                      <span class={`h-1.5 w-1.5 rounded-full ${tone.dot}`} aria-hidden="true" />
+                      {item}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })
+      }
+    </div>
+
+  </div>
+</section>
