@@ -22,7 +22,7 @@ const lead = showOpenCalls
 <section
   id="eventos"
   data-nav-theme="blue"
-  class="relative isolate overflow-hidden bg-ec-blue py-24 text-ec-bone sm:py-32"
+  class="relative isolate overflow-hidden bg-ec-blue py-24 sm:py-32 [@media(max-height:800px)]:!pt-28 [@media(max-height:800px)]:!pb-12 text-ec-bone"
 >
   <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
     <div class="blob absolute -right-[10%] top-[6%] h-[40vw] w-[40vw] bg-ec-blue-deep/70 blur-3xl"></div>
@@ -31,19 +31,19 @@ const lead = showOpenCalls
 
   <div class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10">
     <!-- Section head -->
-    <div class="flex flex-wrap items-end justify-between gap-8">
+    <div class="flex flex-wrap items-end justify-between gap-8 [@media(max-height:800px)]:!gap-4">
       <div>
-        <h2 class="display text-[clamp(2.5rem,7.5vw,6.5rem)]" data-reveal style="--reveal-delay:80ms">
+        <h2 class="display text-[clamp(2.5rem,7.5vw,6.5rem)] [@media(max-height:800px)]:!text-[clamp(2rem,6vh,4rem)]" data-reveal style="--reveal-delay:80ms">
           Lo que viene
         </h2>
       </div>
-      <p class="max-w-md leading-relaxed text-ec-bone/65" data-reveal style="--reveal-delay:160ms">
+      <p class="max-w-md leading-relaxed text-ec-bone/65 [@media(max-height:800px)]:!text-sm" data-reveal style="--reveal-delay:160ms">
         {lead}
       </p>
     </div>
 
     <!-- ===== Next event: ticket ===== -->
-    <div class="mt-16 mx-auto max-w-4xl relative">
+    <div class="mt-16 [@media(max-height:800px)]:!mt-6 mx-auto max-w-4xl relative">
       <div data-reveal="scale" class="relative">
         <span
           class="sticker absolute -top-4 left-8 z-10 bg-ec-red text-ec-bone"
@@ -58,20 +58,20 @@ const lead = showOpenCalls
         <div
           class="ticket relative overflow-hidden rounded-[2rem] bg-ec-bone text-ec-ink [--notch-y:calc(100%-178px)] sm:[--notch-y:calc(100%-115px)] shadow-2xl"
         >
-          <div class="p-8 sm:p-12">
+          <div class="p-8 sm:p-12 [@media(max-height:800px)]:!p-4 sm:[@media(max-height:800px)]:!p-6">
             <div class="flex items-start justify-between gap-4">
               <span class="kicker text-ec-ink/45">{nextEvent.code}</span>
               <span class="kicker text-ec-red">{nextEvent.seats}</span>
             </div>
 
-            <h3 class="display mt-8 text-[clamp(2.2rem,5.5vw,4.5rem)] leading-[0.86]">
+            <h3 class="display mt-8 [@media(max-height:800px)]:!mt-4 text-[clamp(2.2rem,5.5vw,4.5rem)] [@media(max-height:800px)]:!text-[clamp(1.5rem,5vh,3rem)] leading-[0.86]">
               {nextEvent.title}
               <span class="block text-ec-blue">{nextEvent.year}</span>
             </h3>
 
-            <p class="mt-6 max-w-md leading-relaxed text-ec-ink/65">{nextEvent.body}</p>
+            <p class="mt-6 [@media(max-height:800px)]:!mt-2 max-w-md leading-relaxed text-ec-ink/65 [@media(max-height:800px)]:!text-sm">{nextEvent.body}</p>
 
-            <dl class="mt-10 grid grid-cols-2 gap-6 sm:grid-cols-4">
+            <dl class="mt-10 [@media(max-height:800px)]:!mt-4 grid grid-cols-2 gap-6 [@media(max-height:800px)]:!gap-2 sm:grid-cols-4">
               {
                 [
                   ['Fecha', nextEvent.dateShort],
@@ -81,7 +81,7 @@ const lead = showOpenCalls
                 ].map(([label, value]) => (
                   <div>
                     <dt class="kicker text-ec-ink/40">{label}</dt>
-                    <dd class="display-wide mt-2 text-lg">{value}</dd>
+                    <dd class="display-wide mt-2 [@media(max-height:800px)]:!mt-1 text-lg [@media(max-height:800px)]:!text-sm">{value}</dd>
                   </div>
                 ))
               }
@@ -91,10 +91,10 @@ const lead = showOpenCalls
           <!-- Perforation, aligned with the punched notches -->
           <div class="dashed-rule mx-8 h-[2px] text-ec-ink/25" aria-hidden="true"></div>
 
-          <div class="flex flex-wrap items-center justify-between gap-4 p-8 sm:px-12">
+          <div class="flex flex-wrap items-center justify-between gap-4 p-8 sm:px-12 [@media(max-height:800px)]:!p-4 sm:[@media(max-height:800px)]:!px-6 sm:[@media(max-height:800px)]:!py-4">
             <div>
               <div class="kicker text-ec-ink/40">Admite</div>
-              <div class="display-wide mt-1 text-lg">1 persona · entrada libre</div>
+              <div class="display-wide mt-1 [@media(max-height:800px)]:!mt-0 text-lg [@media(max-height:800px)]:!text-sm">1 persona · entrada libre</div>
             </div>
             <a
               href={nextEvent.cta.href}
