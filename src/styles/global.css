@@ -102,6 +102,12 @@
   font-weight: 700;
 }
 
+/* Digits that change in place — countdown, seat counter — must not reflow
+   the line every time a 1 becomes a 4. */
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---------------------------------------------------------------
    Scroll reveal — opt in with data-reveal, JS adds .is-in
    --------------------------------------------------------------- */
@@ -224,6 +230,18 @@
     background-image: linear-gradient(90deg, currentColor 0 8px, transparent 8px 16px);
     background-size: 16px 2px;
     background-repeat: repeat-x;
+  }
+
+  /* Seat counter tick — a beat of attention when the number moves, not a loop */
+  .seat-tick {
+    display: inline-block;
+    animation: seat-tick 0.7s var(--ease-spring);
+  }
+
+  @keyframes seat-tick {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.12); }
+    100% { transform: scale(1); }
   }
 
   /* Slow-morphing blob used as background decoration */
