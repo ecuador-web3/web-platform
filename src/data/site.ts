@@ -153,15 +153,48 @@ export const openCalls = [
   { title: 'Voluntarios de producción y contenido', meta: 'Sin fecha límite', status: 'Abierta' },
 ];
 
-/** PLACEHOLDER: names stand in for real partner logos. */
-export const ecosystem = [
+/**
+ * A single partner tile.
+ *
+ * `logo` is a path under `public/logos/`. Prefer SVG; otherwise a PNG cropped
+ * tight to the artwork — baked-in transparent padding is the main reason a logo
+ * looks undersized next to its neighbours. Logos render in full colour, always
+ * on a light tile, so partner brand guidelines hold.
+ *
+ * `scale` is an optical size override where 1 is the default box. Logos differ
+ * in visual weight as much as in dimensions: wide wordmarks usually want ~0.85,
+ * dense square marks ~1.15. Set it by eye against the tiles either side.
+ *
+ * With no `logo`, the tile sets `name` as a wordmark in the display face. Both
+ * variants fill the identical box, so any mix of the two stays on the grid.
+ */
+export interface EcosystemItem {
+  name: string;
+  logo?: string;
+  scale?: number;
+  url?: string;
+}
+
+/** PLACEHOLDER: names stand in for real partners; none have logos on file yet. */
+export const ecosystem: {
+  id: string;
+  label: string;
+  tone: string;
+  items: EcosystemItem[];
+}[] = [
   {
     id: 'comunidades',
     label: 'Comunidades',
     tone: 'yellow',
     items: [
-      'Blockchain Ecuador', 'Cripto Guayaquil', 'DAO Andina', 'Quito Devs',
-      'NFT Ecuador', 'Bitcoin Cuenca', 'Web3 Manta', 'Mujeres en Blockchain',
+      { name: 'Blockchain Ecuador' },
+      { name: 'Cripto Guayaquil' },
+      { name: 'DAO Andina' },
+      { name: 'Quito Devs' },
+      { name: 'NFT Ecuador' },
+      { name: 'Bitcoin Cuenca' },
+      { name: 'Web3 Manta' },
+      { name: 'Mujeres en Blockchain' },
     ],
   },
   {
@@ -169,8 +202,14 @@ export const ecosystem = [
     label: 'Universidades',
     tone: 'blue',
     items: [
-      'ESPOL', 'USFQ', 'EPN', 'PUCE', 'UDLA', 'Universidad de Cuenca',
-      'ESPE', 'Yachay Tech',
+      { name: 'ESPOL' },
+      { name: 'USFQ' },
+      { name: 'EPN' },
+      { name: 'PUCE' },
+      { name: 'UDLA' },
+      { name: 'Universidad de Cuenca' },
+      { name: 'ESPE' },
+      { name: 'Yachay Tech' },
     ],
   },
   {
@@ -178,8 +217,14 @@ export const ecosystem = [
     label: 'Blockchains',
     tone: 'red',
     items: [
-      'Ethereum', 'Solana', 'Base', 'Polygon', 'Stellar', 'Celo',
-      'Arbitrum', 'Starknet',
+      { name: 'Ethereum' },
+      { name: 'Solana' },
+      { name: 'Base' },
+      { name: 'Polygon' },
+      { name: 'Stellar' },
+      { name: 'Celo' },
+      { name: 'Arbitrum' },
+      { name: 'Starknet' },
     ],
   },
 ];
