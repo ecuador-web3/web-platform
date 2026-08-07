@@ -151,15 +151,6 @@ export const ecosystem = [
       'Arbitrum', 'Starknet',
     ],
   },
-  {
-    id: 'partners',
-    label: 'Partners y Sponsors',
-    tone: 'ink',
-    items: [
-      'Tu marca aquí', 'Tu protocolo aquí', 'Tu fondo aquí', 'Tu universidad aquí',
-      'Tu comunidad aquí', 'Tu empresa aquí',
-    ],
-  },
 ];
 
 export const paths = [

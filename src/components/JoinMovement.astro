@@ -32,51 +32,51 @@ const toneMap: Record<string, { card: string; body: string; num: string; btn: st
 <section
   id="unete"
   data-nav-theme="red"
-  class="relative isolate overflow-hidden bg-ec-red py-24 text-ec-bone sm:py-32"
+  class="relative isolate flex flex-col min-h-[100svh] overflow-hidden bg-ec-red pt-[clamp(4rem,6vh,6rem)] [@media(min-aspect-ratio:2/1)]:!pt-20 pb-6 lg:pb-[clamp(1.5rem,3vh,3rem)] [@media(min-aspect-ratio:2/1)]:!pb-4 text-ec-bone"
 >
   <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
     <div class="blob absolute -left-[12%] top-[10%] h-[42vw] w-[42vw] bg-ec-red-deep/70 blur-3xl"></div>
     <div class="blob absolute -right-[8%] bottom-[8%] h-[36vw] w-[36vw] bg-ec-yellow/15 blur-3xl" style="animation-delay:-9s"></div>
   </div>
 
-  <div class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10">
-    <div class="flex flex-wrap items-end justify-between gap-8">
+  <div class="my-auto mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10">
+    <div class="flex flex-wrap items-end justify-between gap-8 [@media(min-aspect-ratio:2/1)]:!gap-4">
       <div>
-        <h2 class="display text-[clamp(2.5rem,8vw,7rem)]" data-reveal style="--reveal-delay:80ms">
+        <h2 class="display text-[clamp(2.5rem,8vw,7rem)] [@media(min-aspect-ratio:2/1)]:!text-[clamp(2rem,6vh,4rem)]" data-reveal style="--reveal-delay:80ms">
           Únete al<br /><span class="text-ec-yellow">movimiento</span>
         </h2>
       </div>
 
-      <p class="max-w-md text-[clamp(1.05rem,1.5vw,1.25rem)] leading-relaxed text-ec-bone/75" data-reveal style="--reveal-delay:160ms">
+      <p class="max-w-md text-[clamp(1.05rem,1.5vw,1.25rem)] [@media(min-aspect-ratio:2/1)]:!text-sm leading-relaxed text-ec-bone/75" data-reveal style="--reveal-delay:160ms">
         {brand.promise} No importa si llevas años en esto o si hoy es tu primer día. Hay cuatro
         formas de entrar.
       </p>
     </div>
 
     <!-- Four paths -->
-    <div class="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="mt-6 lg:mt-8 [@media(min-aspect-ratio:2/1)]:!mt-6 grid gap-5 [@media(min-aspect-ratio:2/1)]:!gap-3 sm:grid-cols-2 lg:grid-cols-4">
       {
         paths.map((path, i) => {
           const tone = toneMap[path.tone];
           return (
             <article
-              class={`card-lift group relative flex flex-col overflow-hidden rounded-[2rem] p-8 ${tone.card}`}
+              class={`card-lift group relative flex flex-col overflow-hidden rounded-[2rem] p-5 xl:p-6 [@media(min-aspect-ratio:2/1)]:!p-4 ${tone.card}`}
               data-reveal
               style={`--reveal-delay:${i * 110}ms`}
               data-hot
             >
-              <span class={`display absolute right-5 top-4 text-[4.5rem] leading-none ${tone.num}`} aria-hidden="true">
+              <span class={`display absolute right-5 top-4 text-[3.5rem] xl:text-[4rem] [@media(min-aspect-ratio:2/1)]:!text-[3rem] leading-none ${tone.num}`} aria-hidden="true">
                 {path.num}
               </span>
 
-              <h3 class="display-wide relative mt-16 text-[1.65rem] leading-tight">{path.title}</h3>
-              <p class={`relative mt-4 flex-1 text-[0.95rem] leading-relaxed ${tone.body}`}>
+              <h3 class="display-wide relative mt-8 xl:mt-12 [@media(min-aspect-ratio:2/1)]:!mt-8 text-[1.5rem] xl:text-[1.65rem] [@media(min-aspect-ratio:2/1)]:!text-[1.2rem] leading-tight">{path.title}</h3>
+              <p class={`relative mt-2 xl:mt-3 [@media(min-aspect-ratio:2/1)]:!mt-2 flex-1 text-[0.9rem] xl:text-[0.95rem] [@media(min-aspect-ratio:2/1)]:!text-[0.75rem] leading-relaxed ${tone.body}`}>
                 {path.body}
               </p>
 
               <a
                 href={path.href}
-                class={`btn mt-8 justify-between px-6 py-3.5 text-sm ${tone.btn}`}
+                class={`btn mt-6 xl:mt-8 [@media(min-aspect-ratio:2/1)]:!mt-4 justify-between px-5 xl:px-6 py-3 xl:py-3.5 [@media(min-aspect-ratio:2/1)]:!px-4 [@media(min-aspect-ratio:2/1)]:!py-2 text-sm [@media(min-aspect-ratio:2/1)]:!text-xs ${tone.btn}`}
               >
                 {path.cta}
                 <svg
@@ -93,14 +93,14 @@ const toneMap: Record<string, { card: string; body: string; num: string; btn: st
     </div>
 
     <!-- Closing statement -->
-    <div class="mt-24 text-center" data-reveal="mask">
-      <p class="display mx-auto max-w-5xl text-[clamp(1.75rem,5.5vw,4.5rem)]">
+    <div class="mt-8 [@media(min-aspect-ratio:2/1)]:!mt-8 text-center" data-reveal="mask">
+      <p class="display mx-auto max-w-5xl text-[clamp(1.5rem,4.5vw,3.5rem)] [@media(min-aspect-ratio:2/1)]:!text-[clamp(1.2rem,4vh,2rem)] leading-none">
         Construimos con propósito,<br />
         <span class="text-ec-yellow">crecemos juntos.</span>
       </p>
     </div>
 
-    <div class="mt-12 flex flex-wrap justify-center gap-3" data-reveal style="--reveal-delay:180ms">
+    <div class="mt-6 [@media(min-aspect-ratio:2/1)]:!mt-6 flex flex-wrap justify-center gap-3 [@media(min-aspect-ratio:2/1)]:!gap-2" data-reveal style="--reveal-delay:180ms">
       <a href="#" class="btn bg-ec-bone text-ec-ink hover:bg-ec-yellow" data-magnetic="0.24">
         Entrar a la comunidad
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">

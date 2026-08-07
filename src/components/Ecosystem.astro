@@ -1,80 +1,65 @@
 ---
 import { ecosystem } from '../data/site';
+import Marquee from './Marquee.astro';
 
-const toneMap: Record<string, { chip: string; hover: string; dot: string }> = {
-  yellow: {
-    chip: 'bg-ec-yellow text-ec-ink',
-    hover: 'hover:border-ec-yellow hover:bg-ec-yellow hover:text-ec-ink',
-    dot: 'bg-ec-yellow',
-  },
-  blue: {
-    chip: 'bg-ec-blue text-ec-bone',
-    hover: 'hover:border-ec-blue hover:bg-ec-blue hover:text-ec-bone',
-    dot: 'bg-ec-blue',
-  },
-  red: {
-    chip: 'bg-ec-red text-ec-bone',
-    hover: 'hover:border-ec-red hover:bg-ec-red hover:text-ec-bone',
-    dot: 'bg-ec-red',
-  },
-  ink: {
-    chip: 'bg-ec-ink text-ec-bone',
-    hover: 'hover:border-ec-ink hover:bg-ec-ink hover:text-ec-bone',
-    dot: 'bg-ec-ink',
-  },
+const toneMap: Record<string, { bg: string; text: string }> = {
+  yellow: { bg: 'bg-ec-yellow', text: 'text-ec-ink' },
+  blue: { bg: 'bg-ec-blue', text: 'text-ec-bone' },
+  red: { bg: 'bg-ec-red', text: 'text-ec-bone' },
+  ink: { bg: 'bg-ec-ink', text: 'text-ec-bone' },
 };
 ---
 
 <section
   id="ecosistema"
   data-nav-theme="light"
-  class="relative isolate overflow-hidden bg-ec-bone py-24 text-ec-ink sm:py-32"
+  class="relative isolate flex flex-col min-h-[100svh] overflow-hidden bg-ec-bone pt-[clamp(7rem,12vh,9rem)] [@media(min-aspect-ratio:2/1)]:!pt-20 pb-[clamp(2rem,4vh,4rem)] [@media(min-aspect-ratio:2/1)]:!pb-4 text-ec-ink"
 >
   <div class="pointer-events-none absolute inset-0 -z-10 text-ec-ink/[0.05] grid-lines" aria-hidden="true"></div>
 
-  <div class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-10">
-    <div>
-      <h2 class="display text-[clamp(2.5rem,7.5vw,6.5rem)]" data-reveal>
+  <div class="my-auto w-full flex flex-col gap-8 [@media(min-aspect-ratio:2/1)]:!gap-4">
+    <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10">
+      <h2 class="display text-[clamp(2.5rem,7.5vw,6.5rem)] [@media(min-aspect-ratio:2/1)]:!text-[clamp(2rem,6vh,4rem)]" data-reveal>
         Quiénes<br /><span class="text-ec-red">construyen</span>
       </h2>
-      <p class="mt-8 max-w-2xl text-[clamp(1.05rem,1.5vw,1.3rem)] leading-relaxed text-ec-ink/70" data-reveal style="--reveal-delay:120ms">
+      <p class="mt-8 [@media(min-aspect-ratio:2/1)]:!mt-4 max-w-2xl text-[clamp(1.05rem,1.5vw,1.3rem)] [@media(min-aspect-ratio:2/1)]:!text-sm leading-relaxed text-ec-ink/70" data-reveal style="--reveal-delay:120ms">
         Nadie hace esto solo. Estas son las comunidades, universidades, cadenas y equipos que
         sostienen el ecosistema y le ponen el hombro cada mes.
       </p>
     </div>
 
-    <!-- Category groups -->
-    <div class="mt-20 space-y-14">
+    <!-- Full-width Infinite Ribbons -->
+    <div class="w-full shrink-0">
       {
         ecosystem.map((group, gi) => {
           const tone = toneMap[group.tone];
+          const isReverse = gi % 2 !== 0;
+          
           return (
-            <div data-reveal style={`--reveal-delay:${gi * 80}ms`}>
-              <div class="flex items-center gap-4">
-                <span class={`h-2.5 w-2.5 rounded-full ${tone.dot}`} aria-hidden="true" />
-                <h3 class="display-wide text-[clamp(1.15rem,2.2vw,1.6rem)]">{group.label}</h3>
-                <span class="kicker text-ec-ink/30">{String(group.items.length).padStart(2, '0')}</span>
-                <span class="h-px flex-1 bg-ec-ink/12" aria-hidden="true" />
+            <div 
+              class={`relative block border-y border-ec-ink/5 ${tone.bg} ${tone.text} transition-all duration-500 hover:z-20 hover:shadow-2xl hover:scale-[1.02] hover:[&_.marquee]:[animation-play-state:paused]`}
+              data-reveal 
+              style={`--reveal-delay:${gi * 100}ms`}
+            >
+              <!-- Category Label badge -->
+              <div class="absolute left-4 top-3 sm:left-10 sm:top-4 z-30">
+                <span class={`sticker shadow-sm ${tone.bg} ${tone.text} border border-current/20`}>
+                  {group.label}
+                </span>
               </div>
 
-              <ul class="mt-6 flex flex-wrap gap-3">
-                {group.items.map((item) => (
-                  <li>
-                    <span
-                      class={`inline-flex items-center gap-2.5 rounded-2xl border border-ec-ink/15 bg-white/70 px-5 py-3.5 text-[0.95rem] font-medium transition-all duration-400 [transition-timing-function:var(--ease-out-expo)] hover:-translate-y-1 ${tone.hover}`}
-                      data-hot
-                    >
-                      <span class={`h-1.5 w-1.5 rounded-full ${tone.dot}`} aria-hidden="true" />
-                      {item}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              <!-- The Marquee -->
+              <Marquee
+                items={group.items}
+                duration={40 + (gi * 5)} 
+                reverse={isReverse}
+                separator="✦"
+                class="display-wide pt-12 pb-4 sm:pt-11 sm:pb-4 [@media(min-aspect-ratio:2/1)]:!pt-10 [@media(min-aspect-ratio:2/1)]:!pb-2 text-[clamp(2.2rem,4vw,4rem)] [@media(min-aspect-ratio:2/1)]:!text-[clamp(1.5rem,4vh,3rem)] tracking-tight uppercase"
+              />
             </div>
           );
         })
       }
     </div>
-
   </div>
 </section>
