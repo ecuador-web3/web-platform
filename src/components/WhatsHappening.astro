@@ -1,35 +1,20 @@
 ---
-import { brand, nextEvent, seats, reservedAt, calls, openCalls, showOpenCalls } from '../data/site';
+import { nextEvent, seats, calls, openCalls, showOpenCalls } from '../data/site';
 import Marquee from './Marquee.astro';
+import { countdownFrom, padUnit } from '../lib/countdown';
+import { formatEventDateShort, formatEventTime } from '../lib/eventDate';
+import { seatsAt } from '../lib/seats';
+import { TONE_STYLES } from '../lib/tone';
 
 /* Seat meter and countdown are rendered server-side as the no-JS fallback and
    recomputed by the inline script on load — on a static build these values are
    only as fresh as the last deploy. */
-const reserved = reservedAt();
-const remaining = seats.capacity - reserved;
-const filled = Math.round((reserved / seats.capacity) * 100);
+const seatState = seatsAt(seats, Date.now());
+const countdown = countdownFrom(nextEvent.startsAt, Date.now());
 
-const minutesToStart = Math.max(
-  0,
-  Math.floor((Date.parse(nextEvent.startsAt) - Date.now()) / 60_000),
-);
-const countdown = {
-  days: Math.floor(minutesToStart / 1440),
-  hours: Math.floor((minutesToStart % 1440) / 60),
-  minutes: minutesToStart % 60,
-};
-const pad = (n: number) => String(n).padStart(2, '0');
-
-const ctaLabel =
-  remaining > 0
-    ? `${nextEvent.cta.label} · quedan ${remaining}`
-    : nextEvent.cta.soldOutLabel;
-
-const toneMap: Record<string, string> = {
-  yellow: 'bg-ec-yellow text-ec-ink',
-  red: 'bg-ec-red text-ec-bone',
-  bone: 'bg-ec-bone text-ec-ink',
-};
+const ctaLabel = seatState.soldOut
+  ? nextEvent.cta.soldOutLabel
+  : `${nextEvent.cta.label} · quedan ${seatState.remaining}`;
 
 const equatorTicker = [
   'Ecuador Web3', 'Mitad del Mundo', '0°0\'0"',
@@ -95,7 +80,7 @@ const lead = showOpenCalls
               <!-- "reservados" is dropped on small screens, where the full
                    string wraps the header onto two lines. -->
               <span class="kicker text-ec-red tabular whitespace-nowrap" data-seat-label>
-                <span data-seat-count>{reserved} / {seats.capacity}</span><span
+                <span data-seat-count>{seatState.reserved} / {seats.capacity}</span><span
                   class="hidden sm:inline"
                   data-seat-suffix>&nbsp;reservados</span
                 >
@@ -107,12 +92,12 @@ const lead = showOpenCalls
             <div
               class="mt-4 [@media(min-aspect-ratio:2/1)]:!mt-2 h-[6px] w-full overflow-hidden rounded-full bg-ec-ink/10"
               role="img"
-              aria-label={`${reserved} de ${seats.capacity} cupos reservados`}
+              aria-label={`${seatState.reserved} de ${seats.capacity} cupos reservados`}
               data-seat-track
             >
               <div
                 class="h-full rounded-full bg-ec-red transition-[width] duration-1000 [transition-timing-function:var(--ease-out-expo)]"
-                style={`width:${filled}%`}
+                style={`width:${seatState.filledPercent}%`}
                 data-seat-bar
               >
               </div>
@@ -128,8 +113,8 @@ const lead = showOpenCalls
             <dl class="mt-10 [@media(min-aspect-ratio:2/1)]:!mt-4 grid grid-cols-2 gap-6 [@media(min-aspect-ratio:2/1)]:!gap-2 sm:grid-cols-4">
               {
                 [
-                  ['Fecha', nextEvent.dateShort],
-                  ['Hora', nextEvent.time],
+                  ['Fecha', formatEventDateShort(nextEvent.startsAt)],
+                  ['Hora', formatEventTime(nextEvent.startsAt)],
                   ['Ciudad', nextEvent.city],
                   ['Lugar', nextEvent.venue],
                 ].map(([label, value]) => (
@@ -147,14 +132,22 @@ const lead = showOpenCalls
 
           <div class="flex flex-wrap items-center justify-between gap-4 p-8 sm:px-12 [@media(min-aspect-ratio:2/1)]:!p-4 sm:[@media(min-aspect-ratio:2/1)]:!px-6 sm:[@media(min-aspect-ratio:2/1)]:!py-4">
             <div>
-              <div class="kicker text-ec-ink/40" data-countdown-label>Faltan</div>
+              <div class="kicker text-ec-ink/40" data-countdown-label>
+                {countdown.status === 'counting' ? 'Faltan' : 'Sucede'}
+              </div>
               <div
                 class="display-wide tabular mt-1 [@media(min-aspect-ratio:2/1)]:!mt-0 text-lg [@media(min-aspect-ratio:2/1)]:!text-sm"
                 data-countdown
               >
-                <span data-cd-days>{countdown.days}</span> días <span class="text-ec-ink/30">·</span>
-                {' '}<span data-cd-hours>{pad(countdown.hours)}</span> h <span class="text-ec-ink/30">·</span>
-                {' '}<span data-cd-minutes>{pad(countdown.minutes)}</span> min
+                {countdown.status === 'counting' ? (
+                  <Fragment>
+                    <span data-cd-days>{countdown.days}</span> días <span class="text-ec-ink/30">·</span>
+                    {' '}<span data-cd-hours>{padUnit(countdown.hours)}</span> h <span class="text-ec-ink/30">·</span>
+                    {' '}<span data-cd-minutes>{padUnit(countdown.minutes)}</span> min
+                  </Fragment>
+                ) : (
+                  'Hoy mismo'
+                )}
               </div>
             </div>
             <a
@@ -176,20 +169,27 @@ const lead = showOpenCalls
 
 <script>
   /* Ticket urgency: countdown to the event + the seat meter.
-     The reserved count is derived from the clock, not from a registration
-     feed — see the `seats` block in src/data/site.ts for the swap that has to
-     happen before launch. Every parameter arrives on the ticket as a data
-     attribute so this file stays free of content. */
+
+     The maths lives in src/lib so it is testable and shared with the
+     server-rendered pass; this file only moves the results into the DOM.
+     Config still arrives on the element as data attributes rather than by
+     importing the content module, so the client bundle carries the four
+     numbers it needs instead of the whole site copy. */
+  import { countdownFrom, padUnit } from '../lib/countdown';
+  import { seatsAt, type SeatCurve } from '../lib/seats';
+
   const ticket = document.querySelector<HTMLElement>('[data-ticket]');
 
   if (ticket) {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const startsAt = Date.parse(ticket.dataset.startsAt ?? '');
-    const anchorAt = Date.parse(ticket.dataset.anchorAt ?? '');
-    const capacity = Number(ticket.dataset.capacity ?? 0);
-    const anchorReserved = Number(ticket.dataset.anchorReserved ?? 0);
-    const perDay = Number(ticket.dataset.perDay ?? 0);
+    const startsAtIso = ticket.dataset.startsAt ?? '';
+    const curve: SeatCurve = {
+      capacity: Number(ticket.dataset.capacity ?? 0),
+      anchorAt: ticket.dataset.anchorAt ?? '',
+      anchorReserved: Number(ticket.dataset.anchorReserved ?? 0),
+      perDay: Number(ticket.dataset.perDay ?? 0),
+    };
     const ctaLabel = ticket.dataset.ctaLabel ?? '';
     const ctaSoldOut = ticket.dataset.ctaSoldOut ?? '';
 
@@ -205,22 +205,20 @@ const lead = showOpenCalls
     const seatBar = ticket.querySelector<HTMLElement>('[data-seat-bar]');
     const seatCta = ticket.querySelector('[data-seat-cta]');
 
-    const pad = (n: number) => String(n).padStart(2, '0');
-
     /* --- Countdown ----------------------------------------------------- */
     /* Returns false once the event has started, which stops the interval. */
     const paintCountdown = () => {
-      const minutes = Math.floor((startsAt - Date.now()) / 60_000);
+      const state = countdownFrom(startsAtIso, Date.now());
 
-      if (!Number.isFinite(minutes) || minutes <= 0) {
+      if (state.status === 'started') {
         if (countdownLabel) countdownLabel.textContent = 'Sucede';
         if (countdownEl) countdownEl.textContent = 'Hoy mismo';
         return false;
       }
 
-      if (daysEl) daysEl.textContent = String(Math.floor(minutes / 1440));
-      if (hoursEl) hoursEl.textContent = pad(Math.floor((minutes % 1440) / 60));
-      if (minutesEl) minutesEl.textContent = pad(minutes % 60);
+      if (daysEl) daysEl.textContent = String(state.days);
+      if (hoursEl) hoursEl.textContent = padUnit(state.hours);
+      if (minutesEl) minutesEl.textContent = padUnit(state.minutes);
       return true;
     };
 
@@ -232,27 +230,23 @@ const lead = showOpenCalls
     }
 
     /* --- Seat meter ---------------------------------------------------- */
-    const reservedNow = () => {
-      const days = (Date.now() - anchorAt) / 86_400_000;
-      const value = Math.floor(anchorReserved + days * perDay);
-      return Math.min(capacity, Math.max(0, value));
-    };
+    const reservedNow = () => seatsAt(curve, Date.now()).reserved;
 
     const paintSeats = (value: number) => {
-      const remaining = capacity - value;
+      const remaining = curve.capacity - value;
+      const soldOut = remaining <= 0;
       if (seatCount) {
-        seatCount.textContent = remaining > 0 ? `${value} / ${capacity}` : 'Cupos agotados';
+        seatCount.textContent = soldOut ? 'Cupos agotados' : `${value} / ${curve.capacity}`;
       }
       /* Inline style rather than a class: the suffix has to disappear at every
          breakpoint once the room is full, and `hidden sm:inline` would win. */
-      if (seatSuffix) seatSuffix.style.display = remaining > 0 ? '' : 'none';
-      if (seatBar) seatBar.style.width = `${(value / capacity) * 100}%`;
+      if (seatSuffix) seatSuffix.style.display = soldOut ? 'none' : '';
+      if (seatBar) seatBar.style.width = `${(value / curve.capacity) * 100}%`;
       if (seatTrack) {
-        seatTrack.setAttribute('aria-label', `${value} de ${capacity} cupos reservados`);
+        seatTrack.setAttribute('aria-label', `${value} de ${curve.capacity} cupos reservados`);
       }
       if (seatCta) {
-        seatCta.textContent =
-          remaining > 0 ? `${ctaLabel} · quedan ${remaining}` : ctaSoldOut;
+        seatCta.textContent = soldOut ? ctaSoldOut : `${ctaLabel} · quedan ${remaining}`;
       }
     };
 
@@ -301,9 +295,11 @@ const lead = showOpenCalls
     window.setInterval(() => {
       if (reservedNow() === shown) return;
       animateSeats(reservedNow(), 600);
-      seatLabel?.classList.remove('seat-tick');
-      void (seatLabel as HTMLElement | null)?.offsetWidth;
-      seatLabel?.classList.add('seat-tick');
+      if (seatLabel instanceof HTMLElement) {
+        seatLabel.classList.remove('seat-tick');
+        void seatLabel.offsetWidth; /* reflow, so the animation restarts */
+        seatLabel.classList.add('seat-tick');
+      }
     }, 20_000);
   }
 </script>
@@ -340,7 +336,7 @@ const lead = showOpenCalls
               data-hot
             >
               <div class="flex items-center justify-between gap-3">
-                <span class={`sticker ${toneMap[call.tone]}`} style={`transform: rotate(${i % 2 ? 2 : -2}deg)`}>
+                <span class={`sticker ${TONE_STYLES[call.tone].sticker}`} style={`transform: rotate(${i % 2 ? 2 : -2}deg)`}>
                   {call.cadence}
                 </span>
                 <span

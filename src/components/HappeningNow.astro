@@ -1,11 +1,6 @@
 ---
 import { stats, pillars } from '../data/site';
-
-const toneMap: Record<string, { chip: string; bar: string; num: string }> = {
-  yellow: { chip: 'bg-ec-yellow text-ec-ink', bar: 'bg-ec-yellow', num: 'text-ec-yellow-deep' },
-  blue: { chip: 'bg-ec-blue text-ec-bone', bar: 'bg-ec-blue', num: 'text-ec-blue' },
-  red: { chip: 'bg-ec-red text-ec-bone', bar: 'bg-ec-red', num: 'text-ec-red' },
-};
+import { TONE_STYLES } from '../lib/tone';
 ---
 
 <section
@@ -67,7 +62,7 @@ const toneMap: Record<string, { chip: string; bar: string; num: string }> = {
     <div class="mt-[max(1.5rem,4vh)] [@media(min-aspect-ratio:2/1)]:!mt-4 grid gap-4 lg:gap-6 lg:grid-cols-3">
       {
         pillars.map((p, i) => {
-          const tone = toneMap[p.tone];
+          const tone = TONE_STYLES[p.tone];
           return (
             <article
               class="card-lift group relative flex flex-col overflow-hidden rounded-[2rem] border border-ec-ink/12 bg-white/60 p-[max(1.5rem,3.5vh)] [@media(min-aspect-ratio:2/1)]:!p-4 backdrop-blur-sm"
@@ -75,7 +70,7 @@ const toneMap: Record<string, { chip: string; bar: string; num: string }> = {
               style={`--reveal-delay:${i * 120}ms`}
               data-hot
             >
-              <span class={`sticker w-fit ${tone.chip}`} style={`transform: rotate(${i % 2 ? 2 : -2}deg)`}>
+              <span class={`sticker w-fit ${tone.sticker}`} style={`transform: rotate(${i % 2 ? 2 : -2}deg)`}>
                 {p.kicker}
               </span>
 
@@ -86,7 +81,7 @@ const toneMap: Record<string, { chip: string; bar: string; num: string }> = {
               <p class="mt-4 [@media(min-aspect-ratio:2/1)]:!mt-2 flex-1 leading-relaxed text-ec-ink/65 [@media(min-aspect-ratio:2/1)]:!text-sm">{p.body}</p>
 
               <span
-                class={`mt-8 [@media(min-aspect-ratio:2/1)]:!mt-4 h-px w-full origin-left scale-x-0 transition-transform duration-700 [transition-timing-function:var(--ease-out-expo)] group-hover:scale-x-100 ${tone.bar}`}
+                class={`mt-8 [@media(min-aspect-ratio:2/1)]:!mt-4 h-px w-full origin-left scale-x-0 transition-transform duration-700 [transition-timing-function:var(--ease-out-expo)] group-hover:scale-x-100 ${tone.rule}`}
                 aria-hidden="true"
               />
             </article>

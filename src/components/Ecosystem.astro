@@ -1,16 +1,13 @@
 ---
 import { ecosystem } from '../data/site';
+import { deckAttrs, deckCardAttrs } from '../lib/deck';
 import { logoHeight, LOGO_BOX } from '../lib/logoSize';
+import { TONE_STYLES } from '../lib/tone';
+import { safeExternalUrl } from '../lib/url';
 
 /* Category colour lives on the label alone. The cards stay neutral so partner
    logos, which render in full colour, sit on the light surface their own brand
    guidelines assume. */
-const toneMap: Record<string, string> = {
-  yellow: 'bg-ec-yellow text-ec-ink',
-  blue: 'bg-ec-blue text-ec-bone',
-  red: 'bg-ec-red text-ec-bone',
-  ink: 'bg-ec-ink text-ec-bone',
-};
 ---
 
 <section
@@ -51,11 +48,11 @@ const toneMap: Record<string, string> = {
     <div class="mt-12 [@media(min-aspect-ratio:2/1)]:!mt-5 grid gap-10 md:grid-cols-3 md:gap-6 lg:gap-10">
       {
         ecosystem.map((group, gi) => {
-          const tone = toneMap[group.tone] ?? toneMap.ink;
+          const tone = TONE_STYLES[group.tone];
 
           return (
-            <div data-deck data-reveal style={`--reveal-delay:${gi * 110}ms`}>
-              <span class={`sticker ${tone}`} style={`transform: rotate(${gi % 2 ? 1.5 : -1.5}deg)`}>
+            <div {...deckAttrs.root} data-reveal style={`--reveal-delay:${gi * 110}ms`}>
+              <span class={`sticker ${tone.sticker}`} style={`transform: rotate(${gi % 2 ? 1.5 : -1.5}deg)`}>
                 {group.label}
               </span>
 
@@ -67,17 +64,21 @@ const toneMap: Record<string, string> = {
               */}
               <div
                 class="relative mt-5 [@media(min-aspect-ratio:2/1)]:!mt-3 h-[clamp(290px,36vh,375px)] [@media(min-aspect-ratio:2/1)]:!h-[200px] select-none"
-                data-deck-stack
+                {...deckAttrs.stack}
                 tabindex="0"
                 role="group"
                 aria-label={`${group.label}: ${group.items.length} aliados`}
               >
                 <ul class="absolute inset-0">
-                  {group.items.map((item) => (
+                  {group.items.map((item) => {
+                    /* Scheme-checked once, here, so neither the href nor the
+                       pointer shortcut can be handed a `javascript:` value. */
+                    const url = safeExternalUrl(item.url);
+
+                    return (
                     <li
                       class="absolute left-0 right-0 top-0 h-[36%] will-change-transform"
-                      data-card
-                      data-url={item.url}
+                      {...deckCardAttrs(url)}
                     >
                       <div class="flex h-full flex-col overflow-hidden rounded-[1.75rem] border-2 border-ec-ink/10 bg-ec-bone shadow-[6px_6px_0_rgb(8_12_24/0.07)]">
                         <div class="flex flex-1 flex-col items-center justify-center gap-3 px-5 text-center">
@@ -100,17 +101,17 @@ const toneMap: Record<string, string> = {
                             </span>
                           ) : null}
 
-                          {item.url ? (
+                          {url ? (
                             /* A real link, so the partner is reachable by
                                keyboard and announced as a link — the pointer
                                shortcut on the whole card is a convenience on
                                top of it, not the only way in. */
                             <a
-                              href={item.url}
+                              href={url}
                               target="_blank"
                               rel="noreferrer"
                               class="display text-[clamp(1.15rem,2vw,1.7rem)] leading-[0.92] text-balance"
-                              data-card-link
+                              {...deckAttrs.link}
                             >
                               {item.name}
                             </a>
@@ -122,7 +123,8 @@ const toneMap: Record<string, string> = {
                         </div>
                       </div>
                     </li>
-                  ))}
+                    );
+                  })}
                 </ul>
               </div>
             </div>
@@ -134,16 +136,11 @@ const toneMap: Record<string, string> = {
 </section>
 
 <script>
-  /* Partner roulettes.
-     Each column spins slowly through its collaborators forever. Hovering or
-     holding spins it faster; a press freezes it so a click resolves to the card
-     that was actually under the cursor, and a quick click opens that partner.
-     All cards stay in the DOM and in the accessibility tree throughout. */
-  const BASE_SPEED = 0.22; /* cards per second at rest */
-  const BOOST_SPEED = 0.85; /* cards per second while hovered or held */
-  const EASE = 4; /* how sharply speed converges on its target */
-  const HOLD_MS = 200; /* press longer than this and it is a hold, not a click */
-  const MOVE_TOLERANCE = 8; /* px of drift still counted as a click */
+  /* Drives the partner roulettes. All the logic — geometry, speed rules,
+     settle, pointer phases — lives in src/lib/deck.ts; this is the page-level
+     wiring: one animation frame for all three columns, one pause control, and
+     the reduced-motion default. */
+  import { createDeck, DECK_ATTR } from '../lib/deck';
 
   const section = document.querySelector<HTMLElement>('[data-ecosystem]');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -151,123 +148,23 @@ const toneMap: Record<string, string> = {
   if (section) {
     /* Under reduced motion nothing spins until the visitor asks it to. */
     let running = !reduced;
-    let onScreen = false;
 
-    const decks = [...section.querySelectorAll<HTMLElement>('[data-deck]')].map((deck) => {
-      const stack = deck.querySelector<HTMLElement>('[data-deck-stack]')!;
-      const cards = [...deck.querySelectorAll<HTMLElement>('[data-card]')];
-
-      const state = {
-        stack,
-        cards,
-        offset: 0,
-        speed: BASE_SPEED,
-        hovered: false,
-        pressed: false,
-        holding: false,
-        focused: false,
-        centre: 0,
-        spacing: 0,
-        lastCentred: -1,
-      };
-
-      const measure = () => {
-        const height = stack.clientHeight;
-        const cardHeight = cards[0]?.offsetHeight ?? 0;
-        state.centre = (height - cardHeight) / 2;
-        /* Tighter than the card height on purpose: the neighbours tuck behind
-           the centre card and are partly covered by it, which is what makes it
-           read as a stack rather than three separate cards. Paired with the
-           36% card height above. */
-        state.spacing = height * 0.27;
-      };
-
-      measure();
-      new ResizeObserver(measure).observe(stack);
-      return state;
-    });
-
-    const paint = (deck: (typeof decks)[number]) => {
-      const n = deck.cards.length;
-      let centred = 0;
-      let closest = Infinity;
-
-      deck.cards.forEach((card, i) => {
-        /* Signed distance from the centre line, wrapped into [-n/2, n/2) so a
-           card leaving the top reappears at the bottom without a seam. */
-        let d = (((i - deck.offset) % n) + n) % n;
-        if (d > n / 2) d -= n;
-        const distance = Math.abs(d);
-
-        if (distance < closest) {
-          closest = distance;
-          centred = i;
-        }
-
-        const scale = Math.max(0.72, 1 - distance * 0.14);
-        /* Beyond the immediate neighbours a card is invisible, so it can be
-           repositioned freely — that is what makes the wrap seamless. */
-        const opacity = distance > 1.6 ? 0 : Math.max(0, 1 - distance * 0.34);
-
-        card.style.transform = `translate3d(0, ${deck.centre + d * deck.spacing}px, 0) scale(${scale})`;
-        card.style.opacity = String(opacity);
-        card.style.zIndex = String(Math.round(100 - distance * 10));
-
-        /* Parked cards are pushed well outside the stack box, and an invisible
-           element still answers the pointer — left interactive they stretch the
-           column's hover target up over the category label. Only the centred
-           card, which is always inside the box, stays hit-testable. */
-        card.style.pointerEvents = distance < 0.5 ? 'auto' : 'none';
-      });
-
-      if (centred !== deck.lastCentred) {
-        deck.lastCentred = centred;
-        deck.cards.forEach((card, i) => {
-          /* Only the centred card's link takes a tab stop; the others stay
-             announced but unreachable while they sit behind it. */
-          card
-            .querySelectorAll<HTMLElement>('[data-card-link]')
-            .forEach((link) => link.setAttribute('tabindex', i === centred ? '0' : '-1'));
-        });
-        deck.stack.style.cursor = deck.cards[centred]?.dataset.url ? 'pointer' : '';
-      }
+    const openUrl = (url: string) => {
+      window.open(url, '_blank', 'noopener,noreferrer');
     };
 
-    let last = 0;
+    const decks = [...section.querySelectorAll<HTMLElement>(`[${DECK_ATTR.root}]`)]
+      .map((root) => createDeck(root, { isRunning: () => running, openUrl }))
+      .filter((deck) => deck !== null);
+
+    /* One loop for the whole section rather than one per column. */
     let frame = 0;
+    let last = 0;
 
     const tick = (now: number) => {
       const delta = last ? Math.min((now - last) / 1000, 0.1) : 0;
       last = now;
-
-      decks.forEach((deck) => {
-        const n = deck.cards.length;
-        const boosted = deck.hovered || deck.holding;
-        /* A press pins the deck in place so the click that follows resolves to
-           whatever the visitor is actually looking at. */
-        const frozen = deck.pressed && !deck.holding;
-        const stopped = frozen || deck.focused || !running;
-        const target = stopped ? 0 : boosted ? BOOST_SPEED : BASE_SPEED;
-
-        deck.speed += (target - deck.speed) * Math.min(1, delta * EASE);
-        /* Easing only ever approaches its target, so "paused" would otherwise
-           keep creeping forward by a fraction of a pixel forever. */
-        if (Math.abs(target - deck.speed) < 0.004) deck.speed = target;
-
-        if (deck.speed > 0) {
-          deck.offset = (deck.offset + deck.speed * delta) % n;
-        } else if (stopped) {
-          /* Settle onto the nearest card so a column at rest never sits
-             half-way between two. Rounding up past the last card is fine —
-             the offset is normalized back into range once it lands. */
-          const nearest = Math.round(deck.offset);
-          deck.offset += (nearest - deck.offset) * Math.min(1, delta * 6);
-          if (Math.abs(nearest - deck.offset) < 0.0005) deck.offset = nearest % n;
-        }
-
-        paint(deck);
-      });
-
+      decks.forEach((deck) => deck.step(delta));
       frame = requestAnimationFrame(tick);
     };
 
@@ -286,94 +183,10 @@ const toneMap: Record<string, string> = {
     /* Off-screen the section costs nothing — no frames while it is out of view. */
     new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          onScreen = entry.isIntersecting;
-          if (onScreen) start();
-          else stop();
-        });
+        entries.forEach((entry) => (entry.isIntersecting ? start() : stop()));
       },
       { threshold: 0 },
     ).observe(section);
-
-    decks.forEach((deck) => {
-      const { stack } = deck;
-      let downAt = 0;
-      let downX = 0;
-      let downY = 0;
-      let holdTimer = 0;
-
-      stack.addEventListener('pointerenter', () => { deck.hovered = true; });
-      stack.addEventListener('pointerleave', () => {
-        deck.hovered = false;
-        deck.pressed = false;
-        deck.holding = false;
-        window.clearTimeout(holdTimer);
-      });
-
-      stack.addEventListener('pointerdown', (event) => {
-        downAt = event.timeStamp;
-        downX = event.clientX;
-        downY = event.clientY;
-        deck.pressed = true;
-        deck.holding = false;
-        holdTimer = window.setTimeout(() => { deck.holding = true; }, HOLD_MS);
-      });
-
-      stack.addEventListener('pointerup', (event) => {
-        window.clearTimeout(holdTimer);
-        const quick = event.timeStamp - downAt < HOLD_MS;
-        const still =
-          Math.abs(event.clientX - downX) < MOVE_TOLERANCE &&
-          Math.abs(event.clientY - downY) < MOVE_TOLERANCE;
-
-        deck.pressed = false;
-        deck.holding = false;
-
-        /* The anchor handles its own activation — don't open the tab twice. */
-        if ((event.target as HTMLElement).closest('[data-card-link]')) return;
-
-        if (quick && still) {
-          const url = deck.cards[deck.lastCentred]?.dataset.url;
-          if (url) window.open(url, '_blank', 'noopener,noreferrer');
-        }
-      });
-
-      /* Keyboard: hold the deck still while it has focus, and let Enter follow
-         the centred partner.
-
-         Only a *keyboard* focus counts. Clicking the stack focuses it too (it
-         carries tabindex="0"), so treating every focus as a pause left the
-         column parked for good after any click. :focus-visible is exactly the
-         "arrived here by keyboard" signal. */
-      stack.addEventListener('focusin', (event) => {
-        const target = event.target as HTMLElement;
-        try {
-          deck.focused = target.matches(':focus-visible');
-        } catch {
-          deck.focused = false;
-        }
-      });
-      stack.addEventListener('focusout', () => { deck.focused = false; });
-
-      stack.addEventListener('keydown', (event) => {
-        const n = deck.cards.length;
-        if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
-          event.preventDefault();
-          deck.offset = (deck.offset + 1) % n;
-        }
-        if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
-          event.preventDefault();
-          deck.offset = (deck.offset - 1 + n) % n;
-        }
-        if (event.key === 'Enter' || event.key === ' ') {
-          const url = deck.cards[deck.lastCentred]?.dataset.url;
-          if (url) {
-            event.preventDefault();
-            window.open(url, '_blank', 'noopener,noreferrer');
-          }
-        }
-      });
-    });
 
     const toggle = section.querySelector<HTMLElement>('[data-ecosystem-toggle]');
     const label = section.querySelector('[data-toggle-label]');
@@ -394,6 +207,5 @@ const toneMap: Record<string, string> = {
     });
 
     paintToggle();
-    decks.forEach(paint);
   }
 </script>

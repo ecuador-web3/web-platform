@@ -1,7 +1,13 @@
 /**
  * Single source of content for the landing page.
  * Figures, dates, logos and links marked PLACEHOLDER need real data before launch.
+ *
+ * This module holds values only. Anything that computes — seat curves, date
+ * formatting, logo geometry — lives in `src/lib/` so it can be tested without
+ * dragging the whole content tree along.
  */
+import type { SeatCurve } from '../lib/seats';
+import type { Tone } from '../lib/tone';
 
 export const brand = {
   name: 'Ecuador Web3',
@@ -38,7 +44,12 @@ export const stats = [
   { value: 9, suffix: '', label: 'Universidades aliadas' },
 ];
 
-export const pillars = [
+export const pillars: {
+  kicker: string;
+  title: string;
+  body: string;
+  tone: Tone;
+}[] = [
   {
     kicker: 'La oportunidad',
     title: 'Dolarizados y conectados',
@@ -64,12 +75,10 @@ export const nextEvent = {
   code: 'EVENTO #001',
   title: 'Ecuador Web3 Summit',
   year: '2026',
-  /** Drives the countdown. Keep the -05:00 offset explicit so the clock is
-      Ecuador time for every visitor, not the browser's local zone. */
+  /** The one source for every date the ticket prints. Keep the -05:00 offset
+      explicit so the clock is Ecuador time for every visitor, not the
+      browser's local zone. Display strings are formatted in lib/eventDate. */
   startsAt: '2026-09-22T09:00:00-05:00',
-  date: '22 de septiembre, 2026',
-  dateShort: '22 SEP',
-  time: '09:00',
   city: 'Quito',
   venue: 'Por confirmar',
   body: 'Un día completo de charlas, talleres y demos. Entrada libre con registro previo.',
@@ -77,35 +86,24 @@ export const nextEvent = {
 };
 
 /**
- * PLACEHOLDER demand curve for the ticket's seat meter.
- *
- * The reserved count is DERIVED FROM THE CLOCK, not from a registration feed:
- * a straight line from `anchorReserved` seats at `anchorAt`, growing `perDay`,
- * clamped to `capacity`. That keeps it honest in the two ways that matter for
- * a simulated number — every visitor sees the same value at the same moment,
- * and it never walks backwards between visits.
- *
- * It is still a simulation. Before launch, replace `reservedAt()` with the real
- * Luma registration count; a meter that contradicts the door is worse than no
- * meter. `perDay` is the knob for pace: 1.3 fills the room right as the event
- * starts and ticks about once every 18 hours.
+ * PLACEHOLDER demand curve for the ticket's seat meter — see `lib/seats` for
+ * what the numbers mean and what has to replace them before launch.
  */
-export const seats = {
+export const seats: SeatCurve = {
   capacity: 250,
   anchorAt: '2026-08-06T00:00:00-05:00',
   anchorReserved: 187,
   perDay: 1.3,
 };
 
-/** Seats reserved at `now`, clamped to [0, capacity]. */
-export function reservedAt(now: Date | number = Date.now()): number {
-  const ms = typeof now === 'number' ? now : now.getTime();
-  const days = (ms - Date.parse(seats.anchorAt)) / 86_400_000;
-  const value = Math.floor(seats.anchorReserved + days * seats.perDay);
-  return Math.min(seats.capacity, Math.max(0, value));
-}
-
-export const calls = [
+export const calls: {
+  title: string;
+  cadence: string;
+  when: string;
+  where: string;
+  body: string;
+  tone: Tone;
+}[] = [
   {
     title: 'Community Call',
     cadence: 'Semanal',
@@ -179,7 +177,7 @@ export interface EcosystemItem {
 export const ecosystem: {
   id: string;
   label: string;
-  tone: string;
+  tone: Tone;
   items: EcosystemItem[];
 }[] = [
   {
@@ -229,7 +227,14 @@ export const ecosystem: {
   },
 ];
 
-export const paths = [
+export const paths: {
+  num: string;
+  title: string;
+  body: string;
+  cta: string;
+  href: string;
+  tone: Tone;
+}[] = [
   {
     num: '01',
     title: 'Únete',
