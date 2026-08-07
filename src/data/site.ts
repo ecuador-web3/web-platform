@@ -1,7 +1,13 @@
 /**
  * Single source of content for the landing page.
  * Figures, dates, logos and links marked PLACEHOLDER need real data before launch.
+ *
+ * This module holds values only. Anything that computes — seat curves, date
+ * formatting, logo geometry — lives in `src/lib/` so it can be tested without
+ * dragging the whole content tree along.
  */
+import type { SeatCurve } from '../lib/seats';
+import type { Tone } from '../lib/tone';
 
 export const brand = {
   name: 'Ecuador Web3',
@@ -38,7 +44,12 @@ export const stats = [
   { value: 9, suffix: '', label: 'Universidades aliadas' },
 ];
 
-export const pillars = [
+export const pillars: {
+  kicker: string;
+  title: string;
+  body: string;
+  tone: Tone;
+}[] = [
   {
     kicker: 'La oportunidad',
     title: 'Dolarizados y conectados',
@@ -64,17 +75,35 @@ export const nextEvent = {
   code: 'EVENTO #001',
   title: 'Ecuador Web3 Summit',
   year: '2026',
-  date: '14 de marzo, 2026',
-  dateShort: '14 MAR',
-  time: '09:00',
+  /** The one source for every date the ticket prints. Keep the -05:00 offset
+      explicit so the clock is Ecuador time for every visitor, not the
+      browser's local zone. Display strings are formatted in lib/eventDate. */
+  startsAt: '2026-09-22T09:00:00-05:00',
   city: 'Quito',
   venue: 'Por confirmar',
-  seats: '250 cupos',
   body: 'Un día completo de charlas, talleres y demos. Entrada libre con registro previo.',
-  cta: { label: 'Reservar mi lugar', href: '#' },
+  cta: { label: 'Reservar', href: '#', soldOutLabel: 'Lista de espera' },
 };
 
-export const calls = [
+/**
+ * PLACEHOLDER demand curve for the ticket's seat meter — see `lib/seats` for
+ * what the numbers mean and what has to replace them before launch.
+ */
+export const seats: SeatCurve = {
+  capacity: 250,
+  anchorAt: '2026-08-06T00:00:00-05:00',
+  anchorReserved: 187,
+  perDay: 1.3,
+};
+
+export const calls: {
+  title: string;
+  cadence: string;
+  when: string;
+  where: string;
+  body: string;
+  tone: Tone;
+}[] = [
   {
     title: 'Community Call',
     cadence: 'Semanal',
@@ -122,15 +151,48 @@ export const openCalls = [
   { title: 'Voluntarios de producción y contenido', meta: 'Sin fecha límite', status: 'Abierta' },
 ];
 
-/** PLACEHOLDER: names stand in for real partner logos. */
-export const ecosystem = [
+/**
+ * A single partner tile.
+ *
+ * `logo` is a path under `public/logos/`. Prefer SVG; otherwise a PNG cropped
+ * tight to the artwork — baked-in transparent padding is the main reason a logo
+ * looks undersized next to its neighbours. Logos render in full colour, always
+ * on a light tile, so partner brand guidelines hold.
+ *
+ * `scale` is an optical size override where 1 is the default box. Logos differ
+ * in visual weight as much as in dimensions: wide wordmarks usually want ~0.85,
+ * dense square marks ~1.15. Set it by eye against the tiles either side.
+ *
+ * With no `logo`, the tile sets `name` as a wordmark in the display face. Both
+ * variants fill the identical box, so any mix of the two stays on the grid.
+ */
+export interface EcosystemItem {
+  name: string;
+  logo?: string;
+  scale?: number;
+  url?: string;
+}
+
+/** PLACEHOLDER: names stand in for real partners; none have logos on file yet. */
+export const ecosystem: {
+  id: string;
+  label: string;
+  tone: Tone;
+  items: EcosystemItem[];
+}[] = [
   {
     id: 'comunidades',
     label: 'Comunidades',
     tone: 'yellow',
     items: [
-      'Blockchain Ecuador', 'Cripto Guayaquil', 'DAO Andina', 'Quito Devs',
-      'NFT Ecuador', 'Bitcoin Cuenca', 'Web3 Manta', 'Mujeres en Blockchain',
+      { name: 'Blockchain Ecuador' },
+      { name: 'Cripto Guayaquil' },
+      { name: 'DAO Andina' },
+      { name: 'Quito Devs' },
+      { name: 'NFT Ecuador' },
+      { name: 'Bitcoin Cuenca' },
+      { name: 'Web3 Manta' },
+      { name: 'Mujeres en Blockchain' },
     ],
   },
   {
@@ -138,8 +200,14 @@ export const ecosystem = [
     label: 'Universidades',
     tone: 'blue',
     items: [
-      'ESPOL', 'USFQ', 'EPN', 'PUCE', 'UDLA', 'Universidad de Cuenca',
-      'ESPE', 'Yachay Tech',
+      { name: 'ESPOL' },
+      { name: 'USFQ' },
+      { name: 'EPN' },
+      { name: 'PUCE' },
+      { name: 'UDLA' },
+      { name: 'Universidad de Cuenca' },
+      { name: 'ESPE' },
+      { name: 'Yachay Tech' },
     ],
   },
   {
@@ -147,13 +215,26 @@ export const ecosystem = [
     label: 'Blockchains',
     tone: 'red',
     items: [
-      'Ethereum', 'Solana', 'Base', 'Polygon', 'Stellar', 'Celo',
-      'Arbitrum', 'Starknet',
+      { name: 'Ethereum' },
+      { name: 'Solana' },
+      { name: 'Base' },
+      { name: 'Polygon' },
+      { name: 'Stellar' },
+      { name: 'Celo' },
+      { name: 'Arbitrum' },
+      { name: 'Starknet' },
     ],
   },
 ];
 
-export const paths = [
+export const paths: {
+  num: string;
+  title: string;
+  body: string;
+  cta: string;
+  href: string;
+  tone: Tone;
+}[] = [
   {
     num: '01',
     title: 'Únete',

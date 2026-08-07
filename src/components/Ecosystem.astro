@@ -1,61 +1,132 @@
 ---
 import { ecosystem } from '../data/site';
-import Marquee from './Marquee.astro';
+import { deckAttrs, deckCardAttrs } from '../lib/deck';
+import { logoHeight, LOGO_BOX } from '../lib/logoSize';
+import { TONE_STYLES } from '../lib/tone';
+import { safeExternalUrl } from '../lib/url';
 
-const toneMap: Record<string, { bg: string; text: string }> = {
-  yellow: { bg: 'bg-ec-yellow', text: 'text-ec-ink' },
-  blue: { bg: 'bg-ec-blue', text: 'text-ec-bone' },
-  red: { bg: 'bg-ec-red', text: 'text-ec-bone' },
-  ink: { bg: 'bg-ec-ink', text: 'text-ec-bone' },
-};
+/* Category colour lives on the label alone. The cards stay neutral so partner
+   logos, which render in full colour, sit on the light surface their own brand
+   guidelines assume. */
 ---
 
 <section
   id="ecosistema"
   data-nav-theme="light"
-  class="relative isolate flex flex-col min-h-[100svh] overflow-hidden bg-ec-bone pt-[clamp(7rem,12vh,9rem)] [@media(min-aspect-ratio:2/1)]:!pt-20 pb-[clamp(2rem,4vh,4rem)] [@media(min-aspect-ratio:2/1)]:!pb-4 text-ec-ink"
+  class="relative isolate flex flex-col min-h-[100svh] overflow-hidden bg-ec-bone pt-[clamp(7rem,12vh,9rem)] [@media(min-aspect-ratio:2/1)]:!pt-20 pb-[clamp(3rem,6vh,5rem)] [@media(min-aspect-ratio:2/1)]:!pb-6 text-ec-ink"
+  data-ecosystem
 >
   <div class="pointer-events-none absolute inset-0 -z-10 text-ec-ink/[0.05] grid-lines" aria-hidden="true"></div>
 
-  <div class="my-auto w-full flex flex-col gap-8 [@media(min-aspect-ratio:2/1)]:!gap-4">
-    <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10">
-      <h2 class="display text-[clamp(2.5rem,7.5vw,6.5rem)] [@media(min-aspect-ratio:2/1)]:!text-[clamp(2rem,6vh,4rem)]" data-reveal>
-        Quiénes<br /><span class="text-ec-red">construyen</span>
-      </h2>
-      <p class="mt-8 [@media(min-aspect-ratio:2/1)]:!mt-4 max-w-2xl text-[clamp(1.05rem,1.5vw,1.3rem)] [@media(min-aspect-ratio:2/1)]:!text-sm leading-relaxed text-ec-ink/70" data-reveal style="--reveal-delay:120ms">
+  <div class="my-auto mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10">
+    <h2 class="display text-[clamp(2.5rem,7.5vw,6.5rem)] [@media(min-aspect-ratio:2/1)]:!text-[clamp(2rem,6vh,4rem)]" data-reveal>
+      Quiénes<br /><span class="text-ec-red">construyen</span>
+    </h2>
+
+    <div class="mt-8 [@media(min-aspect-ratio:2/1)]:!mt-4 flex flex-wrap items-end justify-between gap-4" data-reveal style="--reveal-delay:120ms">
+      <p class="max-w-2xl text-[clamp(1.05rem,1.5vw,1.3rem)] [@media(min-aspect-ratio:2/1)]:!text-sm leading-relaxed text-ec-ink/70">
         Nadie hace esto solo. Estas son las comunidades, universidades, cadenas y equipos que
         sostienen el ecosistema y le ponen el hombro cada mes.
       </p>
+
+      {/* Continuous motion needs a stop for anyone who can't read past it —
+          WCAG 2.2.2. Doubles as the play control under reduced motion, where
+          the roulettes stay still until asked. */}
+      <button
+        type="button"
+        class="kicker inline-flex shrink-0 items-center gap-2 rounded-full border-2 border-ec-ink/15 px-4 py-2 text-ec-ink/55 transition-all duration-300 hover:border-ec-ink hover:text-ec-ink"
+        data-ecosystem-toggle
+      >
+        <span class="grid h-2.5 w-2.5 place-items-center" aria-hidden="true">
+          <svg viewBox="0 0 10 10" fill="currentColor" data-toggle-pause><rect x="1" y="1" width="3" height="8" rx="1"/><rect x="6" y="1" width="3" height="8" rx="1"/></svg>
+          <svg viewBox="0 0 10 10" fill="currentColor" class="hidden" data-toggle-play><path d="M2 1l7 4-7 4z"/></svg>
+        </span>
+        <span data-toggle-label>Pausar</span>
+      </button>
     </div>
 
-    <!-- Full-width Infinite Ribbons -->
-    <div class="w-full shrink-0">
+    <div class="mt-12 [@media(min-aspect-ratio:2/1)]:!mt-5 grid gap-10 md:grid-cols-3 md:gap-6 lg:gap-10">
       {
         ecosystem.map((group, gi) => {
-          const tone = toneMap[group.tone];
-          const isReverse = gi % 2 !== 0;
-          
-          return (
-            <div 
-              class={`relative block border-y border-ec-ink/5 ${tone.bg} ${tone.text} transition-all duration-500 hover:z-20 hover:shadow-2xl hover:scale-[1.02] hover:[&_.marquee]:[animation-play-state:paused]`}
-              data-reveal 
-              style={`--reveal-delay:${gi * 100}ms`}
-            >
-              <!-- Category Label badge -->
-              <div class="absolute left-4 top-3 sm:left-10 sm:top-4 z-30">
-                <span class={`sticker shadow-sm ${tone.bg} ${tone.text} border border-current/20`}>
-                  {group.label}
-                </span>
-              </div>
+          const tone = TONE_STYLES[group.tone];
 
-              <!-- The Marquee -->
-              <Marquee
-                items={group.items}
-                duration={40 + (gi * 5)} 
-                reverse={isReverse}
-                separator="✦"
-                class="display-wide pt-12 pb-4 sm:pt-11 sm:pb-4 [@media(min-aspect-ratio:2/1)]:!pt-10 [@media(min-aspect-ratio:2/1)]:!pb-2 text-[clamp(2.2rem,4vw,4rem)] [@media(min-aspect-ratio:2/1)]:!text-[clamp(1.5rem,4vh,3rem)] tracking-tight uppercase"
-              />
+          return (
+            <div {...deckAttrs.root} data-reveal style={`--reveal-delay:${gi * 110}ms`}>
+              <span class={`sticker ${tone.sticker}`} style={`transform: rotate(${gi % 2 ? 1.5 : -1.5}deg)`}>
+                {group.label}
+              </span>
+
+              {/*
+                Cards are stacked absolutely and driven per-frame from script.
+                Each sits at the top of the box; the script translates it down to
+                the centre line and then out by its distance from it, so the
+                three nearest cards read as centre / above-behind / below-behind.
+              */}
+              <div
+                class="relative mt-5 [@media(min-aspect-ratio:2/1)]:!mt-3 h-[clamp(290px,36vh,375px)] [@media(min-aspect-ratio:2/1)]:!h-[200px] select-none"
+                {...deckAttrs.stack}
+                tabindex="0"
+                role="group"
+                aria-label={`${group.label}: ${group.items.length} aliados`}
+              >
+                <ul class="absolute inset-0">
+                  {group.items.map((item) => {
+                    /* Scheme-checked once, here, so neither the href nor the
+                       pointer shortcut can be handed a `javascript:` value. */
+                    const url = safeExternalUrl(item.url);
+
+                    return (
+                    <li
+                      class="absolute left-0 right-0 top-0 h-[36%] will-change-transform"
+                      {...deckCardAttrs(url)}
+                    >
+                      <div class="flex h-full flex-col overflow-hidden rounded-[1.75rem] border-2 border-ec-ink/10 bg-ec-bone shadow-[6px_6px_0_rgb(8_12_24/0.07)]">
+                        <div class="flex flex-1 flex-col items-center justify-center gap-3 px-5 text-center">
+                          {item.logo ? (
+                            /* Height comes from the logo's own proportions (see
+                               lib/logoSize.ts) so a wide wordmark and a square
+                               mark read as the same size on their cards. */
+                            <span
+                              class="flex w-full items-center justify-center"
+                              style={`height:${LOGO_BOX}`}
+                            >
+                              <img
+                                src={item.logo}
+                                alt={item.name}
+                                loading="lazy"
+                                decoding="async"
+                                class="w-auto max-w-full object-contain"
+                                style={`height:${logoHeight(item.logo, item.scale)}`}
+                              />
+                            </span>
+                          ) : null}
+
+                          {url ? (
+                            /* A real link, so the partner is reachable by
+                               keyboard and announced as a link — the pointer
+                               shortcut on the whole card is a convenience on
+                               top of it, not the only way in. */
+                            <a
+                              href={url}
+                              target="_blank"
+                              rel="noreferrer"
+                              class="display text-[clamp(1.15rem,2vw,1.7rem)] leading-[0.92] text-balance"
+                              {...deckAttrs.link}
+                            >
+                              {item.name}
+                            </a>
+                          ) : (
+                            <span class="display text-[clamp(1.15rem,2vw,1.7rem)] leading-[0.92] text-balance">
+                              {item.name}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </li>
+                    );
+                  })}
+                </ul>
+              </div>
             </div>
           );
         })
@@ -63,3 +134,78 @@ const toneMap: Record<string, { bg: string; text: string }> = {
     </div>
   </div>
 </section>
+
+<script>
+  /* Drives the partner roulettes. All the logic — geometry, speed rules,
+     settle, pointer phases — lives in src/lib/deck.ts; this is the page-level
+     wiring: one animation frame for all three columns, one pause control, and
+     the reduced-motion default. */
+  import { createDeck, DECK_ATTR } from '../lib/deck';
+
+  const section = document.querySelector<HTMLElement>('[data-ecosystem]');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (section) {
+    /* Under reduced motion nothing spins until the visitor asks it to. */
+    let running = !reduced;
+
+    const openUrl = (url: string) => {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    };
+
+    const decks = [...section.querySelectorAll<HTMLElement>(`[${DECK_ATTR.root}]`)]
+      .map((root) => createDeck(root, { isRunning: () => running, openUrl }))
+      .filter((deck) => deck !== null);
+
+    /* One loop for the whole section rather than one per column. */
+    let frame = 0;
+    let last = 0;
+
+    const tick = (now: number) => {
+      const delta = last ? Math.min((now - last) / 1000, 0.1) : 0;
+      last = now;
+      decks.forEach((deck) => deck.step(delta));
+      frame = requestAnimationFrame(tick);
+    };
+
+    const start = () => {
+      if (frame) return;
+      last = 0;
+      frame = requestAnimationFrame(tick);
+    };
+
+    const stop = () => {
+      if (!frame) return;
+      cancelAnimationFrame(frame);
+      frame = 0;
+    };
+
+    /* Off-screen the section costs nothing — no frames while it is out of view. */
+    new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => (entry.isIntersecting ? start() : stop()));
+      },
+      { threshold: 0 },
+    ).observe(section);
+
+    const toggle = section.querySelector<HTMLElement>('[data-ecosystem-toggle]');
+    const label = section.querySelector('[data-toggle-label]');
+    const pauseIcon = section.querySelector('[data-toggle-pause]');
+    const playIcon = section.querySelector('[data-toggle-play]');
+
+    const paintToggle = () => {
+      /* The label states the action, which is the accessible name — adding
+         aria-pressed on top would announce the state twice. */
+      if (label) label.textContent = running ? 'Pausar' : 'Reanudar';
+      pauseIcon?.classList.toggle('hidden', !running);
+      playIcon?.classList.toggle('hidden', running);
+    };
+
+    toggle?.addEventListener('click', () => {
+      running = !running;
+      paintToggle();
+    });
+
+    paintToggle();
+  }
+</script>
