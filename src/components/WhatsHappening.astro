@@ -1,6 +1,29 @@
 ---
-import { brand, nextEvent, calls, openCalls, showOpenCalls } from '../data/site';
+import { brand, nextEvent, seats, reservedAt, calls, openCalls, showOpenCalls } from '../data/site';
 import Marquee from './Marquee.astro';
+
+/* Seat meter and countdown are rendered server-side as the no-JS fallback and
+   recomputed by the inline script on load — on a static build these values are
+   only as fresh as the last deploy. */
+const reserved = reservedAt();
+const remaining = seats.capacity - reserved;
+const filled = Math.round((reserved / seats.capacity) * 100);
+
+const minutesToStart = Math.max(
+  0,
+  Math.floor((Date.parse(nextEvent.startsAt) - Date.now()) / 60_000),
+);
+const countdown = {
+  days: Math.floor(minutesToStart / 1440),
+  hours: Math.floor((minutesToStart % 1440) / 60),
+  minutes: minutesToStart % 60,
+};
+const pad = (n: number) => String(n).padStart(2, '0');
+
+const ctaLabel =
+  remaining > 0
+    ? `${nextEvent.cta.label} · quedan ${remaining}`
+    : nextEvent.cta.soldOutLabel;
 
 const toneMap: Record<string, string> = {
   yellow: 'bg-ec-yellow text-ec-ink',
@@ -57,11 +80,42 @@ const lead = showOpenCalls
              The taller mobile value accounts for the CTA row wrapping. -->
         <div
           class="ticket relative overflow-hidden rounded-[2rem] bg-ec-bone text-ec-ink [--notch-y:calc(100%-178px)] sm:[--notch-y:calc(100%-115px)] shadow-2xl"
+          data-ticket
+          data-starts-at={nextEvent.startsAt}
+          data-capacity={seats.capacity}
+          data-anchor-at={seats.anchorAt}
+          data-anchor-reserved={seats.anchorReserved}
+          data-per-day={seats.perDay}
+          data-cta-label={nextEvent.cta.label}
+          data-cta-sold-out={nextEvent.cta.soldOutLabel}
         >
           <div class="p-8 sm:p-12 [@media(min-aspect-ratio:2/1)]:!p-4 sm:[@media(min-aspect-ratio:2/1)]:!p-6">
             <div class="flex items-start justify-between gap-4">
               <span class="kicker text-ec-ink/45">{nextEvent.code}</span>
-              <span class="kicker text-ec-red">{nextEvent.seats}</span>
+              <!-- "reservados" is dropped on small screens, where the full
+                   string wraps the header onto two lines. -->
+              <span class="kicker text-ec-red tabular whitespace-nowrap" data-seat-label>
+                <span data-seat-count>{reserved} / {seats.capacity}</span><span
+                  class="hidden sm:inline"
+                  data-seat-suffix>&nbsp;reservados</span
+                >
+              </span>
+            </div>
+
+            <!-- Demand meter. Width is animated from 0 on reveal by the script
+                 below; the inline width is the no-JS resting state. -->
+            <div
+              class="mt-4 [@media(min-aspect-ratio:2/1)]:!mt-2 h-[6px] w-full overflow-hidden rounded-full bg-ec-ink/10"
+              role="img"
+              aria-label={`${reserved} de ${seats.capacity} cupos reservados`}
+              data-seat-track
+            >
+              <div
+                class="h-full rounded-full bg-ec-red transition-[width] duration-1000 [transition-timing-function:var(--ease-out-expo)]"
+                style={`width:${filled}%`}
+                data-seat-bar
+              >
+              </div>
             </div>
 
             <h3 class="display mt-8 [@media(min-aspect-ratio:2/1)]:!mt-4 text-[clamp(2.2rem,5.5vw,4.5rem)] [@media(min-aspect-ratio:2/1)]:!text-[clamp(1.5rem,5vh,3rem)] leading-[0.86]">
@@ -93,15 +147,22 @@ const lead = showOpenCalls
 
           <div class="flex flex-wrap items-center justify-between gap-4 p-8 sm:px-12 [@media(min-aspect-ratio:2/1)]:!p-4 sm:[@media(min-aspect-ratio:2/1)]:!px-6 sm:[@media(min-aspect-ratio:2/1)]:!py-4">
             <div>
-              <div class="kicker text-ec-ink/40">Admite</div>
-              <div class="display-wide mt-1 [@media(min-aspect-ratio:2/1)]:!mt-0 text-lg [@media(min-aspect-ratio:2/1)]:!text-sm">1 persona · entrada libre</div>
+              <div class="kicker text-ec-ink/40" data-countdown-label>Faltan</div>
+              <div
+                class="display-wide tabular mt-1 [@media(min-aspect-ratio:2/1)]:!mt-0 text-lg [@media(min-aspect-ratio:2/1)]:!text-sm"
+                data-countdown
+              >
+                <span data-cd-days>{countdown.days}</span> días <span class="text-ec-ink/30">·</span>
+                {' '}<span data-cd-hours>{pad(countdown.hours)}</span> h <span class="text-ec-ink/30">·</span>
+                {' '}<span data-cd-minutes>{pad(countdown.minutes)}</span> min
+              </div>
             </div>
             <a
               href={nextEvent.cta.href}
               class="btn bg-ec-ink text-ec-bone hover:bg-ec-red"
               data-magnetic="0.2"
             >
-              {nextEvent.cta.label}
+              <span data-seat-cta>{ctaLabel}</span>
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
                 <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
@@ -112,6 +173,140 @@ const lead = showOpenCalls
     </div>
   </div>
 </section>
+
+<script>
+  /* Ticket urgency: countdown to the event + the seat meter.
+     The reserved count is derived from the clock, not from a registration
+     feed — see the `seats` block in src/data/site.ts for the swap that has to
+     happen before launch. Every parameter arrives on the ticket as a data
+     attribute so this file stays free of content. */
+  const ticket = document.querySelector<HTMLElement>('[data-ticket]');
+
+  if (ticket) {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const startsAt = Date.parse(ticket.dataset.startsAt ?? '');
+    const anchorAt = Date.parse(ticket.dataset.anchorAt ?? '');
+    const capacity = Number(ticket.dataset.capacity ?? 0);
+    const anchorReserved = Number(ticket.dataset.anchorReserved ?? 0);
+    const perDay = Number(ticket.dataset.perDay ?? 0);
+    const ctaLabel = ticket.dataset.ctaLabel ?? '';
+    const ctaSoldOut = ticket.dataset.ctaSoldOut ?? '';
+
+    const daysEl = ticket.querySelector('[data-cd-days]');
+    const hoursEl = ticket.querySelector('[data-cd-hours]');
+    const minutesEl = ticket.querySelector('[data-cd-minutes]');
+    const countdownEl = ticket.querySelector('[data-countdown]');
+    const countdownLabel = ticket.querySelector('[data-countdown-label]');
+    const seatLabel = ticket.querySelector('[data-seat-label]');
+    const seatCount = ticket.querySelector('[data-seat-count]');
+    const seatSuffix = ticket.querySelector<HTMLElement>('[data-seat-suffix]');
+    const seatTrack = ticket.querySelector('[data-seat-track]');
+    const seatBar = ticket.querySelector<HTMLElement>('[data-seat-bar]');
+    const seatCta = ticket.querySelector('[data-seat-cta]');
+
+    const pad = (n: number) => String(n).padStart(2, '0');
+
+    /* --- Countdown ----------------------------------------------------- */
+    /* Returns false once the event has started, which stops the interval. */
+    const paintCountdown = () => {
+      const minutes = Math.floor((startsAt - Date.now()) / 60_000);
+
+      if (!Number.isFinite(minutes) || minutes <= 0) {
+        if (countdownLabel) countdownLabel.textContent = 'Sucede';
+        if (countdownEl) countdownEl.textContent = 'Hoy mismo';
+        return false;
+      }
+
+      if (daysEl) daysEl.textContent = String(Math.floor(minutes / 1440));
+      if (hoursEl) hoursEl.textContent = pad(Math.floor((minutes % 1440) / 60));
+      if (minutesEl) minutesEl.textContent = pad(minutes % 60);
+      return true;
+    };
+
+    if (paintCountdown()) {
+      /* 15s keeps the minute digit honest without a per-second repaint. */
+      const clock = window.setInterval(() => {
+        if (!paintCountdown()) window.clearInterval(clock);
+      }, 15_000);
+    }
+
+    /* --- Seat meter ---------------------------------------------------- */
+    const reservedNow = () => {
+      const days = (Date.now() - anchorAt) / 86_400_000;
+      const value = Math.floor(anchorReserved + days * perDay);
+      return Math.min(capacity, Math.max(0, value));
+    };
+
+    const paintSeats = (value: number) => {
+      const remaining = capacity - value;
+      if (seatCount) {
+        seatCount.textContent = remaining > 0 ? `${value} / ${capacity}` : 'Cupos agotados';
+      }
+      /* Inline style rather than a class: the suffix has to disappear at every
+         breakpoint once the room is full, and `hidden sm:inline` would win. */
+      if (seatSuffix) seatSuffix.style.display = remaining > 0 ? '' : 'none';
+      if (seatBar) seatBar.style.width = `${(value / capacity) * 100}%`;
+      if (seatTrack) {
+        seatTrack.setAttribute('aria-label', `${value} de ${capacity} cupos reservados`);
+      }
+      if (seatCta) {
+        seatCta.textContent =
+          remaining > 0 ? `${ctaLabel} · quedan ${remaining}` : ctaSoldOut;
+      }
+    };
+
+    /* Starts level with what the server rendered. */
+    let shown = reservedNow();
+
+    const animateSeats = (to: number, duration: number) => {
+      const from = shown;
+      shown = to;
+      if (reduced || from === to) {
+        paintSeats(to);
+        return;
+      }
+      const start = performance.now();
+      const step = (now: number) => {
+        const t = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - t, 4);
+        paintSeats(Math.round(from + (to - from) * eased));
+        if (t < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+
+    const revealMeter = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          revealMeter.unobserve(entry.target);
+          /* Empty the meter here rather than at load: a browser that never
+             delivers this callback then keeps the server-rendered count
+             instead of being stuck advertising an empty room. */
+          if (!reduced) {
+            shown = 0;
+            paintSeats(0);
+          }
+          animateSeats(reservedNow(), 1400);
+        });
+      },
+      { threshold: 0.4 },
+    );
+    revealMeter.observe(ticket);
+
+    /* The curve moves about once every 18 hours at the shipped `perDay`, so
+       this rarely fires inside one visit — it exists so the number is right
+       on a page left open, and so a real feed drops straight in here. */
+    window.setInterval(() => {
+      if (reservedNow() === shown) return;
+      animateSeats(reservedNow(), 600);
+      seatLabel?.classList.remove('seat-tick');
+      void (seatLabel as HTMLElement | null)?.offsetWidth;
+      seatLabel?.classList.add('seat-tick');
+    }, 20_000);
+  }
+</script>
 
 <!-- Equator slider (Marquee) -->
 <div class="border-y border-ec-bone/20 bg-ec-blue-deep text-ec-yellow relative z-20">
