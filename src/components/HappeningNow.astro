@@ -22,14 +22,14 @@ const toneMap: Record<string, { chip: string; bar: string; num: string }> = {
   </div>
 
   <div class="my-auto mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10">
-    <div class="flex flex-col lg:flex-row lg:justify-between gap-8 lg:gap-12 [@media(max-height:800px)]:!gap-4">
+    <div class="flex flex-col lg:flex-row lg:justify-between gap-8 lg:gap-12 [@media(min-aspect-ratio:2/1)]:!gap-4">
       <!-- Section head -->
       <div class="lg:w-7/12">
-        <h2 class="display text-[clamp(1.75rem,5.5vw,5rem)] [@media(max-height:800px)]:!text-[clamp(1.5rem,6vh,3rem)] leading-tight" data-reveal>
+        <h2 class="display text-[clamp(1.75rem,5.5vw,5rem)] [@media(min-aspect-ratio:2/1)]:!text-[clamp(1.5rem,6vh,3rem)] leading-tight" data-reveal>
           Está pasando<br />
           <span class="text-ec-blue whitespace-nowrap">ahora mismo</span>
         </h2>
-        <p class="mt-[max(1rem,3vh)] [@media(max-height:800px)]:!mt-2 max-w-xl text-[clamp(1rem,1.5vw,1.3rem)] [@media(max-height:800px)]:!text-sm leading-relaxed text-ec-ink/70" data-reveal style="--reveal-delay:120ms">
+        <p class="mt-[max(1rem,3vh)] [@media(min-aspect-ratio:2/1)]:!mt-2 max-w-xl text-[clamp(1rem,1.5vw,1.3rem)] [@media(min-aspect-ratio:2/1)]:!text-sm leading-relaxed text-ec-ink/70" data-reveal style="--reveal-delay:120ms">
           Ecuador tiene una de las adopciones cripto más rápidas de la región y una comunidad que
           recién empieza a organizarse en serio. Ese es exactamente el momento en el que estamos:
           temprano, con espacio para todos y con mucho por armar.
@@ -42,14 +42,14 @@ const toneMap: Record<string, { chip: string; bar: string; num: string }> = {
           {
             stats.map((stat, i) => (
               <div
-                class="group relative bg-ec-bone p-[max(1.25rem,2.5vh)] sm:px-6 [@media(max-height:800px)]:!p-2 sm:[@media(max-height:800px)]:!px-4 transition-colors duration-500 hover:bg-ec-ink"
+                class="group relative bg-ec-bone p-[max(1.25rem,2.5vh)] sm:px-6 [@media(min-aspect-ratio:2/1)]:!p-2 sm:[@media(min-aspect-ratio:2/1)]:!px-4 transition-colors duration-500 hover:bg-ec-ink"
                 data-reveal
                 style={`--reveal-delay:${i * 90}ms`}
               >
-                <div class="display text-[clamp(2rem,5.5vw,4.5rem)] [@media(max-height:800px)]:!text-[clamp(1.5rem,5vh,3rem)] text-ec-ink transition-colors duration-500 group-hover:text-ec-yellow">
+                <div class="display text-[clamp(2rem,5.5vw,4.5rem)] [@media(min-aspect-ratio:2/1)]:!text-[clamp(1.5rem,5vh,3rem)] text-ec-ink transition-colors duration-500 group-hover:text-ec-yellow">
                   <span data-count={stat.value}>0</span>{stat.suffix}
                 </div>
-                <div class="mt-2 [@media(max-height:800px)]:!mt-0 text-[clamp(0.8rem,1.2vh,0.875rem)] leading-snug text-ec-ink/60 transition-colors duration-500 group-hover:text-ec-bone/70">
+                <div class="mt-2 [@media(min-aspect-ratio:2/1)]:!mt-0 text-[clamp(0.8rem,1.2vh,0.875rem)] leading-snug text-ec-ink/60 transition-colors duration-500 group-hover:text-ec-bone/70">
                   {stat.label}
                 </div>
                 <span
@@ -64,13 +64,13 @@ const toneMap: Record<string, { chip: string; bar: string; num: string }> = {
     </div>
 
     <!-- Three pillars -->
-    <div class="mt-[max(1.5rem,4vh)] [@media(max-height:800px)]:!mt-4 grid gap-4 lg:gap-6 lg:grid-cols-3">
+    <div class="mt-[max(1.5rem,4vh)] [@media(min-aspect-ratio:2/1)]:!mt-4 grid gap-4 lg:gap-6 lg:grid-cols-3">
       {
         pillars.map((p, i) => {
           const tone = toneMap[p.tone];
           return (
             <article
-              class="card-lift group relative flex flex-col overflow-hidden rounded-[2rem] border border-ec-ink/12 bg-white/60 p-[max(1.5rem,3.5vh)] [@media(max-height:800px)]:!p-4 backdrop-blur-sm"
+              class="card-lift group relative flex flex-col overflow-hidden rounded-[2rem] border border-ec-ink/12 bg-white/60 p-[max(1.5rem,3.5vh)] [@media(min-aspect-ratio:2/1)]:!p-4 backdrop-blur-sm"
               data-reveal
               style={`--reveal-delay:${i * 120}ms`}
               data-hot
@@ -79,14 +79,14 @@ const toneMap: Record<string, { chip: string; bar: string; num: string }> = {
                 {p.kicker}
               </span>
 
-              <h3 class="display-wide mt-7 [@media(max-height:800px)]:!mt-3 text-[1.6rem] [@media(max-height:800px)]:!text-[1.2rem] leading-tight text-ec-ink">
+              <h3 class="display-wide mt-7 [@media(min-aspect-ratio:2/1)]:!mt-3 text-[1.6rem] [@media(min-aspect-ratio:2/1)]:!text-[1.2rem] leading-tight text-ec-ink">
                 {p.title}
               </h3>
 
-              <p class="mt-4 [@media(max-height:800px)]:!mt-2 flex-1 leading-relaxed text-ec-ink/65 [@media(max-height:800px)]:!text-sm">{p.body}</p>
+              <p class="mt-4 [@media(min-aspect-ratio:2/1)]:!mt-2 flex-1 leading-relaxed text-ec-ink/65 [@media(min-aspect-ratio:2/1)]:!text-sm">{p.body}</p>
 
               <span
-                class={`mt-8 [@media(max-height:800px)]:!mt-4 h-px w-full origin-left scale-x-0 transition-transform duration-700 [transition-timing-function:var(--ease-out-expo)] group-hover:scale-x-100 ${tone.bar}`}
+                class={`mt-8 [@media(min-aspect-ratio:2/1)]:!mt-4 h-px w-full origin-left scale-x-0 transition-transform duration-700 [transition-timing-function:var(--ease-out-expo)] group-hover:scale-x-100 ${tone.bar}`}
                 aria-hidden="true"
               />
             </article>
