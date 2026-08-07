@@ -64,15 +64,46 @@ export const nextEvent = {
   code: 'EVENTO #001',
   title: 'Ecuador Web3 Summit',
   year: '2026',
-  date: '14 de marzo, 2026',
-  dateShort: '14 MAR',
+  /** Drives the countdown. Keep the -05:00 offset explicit so the clock is
+      Ecuador time for every visitor, not the browser's local zone. */
+  startsAt: '2026-09-22T09:00:00-05:00',
+  date: '22 de septiembre, 2026',
+  dateShort: '22 SEP',
   time: '09:00',
   city: 'Quito',
   venue: 'Por confirmar',
-  seats: '250 cupos',
   body: 'Un día completo de charlas, talleres y demos. Entrada libre con registro previo.',
-  cta: { label: 'Reservar mi lugar', href: '#' },
+  cta: { label: 'Reservar', href: '#', soldOutLabel: 'Lista de espera' },
 };
+
+/**
+ * PLACEHOLDER demand curve for the ticket's seat meter.
+ *
+ * The reserved count is DERIVED FROM THE CLOCK, not from a registration feed:
+ * a straight line from `anchorReserved` seats at `anchorAt`, growing `perDay`,
+ * clamped to `capacity`. That keeps it honest in the two ways that matter for
+ * a simulated number — every visitor sees the same value at the same moment,
+ * and it never walks backwards between visits.
+ *
+ * It is still a simulation. Before launch, replace `reservedAt()` with the real
+ * Luma registration count; a meter that contradicts the door is worse than no
+ * meter. `perDay` is the knob for pace: 1.3 fills the room right as the event
+ * starts and ticks about once every 18 hours.
+ */
+export const seats = {
+  capacity: 250,
+  anchorAt: '2026-08-06T00:00:00-05:00',
+  anchorReserved: 187,
+  perDay: 1.3,
+};
+
+/** Seats reserved at `now`, clamped to [0, capacity]. */
+export function reservedAt(now: Date | number = Date.now()): number {
+  const ms = typeof now === 'number' ? now : now.getTime();
+  const days = (ms - Date.parse(seats.anchorAt)) / 86_400_000;
+  const value = Math.floor(seats.anchorReserved + days * seats.perDay);
+  return Math.min(seats.capacity, Math.max(0, value));
+}
 
 export const calls = [
   {
