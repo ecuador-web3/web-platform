@@ -110,41 +110,60 @@ export const seats: SeatCurve = {
 export const calls: {
   title: string;
   cadence: string;
-  when: string;
+  /** Three-letter day label for the calendar cell, e.g. "Jue". */
+  day: string;
+  time: string;
   where: string;
+  /** Who this call is for — one short line. */
+  audience: string;
   body: string;
+  href: string;
+  featured?: boolean;
   tone: Tone;
 }[] = [
   {
     title: 'Community Call',
     cadence: 'Semanal',
-    when: 'Jueves · 19:00 GMT-5',
+    day: 'Jue',
+    time: '19:00',
     where: 'Google Meet',
-    body: 'Actualizaciones del ecosistema, presentaciones de proyectos y micrófono abierto.',
+    audience: 'Toda la comunidad',
+    body: 'Actualizaciones del ecosistema, presentaciones de proyectos y micrófono abierto. El punto semanal para enterarte y conectar.',
+    href: '#unete',
+    featured: true,
     tone: 'yellow',
   },
   {
     title: 'Dev Circle',
     cadence: 'Quincenal',
-    when: 'Martes · 20:00 GMT-5',
+    day: 'Mar',
+    time: '20:00',
     where: 'Discord',
-    body: 'Sesiones técnicas. Solidity, cuentas abstraídas, infra y lo que traiga la gente.',
+    audience: 'Builders y devs',
+    body: 'Sesiones técnicas: Solidity, cuentas abstraídas, infra y lo que traiga la gente.',
+    href: '#unete',
     tone: 'red',
   },
   {
     title: 'Onboarding 101',
     cadence: 'Mensual',
-    when: 'Primer sábado · 11:00',
+    day: 'Sáb',
+    time: '11:00',
     where: 'Presencial + stream',
+    audience: 'Principiantes',
     body: 'Para quien llega por primera vez. Wallets, seguridad y primeros pasos, sin apuro.',
+    href: '#unete',
     tone: 'bone',
   },
   {
     title: 'Arte y Cultura',
     cadence: 'Mensual',
-    when: 'Miércoles · 19:00 GMT-5',
+    day: 'Mié',
+    time: '19:00',
     where: 'Espacio en X',
+    audience: 'Artistas y curadores',
     body: 'Artistas, coleccionistas y curadores del país conversando sobre lo que están haciendo.',
+    href: '#unete',
     tone: 'yellow',
   },
 ];

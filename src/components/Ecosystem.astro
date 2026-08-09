@@ -1,13 +1,11 @@
 ---
 import { ecosystem } from '../data/site';
-import { deckAttrs, deckCardAttrs } from '../lib/deck';
 import { logoHeight, LOGO_BOX } from '../lib/logoSize';
 import { TONE_STYLES } from '../lib/tone';
 import { safeExternalUrl } from '../lib/url';
 
-/* Category colour lives on the label alone. The cards stay neutral so partner
-   logos, which render in full colour, sit on the light surface their own brand
-   guidelines assume. */
+/* Partner strips use CSS marquees (GPU transform, no rAF). The pause control
+   and off-screen freeze only toggle `animation-play-state` via a data attr. */
 ---
 
 <section
@@ -29,9 +27,8 @@ import { safeExternalUrl } from '../lib/url';
         sostienen el ecosistema y le ponen el hombro cada mes.
       </p>
 
-      {/* Continuous motion needs a stop for anyone who can't read past it —
-          WCAG 2.2.2. Doubles as the play control under reduced motion, where
-          the roulettes stay still until asked. */}
+      {/* Continuous motion needs a stop for WCAG 2.2.2. Also the play control
+          under reduced motion, where strips stay still until asked. */}
       <button
         type="button"
         class="kicker inline-flex shrink-0 items-center gap-2 rounded-full border-2 border-ec-ink/15 px-4 py-2 text-ec-ink/55 transition-all duration-300 hover:border-ec-ink hover:text-ec-ink"
@@ -44,146 +41,127 @@ import { safeExternalUrl } from '../lib/url';
         <span data-toggle-label>Pausar</span>
       </button>
     </div>
+  </div>
 
-    <div class="mt-12 [@media(min-aspect-ratio:2/1)]:!mt-5 grid gap-10 md:grid-cols-3 md:gap-6 lg:gap-10">
-      {
-        ecosystem.map((group, gi) => {
-          const tone = TONE_STYLES[group.tone];
+  <div class="mt-12 [@media(min-aspect-ratio:2/1)]:!mt-5 space-y-8 [@media(min-aspect-ratio:2/1)]:!space-y-5" data-reveal style="--reveal-delay:200ms">
+    {
+      ecosystem.map((group, gi) => {
+        const tone = TONE_STYLES[group.tone];
+        const reverse = gi % 2 === 1;
+        /* Duplicate once for a seamless -50% loop. */
+        const track = [...group.items, ...group.items];
+        const duration = Math.max(28, group.items.length * 4.5);
 
-          return (
-            <div {...deckAttrs.root} data-reveal style={`--reveal-delay:${gi * 110}ms`}>
+        return (
+          <div class="eco-strip" style={`--eco-duration:${duration}s`}>
+            <div class="mx-auto mb-4 flex max-w-[1400px] items-center gap-3 px-4 sm:px-6 lg:px-10">
               <span class={`sticker ${tone.sticker}`} style={`transform: rotate(${gi % 2 ? 1.5 : -1.5}deg)`}>
                 {group.label}
               </span>
+              <span class="h-px flex-1 bg-ec-ink/10" aria-hidden="true"></span>
+            </div>
 
-              {/*
-                Cards are stacked absolutely and driven per-frame from script.
-                Each sits at the top of the box; the script translates it down to
-                the centre line and then out by its distance from it, so the
-                three nearest cards read as centre / above-behind / below-behind.
-              */}
+            {/* Animated strip — hidden from AT; the static list below is canonical. */}
+            <div class="eco-marquee-host relative" aria-hidden="true">
               <div
-                class="relative mt-5 [@media(min-aspect-ratio:2/1)]:!mt-3 h-[clamp(290px,36vh,375px)] [@media(min-aspect-ratio:2/1)]:!h-[200px] select-none"
-                {...deckAttrs.stack}
-                tabindex="0"
-                role="group"
-                aria-label={`${group.label}: ${group.items.length} aliados`}
+                class:list={['eco-marquee', reverse && 'eco-marquee--reverse']}
               >
-                <ul class="absolute inset-0">
-                  {group.items.map((item) => {
-                    /* Scheme-checked once, here, so neither the href nor the
-                       pointer shortcut can be handed a `javascript:` value. */
-                    const url = safeExternalUrl(item.url);
+                {track.map((item) => {
+                  const url = safeExternalUrl(item.url);
+                  const inner = (
+                    <>
+                      <span class:list={['eco-chip-dot', tone.rule]} aria-hidden="true"></span>
+                      {item.logo ? (
+                        <span
+                          class="flex shrink-0 items-center justify-center"
+                          style={`height:${LOGO_BOX}`}
+                        >
+                          <img
+                            src={item.logo}
+                            alt=""
+                            loading="lazy"
+                            decoding="async"
+                            class="w-auto max-w-[7rem] object-contain"
+                            style={`height:${logoHeight(item.logo, item.scale)}`}
+                          />
+                        </span>
+                      ) : null}
+                      <span class="display text-[clamp(1.05rem,2vw,1.45rem)] leading-none tracking-tight">
+                        {item.name}
+                      </span>
+                    </>
+                  );
 
-                    return (
-                    <li
-                      class="absolute left-0 right-0 top-0 h-[36%] will-change-transform"
-                      {...deckCardAttrs(url)}
+                  return url ? (
+                    <a
+                      href={url}
+                      target="_blank"
+                      rel="noreferrer"
+                      class="eco-chip group"
                     >
-                      <div class="flex h-full flex-col overflow-hidden rounded-[1.75rem] border-2 border-ec-ink/10 bg-ec-bone shadow-[6px_6px_0_rgb(8_12_24/0.07)]">
-                        <div class="flex flex-1 flex-col items-center justify-center gap-3 px-5 text-center">
-                          {item.logo ? (
-                            /* Height comes from the logo's own proportions (see
-                               lib/logoSize.ts) so a wide wordmark and a square
-                               mark read as the same size on their cards. */
-                            <span
-                              class="flex w-full items-center justify-center"
-                              style={`height:${LOGO_BOX}`}
-                            >
-                              <img
-                                src={item.logo}
-                                alt={item.name}
-                                loading="lazy"
-                                decoding="async"
-                                class="w-auto max-w-full object-contain"
-                                style={`height:${logoHeight(item.logo, item.scale)}`}
-                              />
-                            </span>
-                          ) : null}
-
-                          {url ? (
-                            /* A real link, so the partner is reachable by
-                               keyboard and announced as a link — the pointer
-                               shortcut on the whole card is a convenience on
-                               top of it, not the only way in. */
-                            <a
-                              href={url}
-                              target="_blank"
-                              rel="noreferrer"
-                              class="display text-[clamp(1.15rem,2vw,1.7rem)] leading-[0.92] text-balance"
-                              {...deckAttrs.link}
-                            >
-                              {item.name}
-                            </a>
-                          ) : (
-                            <span class="display text-[clamp(1.15rem,2vw,1.7rem)] leading-[0.92] text-balance">
-                              {item.name}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </li>
-                    );
-                  })}
-                </ul>
+                      {inner}
+                    </a>
+                  ) : (
+                    <div class="eco-chip group">
+                      {inner}
+                    </div>
+                  );
+                })}
               </div>
             </div>
-          );
-        })
-      }
-    </div>
+
+            {/* Accessible, static roster — also the reduced-motion view. */}
+            <ul class="eco-static sr-only mx-auto max-w-[1400px] flex-wrap gap-2 px-4 sm:px-6 lg:px-10 motion-reduce:not-sr-only motion-reduce:flex">
+              {group.items.map((item) => {
+                const url = safeExternalUrl(item.url);
+                return (
+                  <li>
+                    {url ? (
+                      <a
+                        href={url}
+                        target="_blank"
+                        rel="noreferrer"
+                        class="eco-chip eco-chip--static"
+                      >
+                        <span class:list={['eco-chip-dot', tone.rule]} aria-hidden="true"></span>
+                        {item.name}
+                      </a>
+                    ) : (
+                      <span class="eco-chip eco-chip--static">
+                        <span class:list={['eco-chip-dot', tone.rule]} aria-hidden="true"></span>
+                        {item.name}
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        );
+      })
+    }
   </div>
 </section>
 
 <script>
-  /* Drives the partner roulettes. All the logic — geometry, speed rules,
-     settle, pointer phases — lives in src/lib/deck.ts; this is the page-level
-     wiring: one animation frame for all three columns, one pause control, and
-     the reduced-motion default. */
-  import { createDeck, DECK_ATTR } from '../lib/deck';
-
+  /* Pause / resume only — motion itself is CSS. No animation frames. */
   const section = document.querySelector<HTMLElement>('[data-ecosystem]');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   if (section) {
-    /* Under reduced motion nothing spins until the visitor asks it to. */
-    let running = !reduced;
+    let userPaused = reduced;
+    let inView = false;
 
-    const openUrl = (url: string) => {
-      window.open(url, '_blank', 'noopener,noreferrer');
+    const sync = () => {
+      section.toggleAttribute('data-paused', userPaused || !inView);
     };
 
-    const decks = [...section.querySelectorAll<HTMLElement>(`[${DECK_ATTR.root}]`)]
-      .map((root) => createDeck(root, { isRunning: () => running, openUrl }))
-      .filter((deck) => deck !== null);
-
-    /* One loop for the whole section rather than one per column. */
-    let frame = 0;
-    let last = 0;
-
-    const tick = (now: number) => {
-      const delta = last ? Math.min((now - last) / 1000, 0.1) : 0;
-      last = now;
-      decks.forEach((deck) => deck.step(delta));
-      frame = requestAnimationFrame(tick);
-    };
-
-    const start = () => {
-      if (frame) return;
-      last = 0;
-      frame = requestAnimationFrame(tick);
-    };
-
-    const stop = () => {
-      if (!frame) return;
-      cancelAnimationFrame(frame);
-      frame = 0;
-    };
-
-    /* Off-screen the section costs nothing — no frames while it is out of view. */
     new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => (entry.isIntersecting ? start() : stop()));
+        entries.forEach((entry) => {
+          inView = entry.isIntersecting;
+          sync();
+        });
       },
       { threshold: 0 },
     ).observe(section);
@@ -194,18 +172,18 @@ import { safeExternalUrl } from '../lib/url';
     const playIcon = section.querySelector('[data-toggle-play]');
 
     const paintToggle = () => {
-      /* The label states the action, which is the accessible name — adding
-         aria-pressed on top would announce the state twice. */
-      if (label) label.textContent = running ? 'Pausar' : 'Reanudar';
-      pauseIcon?.classList.toggle('hidden', !running);
-      playIcon?.classList.toggle('hidden', running);
+      if (label) label.textContent = userPaused ? 'Reanudar' : 'Pausar';
+      pauseIcon?.classList.toggle('hidden', userPaused);
+      playIcon?.classList.toggle('hidden', !userPaused);
     };
 
     toggle?.addEventListener('click', () => {
-      running = !running;
+      userPaused = !userPaused;
       paintToggle();
+      sync();
     });
 
     paintToggle();
+    sync();
   }
 </script>
