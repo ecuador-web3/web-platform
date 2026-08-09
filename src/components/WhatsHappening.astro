@@ -2,7 +2,7 @@
 import { nextEvent, seats, calls, openCalls, showOpenCalls } from '../data/site';
 import Marquee from './Marquee.astro';
 import { countdownFrom, padUnit } from '../lib/countdown';
-import { formatEventDateShort, formatEventTime } from '../lib/eventDate';
+import { formatEventDateRange, formatEventTime } from '../lib/eventDate';
 import { seatsAt } from '../lib/seats';
 import { TONE_STYLES } from '../lib/tone';
 
@@ -23,8 +23,17 @@ const equatorTicker = [
 
 // The lead promises convocatorias, so it has to follow the section in and out.
 const lead = showOpenCalls
-  ? 'Eventos presenciales, llamadas abiertas cada semana y convocatorias donde tu nombre puede entrar hoy mismo.'
-  : 'Eventos presenciales y llamadas abiertas cada semana, con espacio para que tu nombre entre hoy mismo.';
+  ? 'Talleres, llamadas abiertas cada semana y convocatorias donde tu nombre puede entrar hoy mismo.'
+  : 'Talleres y llamadas abiertas cada semana, con espacio para que tu nombre entre hoy mismo.';
+
+const eventDateLabel = formatEventDateRange(nextEvent.startsAt, nextEvent.endsAt);
+
+/* Conversion copy next to the meter: social proof until scarcity kicks in. */
+const seatProof = seatState.soldOut
+  ? 'Cupos agotados — entra a la lista'
+  : seatState.remaining <= 15
+    ? `Últimos ${seatState.remaining} cupos`
+    : `${seatState.reserved} personas ya reservaron`;
 ---
 
 <section
@@ -51,20 +60,25 @@ const lead = showOpenCalls
     </div>
 
     <!-- ===== Next event: ticket ===== -->
-    <div class="mt-16 [@media(min-aspect-ratio:2/1)]:!mt-6 mx-auto max-w-4xl relative">
+    <div class="mt-10 sm:mt-12 lg:mt-16 [@media(min-aspect-ratio:2/1)]:!mt-6 mx-auto w-full max-w-xl md:max-w-3xl lg:max-w-4xl relative">
       <div data-reveal="scale" class="relative">
         <span
-          class="sticker absolute -top-4 left-8 z-10 bg-ec-red text-ec-bone"
+          class="sticker absolute -top-3 left-5 z-10 bg-ec-yellow text-ec-ink text-[0.65rem] md:left-8 md:text-[0.7rem]"
           style="transform: rotate(-6deg)"
         >
-          Próximo evento
+          Primer curso
+        </span>
+        <span
+          class="sticker absolute -top-2 right-4 z-10 bg-ec-red text-ec-bone text-[0.65rem] md:right-8 md:text-[0.7rem]"
+          style="transform: rotate(5deg)"
+        >
+          Blockchain
         </span>
 
         <!-- Notches anchor to the card bottom, not a percentage: the stub below
-             the perforation keeps a fixed height while the body above reflows.
-             The taller mobile value accounts for the CTA row wrapping. -->
+             the perforation keeps a fixed height while the body above reflows. -->
         <div
-          class="ticket relative overflow-hidden rounded-[2rem] bg-ec-bone text-ec-ink [--notch-y:calc(100%-178px)] sm:[--notch-y:calc(100%-115px)] shadow-2xl"
+          class="ticket ticket--workshop relative overflow-hidden rounded-[1.35rem] md:rounded-[1.75rem] bg-ec-bone text-ec-ink [--notch-y:calc(100%-148px)] sm:[--notch-y:calc(100%-108px)] md:[--notch-y:calc(100%-120px)] lg:[--notch-y:calc(100%-128px)] shadow-xl lg:shadow-2xl"
           data-ticket
           data-starts-at={nextEvent.startsAt}
           data-capacity={seats.capacity}
@@ -74,12 +88,28 @@ const lead = showOpenCalls
           data-cta-label={nextEvent.cta.label}
           data-cta-sold-out={nextEvent.cta.soldOutLabel}
         >
-          <div class="p-8 sm:p-12 [@media(min-aspect-ratio:2/1)]:!p-4 sm:[@media(min-aspect-ratio:2/1)]:!p-6">
-            <div class="flex items-start justify-between gap-4">
-              <span class="kicker text-ec-ink/45">{nextEvent.code}</span>
-              <!-- "reservados" is dropped on small screens, where the full
-                   string wraps the header onto two lines. -->
-              <span class="kicker text-ec-red tabular whitespace-nowrap" data-seat-label>
+          <!-- Flag stripe: yellow / blue / red -->
+          <div class="ticket-stripe absolute inset-y-0 left-0 w-[9px] md:w-3" aria-hidden="true">
+            <span class="block h-1/3 bg-ec-yellow"></span>
+            <span class="block h-1/3 bg-ec-blue"></span>
+            <span class="block h-1/3 bg-ec-red"></span>
+          </div>
+
+          <div class="relative px-5 py-5 pl-7 sm:px-7 sm:py-6 sm:pl-9 md:px-10 md:py-8 md:pl-12 lg:px-12 lg:py-10 lg:pl-14">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex flex-wrap items-center gap-1.5 md:gap-2">
+                <span class="kicker text-ec-ink/45 md:text-[0.7rem]">{nextEvent.code}</span>
+                <span class="rounded-full bg-ec-blue/10 px-2 py-0.5 text-[0.6rem] font-medium tracking-wide text-ec-blue md:px-2.5 md:text-[0.65rem]">
+                  Virtual
+                </span>
+                <span class="rounded-full bg-ec-yellow/25 px-2 py-0.5 text-[0.6rem] font-medium tracking-wide text-ec-ink/70 md:px-2.5 md:text-[0.65rem]">
+                  2 sesiones
+                </span>
+                <span class="rounded-full bg-ec-red/10 px-2 py-0.5 text-[0.6rem] font-medium tracking-wide text-ec-red md:px-2.5 md:text-[0.65rem]">
+                  Gratis
+                </span>
+              </div>
+              <span class="kicker text-ec-red tabular whitespace-nowrap md:text-[0.7rem]" data-seat-label>
                 <span data-seat-count>{seatState.reserved} / {seats.capacity}</span><span
                   class="hidden sm:inline"
                   data-seat-suffix>&nbsp;reservados</span
@@ -87,79 +117,108 @@ const lead = showOpenCalls
               </span>
             </div>
 
-            <!-- Demand meter. Width is animated from 0 on reveal by the script
-                 below; the inline width is the no-JS resting state. -->
             <div
-              class="mt-4 [@media(min-aspect-ratio:2/1)]:!mt-2 h-[6px] w-full overflow-hidden rounded-full bg-ec-ink/10"
+              class="mt-3 md:mt-4 h-[5px] md:h-1.5 w-full overflow-hidden rounded-full bg-ec-ink/10"
               role="img"
               aria-label={`${seatState.reserved} de ${seats.capacity} cupos reservados`}
               data-seat-track
             >
               <div
-                class="h-full rounded-full bg-ec-red transition-[width] duration-1000 [transition-timing-function:var(--ease-out-expo)]"
+                class="h-full rounded-full bg-gradient-to-r from-ec-yellow via-ec-blue to-ec-red transition-[width] duration-1000 [transition-timing-function:var(--ease-out-expo)]"
                 style={`width:${seatState.filledPercent}%`}
                 data-seat-bar
               >
               </div>
             </div>
+            <p class="mt-1.5 text-[0.7rem] font-medium text-ec-red md:text-sm" data-seat-proof>
+              {seatProof}
+            </p>
 
-            <h3 class="display mt-8 [@media(min-aspect-ratio:2/1)]:!mt-4 text-[clamp(2.2rem,5.5vw,4.5rem)] [@media(min-aspect-ratio:2/1)]:!text-[clamp(1.5rem,5vh,3rem)] leading-[0.86]">
+            <h3 class="display mt-4 md:mt-6 text-[clamp(1.65rem,7vw,2.15rem)] md:text-[clamp(2.5rem,4.2vw,3.6rem)] leading-[0.9]">
               {nextEvent.title}
-              <span class="block text-ec-blue">{nextEvent.year}</span>
+              <span class="block text-ec-blue">{nextEvent.accent}</span>
             </h3>
 
-            <p class="mt-6 [@media(min-aspect-ratio:2/1)]:!mt-2 max-w-md leading-relaxed text-ec-ink/65 [@media(min-aspect-ratio:2/1)]:!text-sm">{nextEvent.body}</p>
+            <p class="mt-3 max-w-prose text-sm leading-snug text-ec-ink/60 md:mt-4 md:text-base md:leading-relaxed lg:text-lg">
+              {nextEvent.body}
+            </p>
 
-            <dl class="mt-10 [@media(min-aspect-ratio:2/1)]:!mt-4 grid grid-cols-2 gap-6 [@media(min-aspect-ratio:2/1)]:!gap-2 sm:grid-cols-4">
+            <!-- Motivation hooks: benefits, not decoration -->
+            <ul class="mt-4 flex flex-wrap gap-x-3 gap-y-1.5 md:mt-5 md:gap-x-5" aria-label="Por qué inscribirte">
               {
-                [
-                  ['Fecha', formatEventDateShort(nextEvent.startsAt)],
-                  ['Hora', formatEventTime(nextEvent.startsAt)],
-                  ['Ciudad', nextEvent.city],
-                  ['Lugar', nextEvent.venue],
-                ].map(([label, value]) => (
-                  <div>
-                    <dt class="kicker text-ec-ink/40">{label}</dt>
-                    <dd class="display-wide mt-2 [@media(min-aspect-ratio:2/1)]:!mt-1 text-lg [@media(min-aspect-ratio:2/1)]:!text-sm">{value}</dd>
-                  </div>
+                nextEvent.hooks.map((hook) => (
+                  <li class="flex items-center gap-1.5 text-[0.7rem] font-medium text-ec-ink/70 md:text-sm">
+                    <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-ec-yellow" aria-hidden="true"></span>
+                    {hook}
+                  </li>
                 ))
               }
+            </ul>
+
+            <dl class="mt-5 md:mt-7 grid grid-cols-2 gap-x-4 gap-y-3 md:grid-cols-4 md:gap-5">
+              <div>
+                <dt class="kicker text-ec-yellow-deep/80">Fecha</dt>
+                <dd class="display-wide mt-1 text-base md:text-xl lg:text-2xl">{eventDateLabel}</dd>
+              </div>
+              <div>
+                <dt class="kicker text-ec-blue">Hora</dt>
+                <dd class="display-wide mt-1 text-base md:text-xl lg:text-2xl">{formatEventTime(nextEvent.startsAt)}</dd>
+              </div>
+              <div>
+                <dt class="kicker text-ec-red">Modalidad</dt>
+                <dd class="display-wide mt-1 text-base md:text-xl lg:text-2xl">{nextEvent.city}</dd>
+              </div>
+              <div>
+                <dt class="kicker text-ec-ink/40">Tutores</dt>
+                <dd class="mt-1 space-y-0.5 text-sm leading-tight md:text-base lg:text-lg">
+                  {nextEvent.hosts.map((host) => (
+                    <div class="display-wide">{host}</div>
+                  ))}
+                </dd>
+              </div>
             </dl>
           </div>
 
-          <!-- Perforation, aligned with the punched notches -->
-          <div class="dashed-rule mx-8 h-[2px] text-ec-ink/25" aria-hidden="true"></div>
+          <div class="dashed-rule mx-5 sm:mx-7 md:mx-10 lg:mx-12 h-[2px] text-ec-ink/20" aria-hidden="true"></div>
 
-          <div class="flex flex-wrap items-center justify-between gap-4 p-8 sm:px-12 [@media(min-aspect-ratio:2/1)]:!p-4 sm:[@media(min-aspect-ratio:2/1)]:!px-6 sm:[@media(min-aspect-ratio:2/1)]:!py-4">
-            <div>
+          <div class="relative flex flex-col gap-3 px-5 py-4 pl-7 sm:flex-row sm:items-center sm:justify-between sm:px-7 sm:pl-9 md:px-10 md:pl-12 md:py-5 lg:px-12 lg:pl-14 lg:py-6">
+            <div class="min-w-0">
               <div class="kicker text-ec-ink/40" data-countdown-label>
-                {countdown.status === 'counting' ? 'Faltan' : 'Sucede'}
+                {countdown.status === 'counting' ? 'Empieza en' : 'Sucede'}
               </div>
               <div
-                class="display-wide tabular mt-1 [@media(min-aspect-ratio:2/1)]:!mt-0 text-lg [@media(min-aspect-ratio:2/1)]:!text-sm"
+                class="display-wide tabular mt-0.5 text-sm md:text-lg lg:text-xl"
                 data-countdown
               >
                 {countdown.status === 'counting' ? (
                   <Fragment>
-                    <span data-cd-days>{countdown.days}</span> días <span class="text-ec-ink/30">·</span>
-                    {' '}<span data-cd-hours>{padUnit(countdown.hours)}</span> h <span class="text-ec-ink/30">·</span>
-                    {' '}<span data-cd-minutes>{padUnit(countdown.minutes)}</span> min
+                    <span data-cd-days>{countdown.days}</span>d <span class="text-ec-ink/30">·</span>
+                    {' '}<span data-cd-hours>{padUnit(countdown.hours)}</span>h <span class="text-ec-ink/30">·</span>
+                    {' '}<span data-cd-minutes>{padUnit(countdown.minutes)}</span>m
                   </Fragment>
                 ) : (
                   'Hoy mismo'
                 )}
               </div>
             </div>
-            <a
-              href={nextEvent.cta.href}
-              class="btn bg-ec-ink text-ec-bone hover:bg-ec-red"
-              data-magnetic="0.2"
-            >
-              <span data-seat-cta>{ctaLabel}</span>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </a>
+
+            <div class="flex w-full flex-col items-stretch gap-1.5 sm:w-auto sm:items-end">
+              <a
+                href={nextEvent.cta.href}
+                class="btn ticket-cta w-full justify-center bg-ec-red text-ec-bone hover:bg-ec-ink sm:w-auto md:px-8 md:py-4 md:text-base"
+                data-magnetic="0.2"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span data-seat-cta>{ctaLabel}</span>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                  <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+              <p class="text-center text-[0.65rem] text-ec-ink/45 sm:text-right md:text-xs">
+                {nextEvent.cta.note}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -204,6 +263,7 @@ const lead = showOpenCalls
     const seatTrack = ticket.querySelector('[data-seat-track]');
     const seatBar = ticket.querySelector<HTMLElement>('[data-seat-bar]');
     const seatCta = ticket.querySelector('[data-seat-cta]');
+    const seatProof = ticket.querySelector('[data-seat-proof]');
 
     /* --- Countdown ----------------------------------------------------- */
     /* Returns false once the event has started, which stops the interval. */
@@ -244,6 +304,13 @@ const lead = showOpenCalls
       if (seatBar) seatBar.style.width = `${(value / curve.capacity) * 100}%`;
       if (seatTrack) {
         seatTrack.setAttribute('aria-label', `${value} de ${curve.capacity} cupos reservados`);
+      }
+      if (seatProof) {
+        seatProof.textContent = soldOut
+          ? 'Cupos agotados — entra a la lista'
+          : remaining <= 15
+            ? `Últimos ${remaining} cupos`
+            : `${value} personas ya reservaron`;
       }
       if (seatCta) {
         seatCta.textContent = soldOut ? ctaSoldOut : `${ctaLabel} · quedan ${remaining}`;

@@ -70,30 +70,41 @@ export const pillars: {
   },
 ];
 
-/** PLACEHOLDER: replace with the real next event before launch. */
+/** Next public event — Workshop: Web3 desde Cero (Luma). */
 export const nextEvent = {
-  code: 'EVENTO #001',
-  title: 'Ecuador Web3 Summit',
-  year: '2026',
+  code: 'WS-001',
+  title: 'Web3 desde Cero',
+  /** Accent line under the title — workshop framing, not a calendar year. */
+  accent: 'Primer curso',
   /** The one source for every date the ticket prints. Keep the -05:00 offset
       explicit so the clock is Ecuador time for every visitor, not the
       browser's local zone. Display strings are formatted in lib/eventDate. */
-  startsAt: '2026-09-22T09:00:00-05:00',
-  city: 'Quito',
-  venue: 'Por confirmar',
-  body: 'Un día completo de charlas, talleres y demos. Entrada libre con registro previo.',
-  cta: { label: 'Reservar', href: '#', soldOutLabel: 'Lista de espera' },
+  startsAt: '2026-08-11T19:30:00-05:00',
+  /** End of Día 2 — used for the printed date range on the ticket. */
+  endsAt: '2026-08-12T21:00:00-05:00',
+  city: 'Virtual',
+  hosts: ['Elizabeth Pacheco', 'Gelois o7'],
+  body: 'Dos sesiones para entender blockchain y Web3, sin conocimientos previos.',
+  /** Short conversion hooks near the CTA — keep to three. */
+  hooks: ['Sin experiencia previa', 'Exclusivo Ecuador', 'Cupos limitados'],
+  cta: {
+    label: 'Asegura tu cupo',
+    href: 'https://luma.com/s5r5q74x',
+    soldOutLabel: 'Lista de espera',
+    /** Reassurance under the button: cost + friction. */
+    note: 'Gratis · toma menos de 2 minutos',
+  },
 };
 
 /**
  * PLACEHOLDER demand curve for the ticket's seat meter — see `lib/seats` for
- * what the numbers mean and what has to replace them before launch.
+ * what the numbers mean. Swap for the real Luma registration count when wired.
  */
 export const seats: SeatCurve = {
-  capacity: 250,
-  anchorAt: '2026-08-06T00:00:00-05:00',
-  anchorReserved: 187,
-  perDay: 1.3,
+  capacity: 50,
+  anchorAt: '2026-08-09T00:00:00-05:00',
+  anchorReserved: 36,
+  perDay: 3,
 };
 
 export const calls: {

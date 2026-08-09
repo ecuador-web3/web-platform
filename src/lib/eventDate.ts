@@ -62,3 +62,28 @@ export function formatEventTime(iso: string): string {
     timeZone: ZONE,
   }).format(parseOrThrow(iso));
 }
+
+/**
+ * "11–12 AGO" when start and end fall in the same month, otherwise
+ * "11 AGO – 02 SEP". Single-day events keep the short form.
+ */
+export function formatEventDateRange(startIso: string, endIso?: string): string {
+  if (!endIso) return formatEventDateShort(startIso);
+
+  const start = partsOf(startIso, { day: '2-digit', month: 'short' });
+  const end = partsOf(endIso, { day: '2-digit', month: 'short' });
+  const startDay = start.get('day') ?? '';
+  const endDay = end.get('day') ?? '';
+  const startMonth = (start.get('month') ?? '').replace('.', '').slice(0, 3).toUpperCase();
+  const endMonth = (end.get('month') ?? '').replace('.', '').slice(0, 3).toUpperCase();
+
+  if (startDay === endDay && startMonth === endMonth) {
+    return formatEventDateShort(startIso);
+  }
+
+  if (startMonth === endMonth) {
+    return `${startDay}–${endDay} ${startMonth}`;
+  }
+
+  return `${startDay} ${startMonth} – ${endDay} ${endMonth}`;
+}

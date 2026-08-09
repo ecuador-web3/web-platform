@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { ConfigError } from './errors';
-import { formatEventDate, formatEventDateShort, formatEventTime } from './eventDate';
+import {
+  formatEventDate,
+  formatEventDateRange,
+  formatEventDateShort,
+  formatEventTime,
+} from './eventDate';
 
 const SUMMIT = '2026-09-22T09:00:00-05:00';
 
@@ -20,6 +25,16 @@ describe('event date formatting', () => {
   it('prints 24-hour time', () => {
     expect(formatEventTime(SUMMIT)).toBe('09:00');
     expect(formatEventTime('2026-09-22T19:30:00-05:00')).toBe('19:30');
+  });
+
+  it('prints a same-month range for multi-day workshops', () => {
+    expect(
+      formatEventDateRange('2026-08-11T19:30:00-05:00', '2026-08-12T21:00:00-05:00'),
+    ).toBe('11–12 AGO');
+  });
+
+  it('falls back to the short form when there is no end date', () => {
+    expect(formatEventDateRange(SUMMIT)).toBe('22 SEP');
   });
 
   it('reads the instant in Ecuador time, not the runtime zone', () => {
