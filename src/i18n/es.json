@@ -1,0 +1,373 @@
+{
+  "_readme": {
+    "what": "Every piece of text the site renders. Nothing user-visible is written into a component or a script.",
+    "translate": "Copy this file to <lang>.json, translate the values, leave every key untouched, then register it in src/i18n/index.ts.",
+    "placeholders": "Values in {braces} are filled in at render time. Keep them spelled exactly as they appear; you may move them inside the sentence.",
+    "leaveAlone": "locale.*, and proper nouns under ecosystem.partners, footer.socials and event.hosts. Those are brand and people names.",
+    "notHere": "Colours, links, ISO dates, seat counts and logo files are not copy. They live in src/data/site.ts and are shared by every language.",
+    "derived": "A few strings are built from others and so have no key here: the meta description (brand.promise + brand.motto), the equator strip (brand.name / place / coords), and the ticket's first badge (event.modality). Edit the source key and every use follows."
+  },
+
+  "locale": {
+    "lang": "es",
+    "intl": "es-EC",
+    "og": "es_EC"
+  },
+
+  "meta": {
+    "title": "Ecuador Web3 — El hogar del Ecosistema Web3 Ecuatoriano"
+  },
+
+  "brand": {
+    "name": "Ecuador Web3",
+    "tagline": "El hogar del Ecosistema Web3 Ecuatoriano.",
+    "promise": "Un espacio donde todos son bienvenidos.",
+    "motto": {
+      "lead": "Construimos con propósito,",
+      "tail": "crecemos juntos."
+    },
+    "coords": "0°0'0\"",
+    "place": "Mitad del Mundo",
+    "wordmark": {
+      "top": "Ecuador",
+      "bottom": "Web3"
+    }
+  },
+
+  "a11y": {
+    "skipToContent": "Saltar al contenido",
+    "homeLink": "{brand} — inicio",
+    "primaryNav": "Principal",
+    "mobileNav": "Menú móvil",
+    "menuDialog": "Menú",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú"
+  },
+
+  "nav": {
+    "items": {
+      "ahora": "Ecuador en Web3",
+      "eventos": "Eventos",
+      "ecosistema": "Ecosistema",
+      "unete": "Comunidad"
+    },
+    "cta": "Únete",
+    "mobile": {
+      "kicker": "{coords} · Menú",
+      "cta": "Únete al movimiento"
+    }
+  },
+
+  "hero": {
+    "badge": "Ecuador · {coords}",
+    "welcome": "Bienvenido a Ecuador Web3",
+    "headline": {
+      "line1": "El hogar del",
+      "line2": "Ecosistema",
+      "line3Accent": "Web3",
+      "line3Rest": "Ecuatoriano"
+    },
+    "ctaPrimary": "Únete a la comunidad",
+    "ctaSecondary": "Ver próximo evento",
+    "scrollHint": "Desliza",
+    "ticker": [
+      "Builders",
+      "Devs",
+      "Artistas",
+      "Founders",
+      "Estudiantes",
+      "Traders",
+      "Diseñadores",
+      "Investigadores",
+      "Curiosos",
+      "Tú"
+    ]
+  },
+
+  "happeningNow": {
+    "heading": {
+      "line1": "Está pasando",
+      "line2": "ahora mismo"
+    },
+    "lead": "Ecuador tiene una de las adopciones cripto más rápidas de la región y una comunidad que recién empieza a organizarse en serio. Ese es exactamente el momento en el que estamos: temprano, con espacio para todos y con mucho por armar.",
+    "stats": {
+      "members": "Miembros en la comunidad",
+      "events": "Eventos realizados",
+      "universities": "Universidades aliadas"
+    },
+    "pillars": {
+      "opportunity": {
+        "kicker": "La oportunidad",
+        "title": "Dolarizados y conectados",
+        "body": "Ecuador usa dólares, recibe remesas todos los meses y tiene una población joven con teléfono en la mano. Son las condiciones exactas para que Web3 resuelva algo real y no se quede en teoría."
+      },
+      "vision": {
+        "kicker": "La visión",
+        "title": "Aprender, construir y trabajar sin irse",
+        "body": "Que cualquier persona en el país pueda entrar a este espacio, formarse y vivir de lo que construye. Sin mudarse a Buenos Aires, a Bogotá ni a Lisboa."
+      },
+      "growth": {
+        "kicker": "El crecimiento",
+        "title": "De un grupo de chat a doce ciudades",
+        "body": "Empezó con gente compartiendo links. Hoy hay meetups, calls semanales y capítulos que se organizan solos. Cada mes llega alguien que trae su propio pedazo del ecosistema."
+      }
+    }
+  },
+
+  "events": {
+    "heading": "Lo que viene",
+    "lead": "Talleres y llamadas abiertas cada semana, con espacio para que tu nombre entre hoy mismo.",
+    "leadWithOpenCalls": "Talleres, llamadas abiertas cada semana y convocatorias donde tu nombre puede entrar hoy mismo."
+  },
+
+  "event": {
+    "code": "WS-001",
+    "title": "Web3 desde Cero",
+    "accent": "Primer curso",
+    "body": "Dos sesiones para entender blockchain y Web3, sin conocimientos previos.",
+    "modality": "Virtual",
+    "badges": ["2 sesiones", "Gratis"],
+    "hosts": ["Elizabeth Pacheco", "Gelois o7"],
+    "hooks": ["Sin experiencia previa", "Exclusivo Ecuador", "Cupos limitados"],
+    "hooksLabel": "Por qué inscribirte",
+    "labels": {
+      "date": "Fecha",
+      "time": "Hora",
+      "modality": "Modalidad",
+      "hosts": "Tutores"
+    },
+    "cta": {
+      "label": "Asegura tu cupo",
+      "withRemaining": "{label} · quedan {remaining}",
+      "soldOut": "Lista de espera",
+      "note": "Gratis · toma menos de 2 minutos"
+    },
+    "seats": {
+      "count": "{reserved} / {capacity}",
+      "countSuffix": " reservados",
+      "countSoldOut": "Cupos agotados",
+      "meterLabel": "{reserved} de {capacity} cupos reservados",
+      "proofReserved": "{reserved} personas ya reservaron",
+      "proofLast": "Últimos {remaining} cupos",
+      "proofSoldOut": "Cupos agotados — entra a la lista"
+    },
+    "countdown": {
+      "counting": "Empieza en",
+      "started": "Sucede",
+      "today": "Hoy mismo",
+      "days": "d",
+      "hours": "h",
+      "minutes": "m"
+    }
+  },
+
+  "calls": {
+    "kicker": "Agenda abierta",
+    "heading": {
+      "line1": "Community",
+      "line2": "Calls"
+    },
+    "lead": "Espacios semanales para aprender, preguntar y conectar. Elige la call que va contigo y entra — no hace falta CV.",
+    "featuredBadge": "Próxima",
+    "labels": {
+      "day": "Día",
+      "time": "Hora · GMT-5",
+      "audience": "Para quién",
+      "schedule": "Más en la agenda",
+      "scheduleCount": "{count} calls",
+      "whenSummary": "{day} a las {time}"
+    },
+    "cta": "Unirme a la call",
+    "ctaNote": "Entrada libre · micrófono abierto",
+    "firstTime": {
+      "before": "¿Primera vez en Web3? Empieza por ",
+      "after": "."
+    },
+    "items": {
+      "community": {
+        "title": "Community Call",
+        "cadence": "Semanal",
+        "day": "Jue",
+        "time": "19:00",
+        "where": "Google Meet",
+        "audience": "Toda la comunidad",
+        "body": "Actualizaciones del ecosistema, presentaciones de proyectos y micrófono abierto. El punto semanal para enterarte y conectar."
+      },
+      "dev": {
+        "title": "Dev Circle",
+        "cadence": "Quincenal",
+        "day": "Mar",
+        "time": "20:00",
+        "where": "Discord",
+        "audience": "Builders y devs",
+        "body": "Sesiones técnicas: Solidity, cuentas abstraídas, infra y lo que traiga la gente."
+      },
+      "onboarding": {
+        "title": "Onboarding 101",
+        "cadence": "Mensual",
+        "day": "Sáb",
+        "time": "11:00",
+        "where": "Presencial + stream",
+        "audience": "Principiantes",
+        "body": "Para quien llega por primera vez. Wallets, seguridad y primeros pasos, sin apuro."
+      },
+      "art": {
+        "title": "Arte y Cultura",
+        "cadence": "Mensual",
+        "day": "Mié",
+        "time": "19:00",
+        "where": "Espacio en X",
+        "audience": "Artistas y curadores",
+        "body": "Artistas, coleccionistas y curadores del país conversando sobre lo que están haciendo."
+      }
+    }
+  },
+
+  "openCalls": {
+    "heading": "Convocatorias abiertas",
+    "status": {
+      "open": "Abierta",
+      "soon": "Pronto"
+    },
+    "items": {
+      "speakers": {
+        "title": "Speakers para el Summit 2026",
+        "meta": "Cierra 15 FEB"
+      },
+      "chapters": {
+        "title": "Organizadores de capítulo en Manta y Loja",
+        "meta": "Sin fecha límite"
+      },
+      "grants": {
+        "title": "Grants para proyectos locales · Ronda 2",
+        "meta": "Abre 01 MAR"
+      },
+      "volunteers": {
+        "title": "Voluntarios de producción y contenido",
+        "meta": "Sin fecha límite"
+      }
+    }
+  },
+
+  "ecosystem": {
+    "heading": {
+      "line1": "Quiénes",
+      "line2": "construyen"
+    },
+    "lead": "Nadie hace esto solo. Estas son las comunidades, universidades, cadenas y equipos que sostienen el ecosistema y le ponen el hombro cada mes.",
+    "toggle": {
+      "pause": "Pausar",
+      "resume": "Reanudar"
+    },
+    "groups": {
+      "comunidades": "Comunidades",
+      "universidades": "Universidades",
+      "blockchains": "Blockchains"
+    },
+    "partners": {
+      "blockchain-ecuador": "Blockchain Ecuador",
+      "cripto-guayaquil": "Cripto Guayaquil",
+      "dao-andina": "DAO Andina",
+      "quito-devs": "Quito Devs",
+      "nft-ecuador": "NFT Ecuador",
+      "bitcoin-cuenca": "Bitcoin Cuenca",
+      "web3-manta": "Web3 Manta",
+      "mujeres-en-blockchain": "Mujeres en Blockchain",
+      "espol": "ESPOL",
+      "usfq": "USFQ",
+      "epn": "EPN",
+      "puce": "PUCE",
+      "udla": "UDLA",
+      "universidad-de-cuenca": "Universidad de Cuenca",
+      "espe": "ESPE",
+      "yachay-tech": "Yachay Tech",
+      "ethereum": "Ethereum",
+      "solana": "Solana",
+      "base": "Base",
+      "polygon": "Polygon",
+      "stellar": "Stellar",
+      "celo": "Celo",
+      "arbitrum": "Arbitrum",
+      "starknet": "Starknet"
+    }
+  },
+
+  "join": {
+    "heading": {
+      "line1": "Únete al",
+      "line2": "movimiento"
+    },
+    "lead": "{promise} No importa si llevas años en esto o si hoy es tu primer día. Hay cuatro formas de entrar.",
+    "paths": {
+      "join": {
+        "title": "Únete",
+        "body": "Entra al grupo, ven al próximo evento y pregunta lo que necesites. No hace falta saber nada todavía.",
+        "cta": "Entrar al Telegram"
+      },
+      "organize": {
+        "title": "Organiza un evento",
+        "body": "Ponemos la red, el playbook y el respaldo de la comunidad. Tú pones la ciudad y las ganas.",
+        "cta": "Proponer un evento"
+      },
+      "partner": {
+        "title": "Sé partner",
+        "body": "Empresas, protocolos y universidades que quieren construir ecosistema en Ecuador, no solo patrocinar un logo.",
+        "cta": "Conversemos"
+      },
+      "core": {
+        "title": "Core Member",
+        "body": "Para quienes quieren sostener esto desde adentro: programación, contenido, alianzas y comunidad.",
+        "cta": "Postular"
+      }
+    },
+    "closing": {
+      "line1": "Construimos con propósito,",
+      "line2": "crecemos juntos."
+    },
+    "ctaPrimary": "Entrar a la comunidad",
+    "ctaSecondary": "Ver el calendario"
+  },
+
+  "footer": {
+    "socials": {
+      "x": "X",
+      "telegram": "Telegram",
+      "discord": "Discord",
+      "instagram": "Instagram",
+      "linkedin": "LinkedIn",
+      "github": "GitHub",
+      "luma": "Luma"
+    },
+    "columns": {
+      "ecosistema": {
+        "title": "Ecosistema",
+        "links": {
+          "comunidades": "Comunidades",
+          "universidades": "Universidades",
+          "blockchains": "Blockchains",
+          "partners": "Partners"
+        }
+      },
+      "comunidad": {
+        "title": "Comunidad",
+        "links": {
+          "nextEvent": "Próximo evento",
+          "calls": "Community Calls",
+          "openCalls": "Convocatorias",
+          "core": "Core Members"
+        }
+      },
+      "recursos": {
+        "title": "Recursos",
+        "links": {
+          "playbook": "Playbook de eventos",
+          "brandKit": "Kit de marca",
+          "codeOfConduct": "Código de convivencia",
+          "press": "Prensa"
+        }
+      }
+    },
+    "madeIn": "Hecho en la mitad del mundo · Lat {coords}",
+    "copyright": "© {year} {brand}"
+  }
+}
