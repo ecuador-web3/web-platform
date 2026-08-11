@@ -1,7 +1,10 @@
 ---
-import { brand, footerLinks, socials, showOpenCalls } from '../data/site';
+import { footerLinks, socials, showOpenCalls } from '../data/site';
+import { copy, derived, format } from '../i18n';
 import Logo from './Logo.astro';
 
+const { brand } = copy;
+const t = copy.footer;
 const year = new Date().getFullYear();
 
 // Drop the Convocatorias link while its section is hidden, otherwise it points
@@ -22,15 +25,15 @@ const columns = footerLinks.map((col) => ({
       <!-- Identity -->
       <div data-reveal>
         <div class="flex items-center gap-4">
-          <Logo class="h-16 w-auto shrink-0" title="Ecuador Web3" />
+          <Logo class="h-16 w-auto shrink-0" title={brand.name} />
           <span class="display text-2xl leading-none">
-            Ecuador<br />Web3
+            {brand.wordmark.top}<br />{brand.wordmark.bottom}
           </span>
         </div>
 
         <p class="mt-8 max-w-sm text-lg leading-relaxed text-ec-bone/65">
           {brand.tagline}<br />
-          <span class="text-ec-bone">{brand.motto}</span>
+          <span class="text-ec-bone">{derived.motto}</span>
         </p>
 
         <ul class="mt-8 flex flex-wrap gap-2">
@@ -72,9 +75,9 @@ const columns = footerLinks.map((col) => ({
 
     <div class="mt-20 flex flex-col items-center justify-between gap-4 border-t border-ec-bone/10 py-8 sm:flex-row">
       <span class="kicker text-ec-bone/40">
-        Hecho en la mitad del mundo · Lat {brand.coords}
+        {format(t.madeIn, { coords: brand.coords })}
       </span>
-      <span class="kicker text-ec-bone/40">© {year} {brand.name}</span>
+      <span class="kicker text-ec-bone/40">{format(t.copyright, { year, brand: brand.name })}</span>
     </div>
   </div>
 </footer>

@@ -1,6 +1,9 @@
 ---
-import { brand, heroTicker } from '../data/site';
+import { heroTicker } from '../data/site';
+import { copy, derived, format } from '../i18n';
 import Marquee from './Marquee.astro';
+
+const t = copy.hero;
 ---
 
 <section
@@ -24,22 +27,22 @@ import Marquee from './Marquee.astro';
             <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-ec-red opacity-75"></span>
             <span class="relative inline-flex h-2 w-2 rounded-full bg-ec-red"></span>
           </span>
-          Ecuador · {brand.coords}
+          {format(t.badge, { coords: copy.brand.coords })}
         </span>
-        <span class="kicker text-ec-bone/50">Bienvenido a Ecuador Web3</span>
+        <span class="kicker text-ec-bone/50">{t.welcome}</span>
       </div>
 
       <!-- Headline -->
       <h1 class="display text-[clamp(2.75rem,min(9.5vw,12vh),8rem)] text-ec-bone">
         <span class="block overflow-hidden">
-          <span class="block text-ec-yellow" data-reveal style="--reveal-delay:60ms">El hogar del</span>
+          <span class="block text-ec-yellow" data-reveal style="--reveal-delay:60ms">{t.headline.line1}</span>
         </span>
         <span class="block overflow-hidden">
-          <span class="block text-ec-blue-bright" data-reveal style="--reveal-delay:160ms">Ecosistema</span>
+          <span class="block text-ec-blue-bright" data-reveal style="--reveal-delay:160ms">{t.headline.line2}</span>
         </span>
         <span class="block overflow-hidden">
           <span class="block" data-reveal style="--reveal-delay:260ms">
-            <span class="text-ec-red">Web3</span> Ecuatoriano
+            <span class="text-ec-red">{t.headline.line3Accent}</span> {t.headline.line3Rest}
           </span>
         </span>
       </h1>
@@ -51,13 +54,13 @@ import Marquee from './Marquee.astro';
           data-reveal
           style="--reveal-delay:360ms"
         >
-          {brand.promise}<br />
-          <span class="text-ec-bone">{brand.motto}</span>
+          {copy.brand.promise}<br />
+          <span class="text-ec-bone">{derived.motto}</span>
         </p>
 
         <div class="flex flex-wrap items-center gap-3" data-reveal style="--reveal-delay:440ms">
           <a href="#unete" class="btn bg-ec-yellow text-ec-ink hover:bg-ec-bone" data-magnetic="0.22">
-            Únete a la comunidad
+            {t.ctaPrimary}
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
@@ -66,7 +69,7 @@ import Marquee from './Marquee.astro';
             href="#eventos"
             class="btn border border-ec-bone/25 text-ec-bone hover:border-ec-bone hover:bg-ec-bone hover:text-ec-ink"
           >
-            Ver próximo evento
+            {t.ctaSecondary}
           </a>
         </div>
       </div>
@@ -77,7 +80,7 @@ import Marquee from './Marquee.astro';
           <rect x="1" y="1" width="16" height="24" rx="8" stroke="currentColor" stroke-width="1.5"/>
           <circle cx="9" cy="8" r="2" fill="currentColor" class="float-slow"/>
         </svg>
-        <span class="kicker">Desliza</span>
+        <span class="kicker">{t.scrollHint}</span>
       </div>
     </div>
   </div>
