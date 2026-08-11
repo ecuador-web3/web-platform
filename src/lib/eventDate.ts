@@ -1,3 +1,4 @@
+import { copy } from '../i18n';
 import { ConfigError } from './errors';
 
 /**
@@ -10,8 +11,10 @@ import { ConfigError } from './errors';
  *
  * The timezone is pinned rather than taken from the runtime: the printed date
  * is Ecuador's, not the visitor's, and the build machine's zone is irrelevant.
+ * The locale, by contrast, follows the active copy — month names are text and
+ * belong to the language, while the event happens in Guayaquil either way.
  */
-const LOCALE = 'es-EC';
+const LOCALE = copy.locale.intl;
 const ZONE = 'America/Guayaquil';
 
 function parseOrThrow(iso: string): Date {

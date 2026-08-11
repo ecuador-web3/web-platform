@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { copy } from '../i18n';
 
 interface Props {
   title: string;
@@ -7,10 +8,11 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+const { lang, intl, og } = copy.locale;
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={lang} data-intl-locale={intl}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -24,7 +26,7 @@ const { title, description } = Astro.props;
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:locale" content="es_EC" />
+    <meta property="og:locale" content={og} />
     <meta name="twitter:card" content="summary_large_image" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -40,7 +42,7 @@ const { title, description } = Astro.props;
       href="#contenido"
       class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[80] focus:rounded-full focus:bg-ec-yellow focus:px-5 focus:py-3 focus:font-bold focus:text-ec-ink"
     >
-      Saltar al contenido
+      {copy.a11y.skipToContent}
     </a>
 
     {/* Scroll progress in flag order: yellow, blue, red */}
@@ -175,7 +177,9 @@ const { title, description } = Astro.props;
 
       /* --- Count-up statistics ------------------------------------------ */
       const counters = document.querySelectorAll<HTMLElement>('[data-count]');
-      const formatter = new Intl.NumberFormat('es-EC');
+      /* Read off <html> rather than importing the copy module: this script is
+         shipped to the browser, and the locale tag is the only thing it needs. */
+      const formatter = new Intl.NumberFormat(document.documentElement.dataset.intlLocale);
 
       const runCount = (el: HTMLElement) => {
         const target = Number(el.dataset.count ?? '0');
