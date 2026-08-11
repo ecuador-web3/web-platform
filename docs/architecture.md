@@ -8,8 +8,9 @@ hand-written DOM wiring.
 
 | Layer | Holds | Rule |
 |---|---|---|
-| `src/data/site.ts` | Copy, dates, partner lists, links | Values only. If it computes, it does not belong here. |
-| `src/lib/` | Seat curve, countdown, date formatting, logo sizing, roulette engine, URL safety | Pure and tested. No DOM at module scope. |
+| `src/i18n/<lang>.json` | Every string a visitor reads | Text only. No component ever hardcodes a word. |
+| `src/data/site.ts` | Tones, links, ISO dates, seat counts, partner registry | Values only, and only ones that survive translation. If it computes, it does not belong here. |
+| `src/lib/` | Seat curve, countdown, date formatting, logo sizing, URL safety | Pure and tested. No DOM at module scope. |
 | `src/components/` | Markup, and the wiring that moves `lib` results into the DOM | Thin. A branch worth testing is a sign something belongs in `lib`. |
 
 The reason for the split is testability. Logic that lives inside an Astro
@@ -17,12 +18,44 @@ The reason for the split is testability. Logic that lives inside an Astro
 and slowly accumulates bugs nobody can see. Everything with real behaviour was
 moved out.
 
+## Copy and translations
+
+`src/i18n/es.json` is the whole of the site's text — headings, buttons, `aria`
+labels, the `<title>`, the strings the ticket script paints after the clock
+moves. A component reads `copy.<section>.<key>`; it never spells a word out.
+
+Adding a language is one file: duplicate `es.json`, translate the values, leave
+the keys, register it in `src/i18n/index.ts`. The `LOCALES` map is declared
+`satisfies Record<string, Copy>`, so a key a translator dropped or renamed is a
+type error rather than a blank spot on the page.
+
+The split against `site.ts` is by what a translation would change. Colours,
+links, ISO instants, seat counts and logo files are the same in every language
+and stay in `site.ts`, which joins the two halves into the shapes components
+already consumed. Partner and social names sit in the JSON because they are
+visible text, even though nobody will translate "ESPOL". Their logos and URLs
+stay in the registry, paired to the name by key.
+
+Interpolated strings use `{name}` slots filled by `format()`. A slot with no
+value throws a `ConfigError` and stops the build: a translator dropping or
+misspelling a placeholder is the one error editing a JSON file can actually
+introduce, and `src/i18n/copy.test.ts` walks every string to catch it earlier.
+
+Client scripts are the exception to "import the copy module". `WhatsHappening`
+and `Ecosystem` receive their handful of strings as data attributes, so the
+browser downloads eleven strings and two words rather than the whole content
+tree.
+
 ## Sections
 
-`src/pages/index.astro` composes seven pieces, each a full-height section:
+`src/pages/index.astro` composes eight pieces, each a full-height section:
 
-`Nav`, `Hero`, `HappeningNow`, `WhatsHappening`, `Ecosystem`, `JoinMovement`,
-`Footer`.
+`Nav`, `Hero`, `HappeningNow`, `NextEvent`, `CommunityCalls`, `Ecosystem`,
+`JoinMovement`, `Footer`.
+
+`NextEvent` and `CommunityCalls` were one `WhatsHappening` component. They share
+no state and never did; the single file just made that hard to see, and at 600
+lines the ticket's client script sat a long way from the markup it drives.
 
 Sections declare `data-nav-theme` (`dark` / `light` / `blue` / `red`). A thin
 observer band pinned under the nav in `Base.astro` recolours the navigation to
@@ -47,7 +80,26 @@ element from not-intersecting straight back to not-intersecting with no callback
 in between, leaving whole sections stuck at `opacity: 0`. Comparing positions has
 no such gap. The pending list shrinks to empty and the listeners detach.
 
-## The ticket (`WhatsHappening`)
+## When a failure throws and when it returns
+
+Two shapes, picked by whether the caller has anything useful to do about it.
+
+**Fatal, so it throws `ConfigError`.** `countdownFrom`, `seatsAt` and `format`
+all take developer-authored config. None of a bad date, a capacity of zero, or
+a placeholder no value was passed for has a sensible fallback, and each would
+otherwise ship a page rendering `NaN`, an empty countdown, or a sentence with a
+hole in it. Throwing stops the build at the commit that introduced the
+typo. The error carries a code and scalar context so the build log names it.
+
+**Recoverable, so it returns a result.** `logoSize` returns
+`{ ok: false, reason }` for a logo it cannot measure, because there *is* a
+sensible answer: fall back to square sizing, warn, and keep building. One
+unmeasurable partner logo should not block a deploy.
+
+The test is whether the caller can carry on. If it can, hand it a value it can
+branch on; if it cannot, fail the build rather than inventing one.
+
+## The ticket (`NextEvent`)
 
 Two derived displays, both rendered server-side as the no-JS fallback and
 recomputed on load:
