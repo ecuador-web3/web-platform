@@ -1,47 +1,38 @@
 /**
- * Single source of content for the landing page.
- * Figures, dates, logos and links marked PLACEHOLDER need real data before launch.
+ * Non-translatable configuration for the landing page, joined to the copy.
+ *
+ * The split is deliberate. Every string a visitor reads lives in
+ * `src/i18n/<lang>.json`; this file holds what stays the same in every
+ * language — accent tones, links, ISO instants, seat counts, logo files — and
+ * stitches the two together into the shapes the components consume. A second
+ * language means one new JSON file and no edits here.
+ *
+ * Figures, dates, logos and links marked PLACEHOLDER need real data before
+ * launch.
  *
  * This module holds values only. Anything that computes — seat curves, date
  * formatting, logo geometry — lives in `src/lib/` so it can be tested without
  * dragging the whole content tree along.
  */
+import { copy } from '../i18n';
 import type { SeatCurve } from '../lib/seats';
 import type { Tone } from '../lib/tone';
 
-export const brand = {
-  name: 'Ecuador Web3',
-  tagline: 'El hogar del Ecosistema Web3 Ecuatoriano.',
-  promise: 'Un espacio donde todos son bienvenidos.',
-  motto: 'Construimos con propósito, crecemos juntos.',
-  coords: '0°0\'0"',
-  place: 'Mitad del Mundo',
-};
+export const brand = copy.brand;
 
 export const nav = [
-  { label: 'Ecuador en Web3', href: '#ahora' },
-  { label: 'Eventos', href: '#eventos' },
-  { label: 'Ecosistema', href: '#ecosistema' },
-  { label: 'Comunidad', href: '#unete' },
+  { label: copy.nav.items.ahora, href: '#ahora' },
+  { label: copy.nav.items.eventos, href: '#eventos' },
+  { label: copy.nav.items.ecosistema, href: '#ecosistema' },
+  { label: copy.nav.items.unete, href: '#unete' },
 ];
 
-export const heroTicker = [
-  'Builders',
-  'Devs',
-  'Artistas',
-  'Founders',
-  'Estudiantes',
-  'Traders',
-  'Diseñadores',
-  'Investigadores',
-  'Curiosos',
-  'Tú',
-];
+export const heroTicker = copy.hero.ticker;
 
 export const stats = [
-  { value: 2400, suffix: '+', label: 'Miembros en la comunidad' },
-  { value: 40, suffix: '', label: 'Eventos realizados' },
-  { value: 9, suffix: '', label: 'Universidades aliadas' },
+  { value: 2400, suffix: '+', label: copy.happeningNow.stats.members },
+  { value: 40, suffix: '', label: copy.happeningNow.stats.events },
+  { value: 9, suffix: '', label: copy.happeningNow.stats.universities },
 ];
 
 export const pillars: {
@@ -50,50 +41,24 @@ export const pillars: {
   body: string;
   tone: Tone;
 }[] = [
-  {
-    kicker: 'La oportunidad',
-    title: 'Dolarizados y conectados',
-    body: 'Ecuador usa dólares, recibe remesas todos los meses y tiene una población joven con teléfono en la mano. Son las condiciones exactas para que Web3 resuelva algo real y no se quede en teoría.',
-    tone: 'yellow',
-  },
-  {
-    kicker: 'La visión',
-    title: 'Aprender, construir y trabajar sin irse',
-    body: 'Que cualquier persona en el país pueda entrar a este espacio, formarse y vivir de lo que construye. Sin mudarse a Buenos Aires, a Bogotá ni a Lisboa.',
-    tone: 'blue',
-  },
-  {
-    kicker: 'El crecimiento',
-    title: 'De un grupo de chat a doce ciudades',
-    body: 'Empezó con gente compartiendo links. Hoy hay meetups, calls semanales y capítulos que se organizan solos. Cada mes llega alguien que trae su propio pedazo del ecosistema.',
-    tone: 'red',
-  },
+  { ...copy.happeningNow.pillars.opportunity, tone: 'yellow' },
+  { ...copy.happeningNow.pillars.vision, tone: 'blue' },
+  { ...copy.happeningNow.pillars.growth, tone: 'red' },
 ];
 
-/** Next public event — Workshop: Web3 desde Cero (Luma). */
+/**
+ * Next public event — Workshop: Web3 desde Cero (Luma).
+ *
+ * Title, hosts, hooks and every label on the ticket are in `copy.event`.
+ */
 export const nextEvent = {
-  code: 'WS-001',
-  title: 'Web3 desde Cero',
-  /** Accent line under the title — workshop framing, not a calendar year. */
-  accent: 'Primer curso',
   /** The one source for every date the ticket prints. Keep the -05:00 offset
       explicit so the clock is Ecuador time for every visitor, not the
       browser's local zone. Display strings are formatted in lib/eventDate. */
   startsAt: '2026-08-11T19:30:00-05:00',
   /** End of Día 2 — used for the printed date range on the ticket. */
   endsAt: '2026-08-12T21:00:00-05:00',
-  city: 'Virtual',
-  hosts: ['Elizabeth Pacheco', 'Gelois o7'],
-  body: 'Dos sesiones para entender blockchain y Web3, sin conocimientos previos.',
-  /** Short conversion hooks near the CTA — keep to three. */
-  hooks: ['Sin experiencia previa', 'Exclusivo Ecuador', 'Cupos limitados'],
-  cta: {
-    label: 'Asegura tu cupo',
-    href: 'https://luma.com/s5r5q74x',
-    soldOutLabel: 'Lista de espera',
-    /** Reassurance under the button: cost + friction. */
-    note: 'Gratis · toma menos de 2 minutos',
-  },
+  ctaHref: 'https://luma.com/s5r5q74x',
 };
 
 /**
@@ -121,51 +86,10 @@ export const calls: {
   featured?: boolean;
   tone: Tone;
 }[] = [
-  {
-    title: 'Community Call',
-    cadence: 'Semanal',
-    day: 'Jue',
-    time: '19:00',
-    where: 'Google Meet',
-    audience: 'Toda la comunidad',
-    body: 'Actualizaciones del ecosistema, presentaciones de proyectos y micrófono abierto. El punto semanal para enterarte y conectar.',
-    href: '#unete',
-    featured: true,
-    tone: 'yellow',
-  },
-  {
-    title: 'Dev Circle',
-    cadence: 'Quincenal',
-    day: 'Mar',
-    time: '20:00',
-    where: 'Discord',
-    audience: 'Builders y devs',
-    body: 'Sesiones técnicas: Solidity, cuentas abstraídas, infra y lo que traiga la gente.',
-    href: '#unete',
-    tone: 'red',
-  },
-  {
-    title: 'Onboarding 101',
-    cadence: 'Mensual',
-    day: 'Sáb',
-    time: '11:00',
-    where: 'Presencial + stream',
-    audience: 'Principiantes',
-    body: 'Para quien llega por primera vez. Wallets, seguridad y primeros pasos, sin apuro.',
-    href: '#unete',
-    tone: 'bone',
-  },
-  {
-    title: 'Arte y Cultura',
-    cadence: 'Mensual',
-    day: 'Mié',
-    time: '19:00',
-    where: 'Espacio en X',
-    audience: 'Artistas y curadores',
-    body: 'Artistas, coleccionistas y curadores del país conversando sobre lo que están haciendo.',
-    href: '#unete',
-    tone: 'yellow',
-  },
+  { ...copy.calls.items.community, href: '#unete', featured: true, tone: 'yellow' },
+  { ...copy.calls.items.dev, href: '#unete', tone: 'red' },
+  { ...copy.calls.items.onboarding, href: '#unete', tone: 'bone' },
+  { ...copy.calls.items.art, href: '#unete', tone: 'yellow' },
 ];
 
 /**
@@ -174,15 +98,22 @@ export const calls: {
  */
 export const showOpenCalls = false;
 
-export const openCalls = [
-  { title: 'Speakers para el Summit 2026', meta: 'Cierra 15 FEB', status: 'Abierta' },
-  { title: 'Organizadores de capítulo en Manta y Loja', meta: 'Sin fecha límite', status: 'Abierta' },
-  { title: 'Grants para proyectos locales · Ronda 2', meta: 'Abre 01 MAR', status: 'Pronto' },
-  { title: 'Voluntarios de producción y contenido', meta: 'Sin fecha límite', status: 'Abierta' },
+/** Drives both the badge wording and its colour, so the two cannot drift. */
+export type OpenCallStatus = keyof typeof copy.openCalls.status;
+
+export const openCalls: { title: string; meta: string; status: OpenCallStatus }[] = [
+  { ...copy.openCalls.items.speakers, status: 'open' },
+  { ...copy.openCalls.items.chapters, status: 'open' },
+  { ...copy.openCalls.items.grants, status: 'soon' },
+  { ...copy.openCalls.items.volunteers, status: 'open' },
 ];
 
 /**
  * A single partner tile.
+ *
+ * The display name is not here — it is `copy.ecosystem.partners[key]`, so the
+ * roster reads the same way as the rest of the page even though brand names
+ * are never actually translated.
  *
  * `logo` is a path under `public/logos/`. Prefer SVG; otherwise a PNG cropped
  * tight to the artwork — baked-in transparent padding is the main reason a logo
@@ -193,15 +124,29 @@ export const openCalls = [
  * in visual weight as much as in dimensions: wide wordmarks usually want ~0.85,
  * dense square marks ~1.15. Set it by eye against the tiles either side.
  *
- * With no `logo`, the tile sets `name` as a wordmark in the display face. Both
- * variants fill the identical box, so any mix of the two stays on the grid.
+ * With no `logo`, the tile sets the name as a wordmark in the display face.
+ * Both variants fill the identical box, so any mix of the two stays on the grid.
  */
+export type PartnerKey = keyof typeof copy.ecosystem.partners;
+
+interface PartnerConfig {
+  key: PartnerKey;
+  logo?: string;
+  scale?: number;
+  url?: string;
+}
+
 export interface EcosystemItem {
   name: string;
   logo?: string;
   scale?: number;
   url?: string;
 }
+
+/** Resolves each key to its display name. An unknown key is a type error, so
+    the registry here and the names in the copy file cannot drift apart. */
+const partners = (list: PartnerConfig[]): EcosystemItem[] =>
+  list.map(({ key, ...rest }) => ({ name: copy.ecosystem.partners[key], ...rest }));
 
 /** PLACEHOLDER: names stand in for real partners; none have logos on file yet. */
 export const ecosystem: {
@@ -212,48 +157,48 @@ export const ecosystem: {
 }[] = [
   {
     id: 'comunidades',
-    label: 'Comunidades',
+    label: copy.ecosystem.groups.comunidades,
     tone: 'yellow',
-    items: [
-      { name: 'Blockchain Ecuador' },
-      { name: 'Cripto Guayaquil' },
-      { name: 'DAO Andina' },
-      { name: 'Quito Devs' },
-      { name: 'NFT Ecuador' },
-      { name: 'Bitcoin Cuenca' },
-      { name: 'Web3 Manta' },
-      { name: 'Mujeres en Blockchain' },
-    ],
+    items: partners([
+      { key: 'blockchain-ecuador' },
+      { key: 'cripto-guayaquil' },
+      { key: 'dao-andina' },
+      { key: 'quito-devs' },
+      { key: 'nft-ecuador' },
+      { key: 'bitcoin-cuenca' },
+      { key: 'web3-manta' },
+      { key: 'mujeres-en-blockchain' },
+    ]),
   },
   {
     id: 'universidades',
-    label: 'Universidades',
+    label: copy.ecosystem.groups.universidades,
     tone: 'blue',
-    items: [
-      { name: 'ESPOL' },
-      { name: 'USFQ' },
-      { name: 'EPN' },
-      { name: 'PUCE' },
-      { name: 'UDLA' },
-      { name: 'Universidad de Cuenca' },
-      { name: 'ESPE' },
-      { name: 'Yachay Tech' },
-    ],
+    items: partners([
+      { key: 'espol' },
+      { key: 'usfq' },
+      { key: 'epn' },
+      { key: 'puce' },
+      { key: 'udla' },
+      { key: 'universidad-de-cuenca' },
+      { key: 'espe' },
+      { key: 'yachay-tech' },
+    ]),
   },
   {
     id: 'blockchains',
-    label: 'Blockchains',
+    label: copy.ecosystem.groups.blockchains,
     tone: 'red',
-    items: [
-      { name: 'Ethereum' },
-      { name: 'Solana' },
-      { name: 'Base' },
-      { name: 'Polygon' },
-      { name: 'Stellar' },
-      { name: 'Celo' },
-      { name: 'Arbitrum' },
-      { name: 'Starknet' },
-    ],
+    items: partners([
+      { key: 'ethereum' },
+      { key: 'solana' },
+      { key: 'base' },
+      { key: 'polygon' },
+      { key: 'stellar' },
+      { key: 'celo' },
+      { key: 'arbitrum' },
+      { key: 'starknet' },
+    ]),
   },
 ];
 
@@ -265,77 +210,49 @@ export const paths: {
   href: string;
   tone: Tone;
 }[] = [
-  {
-    num: '01',
-    title: 'Únete',
-    body: 'Entra al grupo, ven al próximo evento y pregunta lo que necesites. No hace falta saber nada todavía.',
-    cta: 'Entrar al Telegram',
-    href: '#',
-    tone: 'yellow',
-  },
-  {
-    num: '02',
-    title: 'Organiza un evento',
-    body: 'Ponemos la red, el playbook y el respaldo de la comunidad. Tú pones la ciudad y las ganas.',
-    cta: 'Proponer un evento',
-    href: '#',
-    tone: 'bone',
-  },
-  {
-    num: '03',
-    title: 'Sé partner',
-    body: 'Empresas, protocolos y universidades que quieren construir ecosistema en Ecuador, no solo patrocinar un logo.',
-    cta: 'Conversemos',
-    href: '#',
-    tone: 'blue',
-  },
-  {
-    num: '04',
-    title: 'Core Member',
-    body: 'Para quienes quieren sostener esto desde adentro: programación, contenido, alianzas y comunidad.',
-    cta: 'Postular',
-    href: '#',
-    tone: 'ink',
-  },
+  { num: '01', ...copy.join.paths.join, href: '#', tone: 'yellow' },
+  { num: '02', ...copy.join.paths.organize, href: '#', tone: 'bone' },
+  { num: '03', ...copy.join.paths.partner, href: '#', tone: 'blue' },
+  { num: '04', ...copy.join.paths.core, href: '#', tone: 'ink' },
 ];
 
 /** PLACEHOLDER: swap the # for real profile URLs. */
 export const socials = [
-  { label: 'X', href: '#' },
-  { label: 'Telegram', href: '#' },
-  { label: 'Discord', href: '#' },
-  { label: 'Instagram', href: '#' },
-  { label: 'LinkedIn', href: '#' },
-  { label: 'GitHub', href: '#' },
-  { label: 'Luma', href: '#' },
+  { label: copy.footer.socials.x, href: '#' },
+  { label: copy.footer.socials.telegram, href: '#' },
+  { label: copy.footer.socials.discord, href: '#' },
+  { label: copy.footer.socials.instagram, href: '#' },
+  { label: copy.footer.socials.linkedin, href: '#' },
+  { label: copy.footer.socials.github, href: '#' },
+  { label: copy.footer.socials.luma, href: '#' },
 ];
 
 export const footerLinks = [
   {
-    title: 'Ecosistema',
+    title: copy.footer.columns.ecosistema.title,
     links: [
-      { label: 'Comunidades', href: '#ecosistema' },
-      { label: 'Universidades', href: '#ecosistema' },
-      { label: 'Blockchains', href: '#ecosistema' },
-      { label: 'Partners', href: '#unete' },
+      { label: copy.footer.columns.ecosistema.links.comunidades, href: '#ecosistema' },
+      { label: copy.footer.columns.ecosistema.links.universidades, href: '#ecosistema' },
+      { label: copy.footer.columns.ecosistema.links.blockchains, href: '#ecosistema' },
+      { label: copy.footer.columns.ecosistema.links.partners, href: '#unete' },
     ],
   },
   {
-    title: 'Comunidad',
+    title: copy.footer.columns.comunidad.title,
     links: [
-      { label: 'Próximo evento', href: '#eventos' },
-      { label: 'Community Calls', href: '#eventos' },
-      { label: 'Convocatorias', href: '#convocatorias' },
-      { label: 'Core Members', href: '#unete' },
+      { label: copy.footer.columns.comunidad.links.nextEvent, href: '#eventos' },
+      { label: copy.footer.columns.comunidad.links.calls, href: '#eventos' },
+      { label: copy.footer.columns.comunidad.links.openCalls, href: '#convocatorias' },
+      { label: copy.footer.columns.comunidad.links.core, href: '#unete' },
     ],
   },
   {
-    title: 'Recursos',
+    title: copy.footer.columns.recursos.title,
     links: [
-      { label: 'Playbook de eventos', href: '#' },
-      { label: 'Kit de marca', href: '#' },
-      { label: 'Código de convivencia', href: '#' },
-      { label: 'Prensa', href: '#' },
+      { label: copy.footer.columns.recursos.links.playbook, href: '#' },
+      { label: copy.footer.columns.recursos.links.brandKit, href: '#' },
+      { label: copy.footer.columns.recursos.links.codeOfConduct, href: '#' },
+      { label: copy.footer.columns.recursos.links.press, href: '#' },
     ],
   },
 ];
