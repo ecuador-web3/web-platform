@@ -148,7 +148,7 @@ export interface EcosystemItem {
 const partners = (list: PartnerConfig[]): EcosystemItem[] =>
   list.map(({ key, ...rest }) => ({ name: copy.ecosystem.partners[key], ...rest }));
 
-/** PLACEHOLDER: names stand in for real partners; none have logos on file yet. */
+/** Confirmed partners. Add official logos and URLs only after they are supplied. */
 export const ecosystem: {
   id: string;
   label: string;
@@ -156,48 +156,22 @@ export const ecosystem: {
   items: EcosystemItem[];
 }[] = [
   {
-    id: 'comunidades',
-    label: copy.ecosystem.groups.comunidades,
+    id: 'partners',
+    label: copy.ecosystem.groups.partners,
     tone: 'yellow',
     items: partners([
-      { key: 'blockchain-ecuador' },
-      { key: 'cripto-guayaquil' },
-      { key: 'dao-andina' },
-      { key: 'quito-devs' },
-      { key: 'nft-ecuador' },
-      { key: 'bitcoin-cuenca' },
-      { key: 'web3-manta' },
-      { key: 'mujeres-en-blockchain' },
-    ]),
-  },
-  {
-    id: 'universidades',
-    label: copy.ecosystem.groups.universidades,
-    tone: 'blue',
-    items: partners([
-      { key: 'espol' },
-      { key: 'usfq' },
-      { key: 'epn' },
-      { key: 'puce' },
-      { key: 'udla' },
-      { key: 'universidad-de-cuenca' },
-      { key: 'espe' },
-      { key: 'yachay-tech' },
-    ]),
-  },
-  {
-    id: 'blockchains',
-    label: copy.ecosystem.groups.blockchains,
-    tone: 'red',
-    items: partners([
-      { key: 'ethereum' },
-      { key: 'solana' },
-      { key: 'base' },
-      { key: 'polygon' },
-      { key: 'stellar' },
-      { key: 'celo' },
-      { key: 'arbitrum' },
-      { key: 'starknet' },
+      { key: 'aws-community-builders' },
+      { key: 'eth-kpu' },
+      { key: 'google-developer' },
+      { key: 'jtx-latam' },
+      { key: 'loxa-libre' },
+      { key: 'python-ecuador' },
+      { key: 'red-qqrucho' },
+      { key: 'seed-latam' },
+      { key: 'stratosphere' },
+      { key: 'team1' },
+      { key: 'litvm' },
+      { key: 'superteam-brasil' },
     ]),
   },
 ];

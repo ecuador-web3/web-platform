@@ -254,41 +254,27 @@
       "line1": "Mapa del",
       "line2": "ecosistema"
     },
-    "lead": "Estamos documentando comunidades, universidades, proyectos y tecnologías relacionadas con Web3 en Ecuador. Una aparición en este mapa no implica alianza, patrocinio ni respaldo oficial.",
+    "lead": "Organizaciones y comunidades que colaboran con Ecuador Web3 para fortalecer el aprendizaje, la investigación y la construcción de tecnología abierta.",
     "toggle": {
       "pause": "Pausar",
       "resume": "Reanudar"
     },
     "groups": {
-      "comunidades": "Comunidades",
-      "universidades": "Universidades",
-      "blockchains": "Tecnologías"
+      "partners": "Partners"
     },
     "partners": {
-      "blockchain-ecuador": "Blockchain Ecuador",
-      "cripto-guayaquil": "Cripto Guayaquil",
-      "dao-andina": "DAO Andina",
-      "quito-devs": "Quito Devs",
-      "nft-ecuador": "NFT Ecuador",
-      "bitcoin-cuenca": "Bitcoin Cuenca",
-      "web3-manta": "Web3 Manta",
-      "mujeres-en-blockchain": "Mujeres en Blockchain",
-      "espol": "ESPOL",
-      "usfq": "USFQ",
-      "epn": "EPN",
-      "puce": "PUCE",
-      "udla": "UDLA",
-      "universidad-de-cuenca": "Universidad de Cuenca",
-      "espe": "ESPE",
-      "yachay-tech": "Yachay Tech",
-      "ethereum": "Ethereum",
-      "solana": "Solana",
-      "base": "Base",
-      "polygon": "Polygon",
-      "stellar": "Stellar",
-      "celo": "Celo",
-      "arbitrum": "Arbitrum",
-      "starknet": "Starknet"
+      "aws-community-builders": "AWS Community Builders",
+      "eth-kpu": "ETH KPU",
+      "google-developer": "Google Developer",
+      "jtx-latam": "JTX LATAM",
+      "loxa-libre": "Loxa Libre",
+      "python-ecuador": "Python Ecuador",
+      "red-qqrucho": "Red QQRUCHO",
+      "seed-latam": "Seed Latam",
+      "stratosphere": "Stratosphere",
+      "team1": "Team1",
+      "litvm": "LitVM",
+      "superteam-brasil": "Superteam Brasil"
     }
   },
 
