@@ -21,7 +21,7 @@
   "brand": {
     "name": "Ecuador Web3",
     "tagline": "El hogar del Ecosistema Web3 Ecuatoriano.",
-    "promise": "Un espacio donde todos son bienvenidos.",
+    "promise": "Un espacio abierto para aprender, investigar, construir y conectar. Todos son bienvenidos",
     "motto": {
       "lead": "Construimos con propósito,",
       "tail": "crecemos juntos."
@@ -71,25 +71,25 @@
     "ctaSecondary": "Ver próximo evento",
     "scrollHint": "Desliza",
     "ticker": [
-      "Builders",
-      "Devs",
-      "Artistas",
-      "Founders",
       "Estudiantes",
-      "Traders",
+      "Builders",
+      "Desarrolladores",
       "Diseñadores",
+      "Artistas",
       "Investigadores",
-      "Curiosos",
+      "Emprendedores",
+      "Comunidades",
+      "Universidades",
       "Tú"
     ]
   },
 
   "happeningNow": {
     "heading": {
-      "line1": "Está pasando",
-      "line2": "ahora mismo"
+      "line1": "Por qué importa",
+      "line2": "en Ecuador"
     },
-    "lead": "Ecuador tiene una de las adopciones cripto más rápidas de la región y una comunidad que recién empieza a organizarse en serio. Ese es exactamente el momento en el que estamos: temprano, con espacio para todos y con mucho por armar.",
+    "lead": "Ecuador es un país dolarizado, conectado con el exterior mediante remesas y en proceso de transformación digital. Al mismo tiempo, existen preguntas importantes sobre pagos, seguridad, talento, regulación e infraestructura. Web3 no resuelve todo, pero entender sus herramientas nos permite evaluar dónde puede aportar, dónde no y qué riesgos debemos evitar.",
     "stats": {
       "members": "Miembros en la comunidad",
       "events": "Eventos realizados",
@@ -97,27 +97,27 @@
     },
     "pillars": {
       "opportunity": {
-        "kicker": "La oportunidad",
-        "title": "Dolarizados y conectados",
-        "body": "Ecuador usa dólares, recibe remesas todos los meses y tiene una población joven con teléfono en la mano. Son las condiciones exactas para que Web3 resuelva algo real y no se quede en teoría."
+        "kicker": "El contexto",
+        "title": "Dolarización, remesas y economía digital",
+        "body": "Ecuador reúne condiciones que hacen relevante estudiar nuevas infraestructuras financieras y digitales. El objetivo no es asumir que blockchain es la respuesta, sino investigar cuándo aporta valor y cuándo introduce riesgos innecesarios."
       },
       "vision": {
-        "kicker": "La visión",
-        "title": "Aprender, construir y trabajar sin irse",
-        "body": "Que cualquier persona en el país pueda entrar a este espacio, formarse y vivir de lo que construye. Sin mudarse a Buenos Aires, a Bogotá ni a Lisboa."
+        "kicker": "La oportunidad",
+        "title": "Aprender y construir desde Ecuador",
+        "body": "Queremos que más personas puedan desarrollar habilidades, participar en proyectos abiertos y conectarse con oportunidades globales sin tener que abandonar su contexto local."
       },
       "growth": {
-        "kicker": "El crecimiento",
-        "title": "De un grupo de chat a doce ciudades",
-        "body": "Empezó con gente compartiendo links. Hoy hay meetups, calls semanales y capítulos que se organizan solos. Cada mes llega alguien que trae su propio pedazo del ecosistema."
+        "kicker": "El desafío",
+        "title": "Conectar un ecosistema todavía disperso",
+        "body": "Ya existen comunidades, iniciativas, universidades y personas trabajando alrededor de blockchain y Web3. El siguiente paso es documentarlas, conectarlas y convertir conversaciones aisladas en colaboración verificable."
       }
     }
   },
 
   "events": {
-    "heading": "Lo que viene",
-    "lead": "Talleres y llamadas abiertas cada semana, con espacio para que tu nombre entre hoy mismo.",
-    "leadWithOpenCalls": "Talleres, llamadas abiertas cada semana y convocatorias donde tu nombre puede entrar hoy mismo."
+    "heading": "Aprende y participa",
+    "lead": "Encuentra sesiones, talleres y espacios comunitarios con fecha, responsable y enlace confirmado.",
+    "leadWithOpenCalls": "Explora actividades y convocatorias verificadas para aprender, colaborar o presentar un proyecto."
   },
 
   "event": {
@@ -162,99 +162,99 @@
   },
 
   "calls": {
-    "kicker": "Agenda abierta",
+    "kicker": "Espacios comunitarios",
     "heading": {
-      "line1": "Community",
-      "line2": "Calls"
+      "line1": "Aprende",
+      "line2": "en comunidad"
     },
-    "lead": "Espacios semanales para aprender, preguntar y conectar. Elige la call que va contigo y entra — no hace falta CV.",
-    "featuredBadge": "Próxima",
+    "lead": "Sesiones abiertas para entender conceptos, resolver preguntas, compartir proyectos y conectar con otras personas del ecosistema.",
+    "featuredBadge": "Próxima sesión",
     "labels": {
       "day": "Día",
-      "time": "Hora · GMT-5",
-      "audience": "Para quién",
-      "schedule": "Más en la agenda",
-      "scheduleCount": "{count} calls",
+      "time": "Hora · Ecuador",
+      "audience": "Dirigido a",
+      "schedule": "Otras actividades",
+      "scheduleCount": "{count} actividades",
       "whenSummary": "{day} a las {time}"
     },
-    "cta": "Unirme a la call",
-    "ctaNote": "Entrada libre · micrófono abierto",
+    "cta": "Ver información",
+    "ctaNote": "Confirma la fecha y el enlace antes de participar",
     "firstTime": {
-      "before": "¿Primera vez en Web3? Empieza por ",
+      "before": "¿Es tu primera vez? Empieza por ",
       "after": "."
     },
     "items": {
       "community": {
-        "title": "Community Call",
-        "cadence": "Semanal",
-        "day": "Jue",
-        "time": "19:00",
-        "where": "Google Meet",
+        "title": "Ecuador Web3 Community Call",
+        "cadence": "Mensual",
+        "day": "Por confirmar",
+        "time": "Por confirmar",
+        "where": "Online",
         "audience": "Toda la comunidad",
-        "body": "Actualizaciones del ecosistema, presentaciones de proyectos y micrófono abierto. El punto semanal para enterarte y conectar."
+        "body": "Un espacio para compartir avances, presentar iniciativas y definir próximos pasos de forma abierta."
       },
       "dev": {
-        "title": "Dev Circle",
-        "cadence": "Quincenal",
-        "day": "Mar",
-        "time": "20:00",
-        "where": "Discord",
-        "audience": "Builders y devs",
-        "body": "Sesiones técnicas: Solidity, cuentas abstraídas, infra y lo que traiga la gente."
+        "title": "Builder Clinic",
+        "cadence": "Mensual",
+        "day": "Por confirmar",
+        "time": "Por confirmar",
+        "where": "Online",
+        "audience": "Builders y equipos",
+        "body": "Revisión práctica de proyectos, repositorios, arquitectura y problemas técnicos."
       },
       "onboarding": {
-        "title": "Onboarding 101",
+        "title": "Web3 desde Cero",
         "cadence": "Mensual",
-        "day": "Sáb",
-        "time": "11:00",
-        "where": "Presencial + stream",
+        "day": "Por confirmar",
+        "time": "Por confirmar",
+        "where": "Online",
         "audience": "Principiantes",
-        "body": "Para quien llega por primera vez. Wallets, seguridad y primeros pasos, sin apuro."
+        "body": "Conceptos básicos, wallets, seguridad y primeros pasos sin promesas financieras ni conocimientos previos."
       },
       "art": {
-        "title": "Arte y Cultura",
+        "title": "Research & Payments Lab",
         "cadence": "Mensual",
-        "day": "Mié",
-        "time": "19:00",
-        "where": "Espacio en X",
-        "audience": "Artistas y curadores",
-        "body": "Artistas, coleccionistas y curadores del país conversando sobre lo que están haciendo."
+        "day": "Por confirmar",
+        "time": "Por confirmar",
+        "where": "Online",
+        "audience": "Investigadores, fintechs y comunidades",
+        "body": "Análisis abierto de pagos, remesas, stablecoins, regulación e infraestructura digital en Ecuador."
       }
     }
   },
 
   "openCalls": {
-    "heading": "Convocatorias abiertas",
+    "heading": "Formas de colaborar",
     "status": {
       "open": "Abierta",
-      "soon": "Pronto"
+      "soon": "En preparación"
     },
     "items": {
       "speakers": {
-        "title": "Speakers para el Summit 2026",
-        "meta": "Cierra 15 FEB"
+        "title": "Propón una charla o taller",
+        "meta": "Formulario por publicar"
       },
       "chapters": {
-        "title": "Organizadores de capítulo en Manta y Loja",
-        "meta": "Sin fecha límite"
+        "title": "Conecta una comunidad local",
+        "meta": "Canal por confirmar"
       },
       "grants": {
-        "title": "Grants para proyectos locales · Ronda 2",
-        "meta": "Abre 01 MAR"
+        "title": "Comparte un proyecto en construcción",
+        "meta": "Convocatoria por publicar"
       },
       "volunteers": {
-        "title": "Voluntarios de producción y contenido",
-        "meta": "Sin fecha límite"
+        "title": "Colabora en contenido, investigación o producción",
+        "meta": "Formulario por publicar"
       }
     }
   },
 
   "ecosystem": {
     "heading": {
-      "line1": "Quiénes",
-      "line2": "construyen"
+      "line1": "Mapa del",
+      "line2": "ecosistema"
     },
-    "lead": "Nadie hace esto solo. Estas son las comunidades, universidades, cadenas y equipos que sostienen el ecosistema y le ponen el hombro cada mes.",
+    "lead": "Estamos documentando comunidades, universidades, proyectos y tecnologías relacionadas con Web3 en Ecuador. Una aparición en este mapa no implica alianza, patrocinio ni respaldo oficial.",
     "toggle": {
       "pause": "Pausar",
       "resume": "Reanudar"
@@ -262,7 +262,7 @@
     "groups": {
       "comunidades": "Comunidades",
       "universidades": "Universidades",
-      "blockchains": "Blockchains"
+      "blockchains": "Tecnologías"
     },
     "partners": {
       "blockchain-ecuador": "Blockchain Ecuador",
