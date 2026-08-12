@@ -1,6 +1,10 @@
 ---
-import { nav, brand } from '../data/site';
+import { nav } from '../data/site';
+import { copy, format } from '../i18n';
 import Logo from './Logo.astro';
+
+const { brand, a11y } = copy;
+const t = copy.nav;
 ---
 
 <header
@@ -17,12 +21,12 @@ import Logo from './Logo.astro';
       href="#top"
       class="group flex h-11 w-11 items-center justify-center gap-2.5 rounded-full border px-2 backdrop-blur-xl transition-transform duration-700 [transition-timing-function:var(--ease-spring)] hover:scale-[1.03] sm:h-[54px] sm:w-auto sm:justify-start sm:px-5"
       style="background: var(--nav-bg); border-color: var(--nav-border)"
-      aria-label={`${brand.name} — inicio`}
+      aria-label={format(a11y.homeLink, { brand: brand.name })}
     >
       <Logo class="h-7 w-auto shrink-0 sm:h-9" />
       <span class="hidden leading-none sm:block">
-        <span class="display block text-[15px] tracking-[0.02em]">Ecuador</span>
-        <span class="display block text-[15px] tracking-[0.02em] opacity-60">Web3</span>
+        <span class="display block text-[15px] tracking-[0.02em]">{brand.wordmark.top}</span>
+        <span class="display block text-[15px] tracking-[0.02em] opacity-60">{brand.wordmark.bottom}</span>
       </span>
     </a>
 
@@ -30,7 +34,7 @@ import Logo from './Logo.astro';
     <nav
       class="hidden items-center gap-1 rounded-full border px-2 py-2 backdrop-blur-xl lg:flex"
       style="background: var(--nav-bg); border-color: var(--nav-border)"
-      aria-label="Principal"
+      aria-label={a11y.primaryNav}
     >
       {
         nav.map((item) => (
@@ -50,7 +54,7 @@ import Logo from './Logo.astro';
         class="btn hidden bg-ec-yellow py-3 text-ec-ink hover:bg-ec-bone sm:inline-flex"
         data-magnetic="0.2"
       >
-        Únete
+        {t.cta}
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
           <path d="M1 13L13 1M13 1H4M13 1v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -62,7 +66,7 @@ import Logo from './Logo.astro';
         type="button"
         class="grid h-11 w-11 place-items-center rounded-full border backdrop-blur-xl lg:hidden"
         style="background: var(--nav-bg); border-color: var(--nav-border)"
-        aria-label="Abrir menú"
+        aria-label={a11y.openMenu}
         aria-expanded="false"
         aria-controls="mobile-menu"
       >
@@ -81,15 +85,15 @@ import Logo from './Logo.astro';
   class="invisible fixed inset-0 z-[65] flex flex-col bg-ec-ink opacity-0 transition-[opacity,visibility] duration-400 lg:hidden"
   role="dialog"
   aria-modal="true"
-  aria-label="Menú"
+  aria-label={a11y.menuDialog}
 >
   <div class="flex items-center justify-between px-4 py-4 sm:px-6">
-    <span class="kicker text-ec-yellow">{brand.coords} · Menú</span>
+    <span class="kicker text-ec-yellow">{format(t.mobile.kicker, { coords: brand.coords })}</span>
     <button
       id="menu-close"
       type="button"
       class="grid h-11 w-11 place-items-center rounded-full border border-ec-bone/20 text-ec-bone"
-      aria-label="Cerrar menú"
+      aria-label={a11y.closeMenu}
     >
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
         <path d="M1 1l14 14M15 1L1 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -97,7 +101,7 @@ import Logo from './Logo.astro';
     </button>
   </div>
 
-  <nav class="flex flex-1 flex-col justify-center gap-2 px-6 pb-24" aria-label="Menú móvil">
+  <nav class="flex flex-1 flex-col justify-center gap-2 px-6 pb-24" aria-label={a11y.mobileNav}>
     {
       nav.map((item, i) => (
         <a
@@ -112,7 +116,7 @@ import Logo from './Logo.astro';
       ))
     }
     <a href="#unete" data-menu-link class="btn mt-8 justify-center bg-ec-yellow text-ec-ink">
-      Únete al movimiento
+      {t.mobile.cta}
     </a>
   </nav>
 </div>

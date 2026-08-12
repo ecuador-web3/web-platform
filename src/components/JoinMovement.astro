@@ -1,6 +1,9 @@
 ---
-import { paths, brand } from '../data/site';
+import { paths } from '../data/site';
+import { copy, format } from '../i18n';
 import { TONE_STYLES } from '../lib/tone';
+
+const t = copy.join;
 ---
 
 <section
@@ -17,13 +20,12 @@ import { TONE_STYLES } from '../lib/tone';
     <div class="flex flex-wrap items-end justify-between gap-8 [@media(min-aspect-ratio:2/1)]:!gap-4">
       <div>
         <h2 class="display text-[clamp(2.5rem,8vw,7rem)] [@media(min-aspect-ratio:2/1)]:!text-[clamp(2rem,6vh,4rem)]" data-reveal style="--reveal-delay:80ms">
-          Únete al<br /><span class="text-ec-yellow">movimiento</span>
+          {t.heading.line1}<br /><span class="text-ec-yellow">{t.heading.line2}</span>
         </h2>
       </div>
 
       <p class="max-w-md text-[clamp(1.05rem,1.5vw,1.25rem)] [@media(min-aspect-ratio:2/1)]:!text-sm leading-relaxed text-ec-bone/75" data-reveal style="--reveal-delay:160ms">
-        {brand.promise} No importa si llevas años en esto o si hoy es tu primer día. Hay cuatro
-        formas de entrar.
+        {format(t.lead, { promise: copy.brand.promise })}
       </p>
     </div>
 
@@ -69,14 +71,14 @@ import { TONE_STYLES } from '../lib/tone';
     <!-- Closing statement -->
     <div class="mt-8 [@media(min-aspect-ratio:2/1)]:!mt-8 text-center" data-reveal="mask">
       <p class="display mx-auto max-w-5xl text-[clamp(1.5rem,4.5vw,3.5rem)] [@media(min-aspect-ratio:2/1)]:!text-[clamp(1.2rem,4vh,2rem)] leading-none">
-        Construimos con propósito,<br />
-        <span class="text-ec-yellow">crecemos juntos.</span>
+        {t.closing.line1}<br />
+        <span class="text-ec-yellow">{t.closing.line2}</span>
       </p>
     </div>
 
     <div class="mt-6 [@media(min-aspect-ratio:2/1)]:!mt-6 flex flex-wrap justify-center gap-3 [@media(min-aspect-ratio:2/1)]:!gap-2" data-reveal style="--reveal-delay:180ms">
       <a href="#" class="btn bg-ec-bone text-ec-ink hover:bg-ec-yellow" data-magnetic="0.24">
-        Entrar a la comunidad
+        {t.ctaPrimary}
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
           <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -85,7 +87,7 @@ import { TONE_STYLES } from '../lib/tone';
         href="#eventos"
         class="btn border border-ec-bone/35 text-ec-bone hover:border-ec-bone hover:bg-ec-bone hover:text-ec-red"
       >
-        Ver el calendario
+        {t.ctaSecondary}
       </a>
     </div>
   </div>

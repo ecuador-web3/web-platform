@@ -1,6 +1,9 @@
 ---
 import { stats, pillars } from '../data/site';
+import { copy } from '../i18n';
 import { TONE_STYLES } from '../lib/tone';
+
+const t = copy.happeningNow;
 ---
 
 <section
@@ -21,13 +24,11 @@ import { TONE_STYLES } from '../lib/tone';
       <!-- Section head -->
       <div class="lg:w-7/12">
         <h2 class="display text-[clamp(1.75rem,5.5vw,5rem)] [@media(min-aspect-ratio:2/1)]:!text-[clamp(1.5rem,6vh,3rem)] leading-tight" data-reveal>
-          Está pasando<br />
-          <span class="text-ec-blue whitespace-nowrap">ahora mismo</span>
+          {t.heading.line1}<br />
+          <span class="text-ec-blue whitespace-nowrap">{t.heading.line2}</span>
         </h2>
         <p class="mt-[max(1rem,3vh)] [@media(min-aspect-ratio:2/1)]:!mt-2 max-w-xl text-[clamp(1rem,1.5vw,1.3rem)] [@media(min-aspect-ratio:2/1)]:!text-sm leading-relaxed text-ec-ink/70" data-reveal style="--reveal-delay:120ms">
-          Ecuador tiene una de las adopciones cripto más rápidas de la región y una comunidad que
-          recién empieza a organizarse en serio. Ese es exactamente el momento en el que estamos:
-          temprano, con espacio para todos y con mucho por armar.
+          {t.lead}
         </p>
       </div>
 
