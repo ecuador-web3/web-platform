@@ -125,7 +125,10 @@
     "title": "Web3 desde Cero",
     "accent": "Primer curso",
     "body": "Dos sesiones para entender blockchain y Web3, sin conocimientos previos.",
-    "modality": "Virtual",
+    "modality": {
+      "virtual": "Virtual",
+      "inPerson": "Presencial"
+    },
     "badges": ["2 sesiones", "Gratis"],
     "hosts": ["Elizabeth Pacheco", "Gelois o7"],
     "hooks": ["Sin experiencia previa", "Exclusivo Ecuador", "Cupos limitados"],
@@ -158,6 +161,14 @@
       "days": "d",
       "hours": "h",
       "minutes": "m"
+    },
+    "empty": {
+      "accent": "Próximamente",
+      "title": "Estamos armando",
+      "titleAccent": "la próxima sesión",
+      "body": "No hay eventos con fecha confirmada ahora mismo. Sigue nuestro calendario en Luma y entérate apenas publiquemos la siguiente.",
+      "cta": "Seguir en Luma",
+      "note": "Publicamos sesiones nuevas cada mes"
     }
   },
 
@@ -168,58 +179,36 @@
       "line2": "en comunidad"
     },
     "lead": "Sesiones abiertas para entender conceptos, resolver preguntas, compartir proyectos y conectar con otras personas del ecosistema.",
-    "featuredBadge": "Próxima sesión",
+    "leadRecent": "Todavía no hay fechas nuevas confirmadas. Estas son las últimas sesiones que hicimos, y el calendario es donde anunciamos la siguiente.",
+    "badge": {
+      "upcoming": "Próxima sesión",
+      "recent": "Última sesión"
+    },
     "labels": {
-      "day": "Día",
+      "day": "Fecha",
       "time": "Hora · Ecuador",
-      "audience": "Dirigido a",
-      "schedule": "Otras actividades",
-      "scheduleCount": "{count} actividades",
+      "hosts": "Organizan",
+      "online": "Online",
+      "scheduleUpcoming": "También en agenda",
+      "scheduleRecent": "Sesiones anteriores",
+      "scheduleCountOne": "1 sesión",
+      "scheduleCountMany": "{count} sesiones",
       "whenSummary": "{day} a las {time}"
     },
-    "cta": "Ver información",
-    "ctaNote": "Confirma la fecha y el enlace antes de participar",
+    "hostsMore": "y {count} más",
+    "hostsUnknown": "Ecuador Web3",
+    "cta": {
+      "upcoming": "Ver información",
+      "recent": "Ver el evento"
+    },
+    "ctaNote": {
+      "upcoming": "Confirma la fecha y el enlace antes de participar",
+      "recent": "Esta sesión ya se realizó"
+    },
     "firstTime": {
       "before": "¿Es tu primera vez? Empieza por ",
+      "link": "unirte a la comunidad",
       "after": "."
-    },
-    "items": {
-      "community": {
-        "title": "Ecuador Web3 Community Call",
-        "cadence": "Mensual",
-        "day": "Por confirmar",
-        "time": "Por confirmar",
-        "where": "Online",
-        "audience": "Toda la comunidad",
-        "body": "Un espacio para compartir avances, presentar iniciativas y definir próximos pasos de forma abierta."
-      },
-      "dev": {
-        "title": "Builder Clinic",
-        "cadence": "Mensual",
-        "day": "Por confirmar",
-        "time": "Por confirmar",
-        "where": "Online",
-        "audience": "Builders y equipos",
-        "body": "Revisión práctica de proyectos, repositorios, arquitectura y problemas técnicos."
-      },
-      "onboarding": {
-        "title": "Web3 desde Cero",
-        "cadence": "Mensual",
-        "day": "Por confirmar",
-        "time": "Por confirmar",
-        "where": "Online",
-        "audience": "Principiantes",
-        "body": "Conceptos básicos, wallets, seguridad y primeros pasos sin promesas financieras ni conocimientos previos."
-      },
-      "art": {
-        "title": "Research & Payments Lab",
-        "cadence": "Mensual",
-        "day": "Por confirmar",
-        "time": "Por confirmar",
-        "where": "Online",
-        "audience": "Investigadores, fintechs y comunidades",
-        "body": "Análisis abierto de pagos, remesas, stablecoins, regulación e infraestructura digital en Ecuador."
-      }
     }
   },
 

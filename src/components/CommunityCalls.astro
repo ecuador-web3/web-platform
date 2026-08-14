@@ -1,216 +1,336 @@
 ---
 /**
- * The weekly call schedule, and the open calls that sit behind `showOpenCalls`.
+ * The community sessions, and the open calls that sit behind `showOpenCalls`.
+ *
+ * This used to be four hand-written formats whose day and time both read "Por
+ * confirmar", with no mechanism by which they would ever say anything else. It
+ * now renders the Luma calendar: whatever is scheduled beyond the event already
+ * on the ticket, or the most recent sessions when nothing is left ahead.
+ *
+ * The recent case is a different section, not a dimmer version of the same one.
+ * A card that says "próxima sesión" over a date from last month is a lie, so the
+ * badge, the lead, the CTA and the list heading all switch with it.
+ *
+ * With nothing on the calendar at all the section does not render. The ticket
+ * above already says nothing is scheduled, and two full-height sections saying
+ * it reads as a bug.
  */
-import { calls, openCalls, showOpenCalls } from '../data/site';
+import { Image } from 'astro:assets';
+import { lumaProfileUrl, openCalls, sessions, showOpenCalls } from '../data/site';
 import { copy, format } from '../i18n';
+import {
+  formatEventDateRange,
+  formatEventDateShort,
+  formatEventTime,
+  formatEventWeekday,
+  formatEventWeekdayRange,
+} from '../lib/eventDate';
+import type { ScheduledEvent } from '../lib/lumaCalendar';
 import { TONE_STYLES } from '../lib/tone';
 
 const tc = copy.calls;
 
-const featuredCall = calls.find((c) => c.featured) ?? calls[0];
-const otherCalls = calls.filter((c) => c !== featuredCall);
+const isRecent = sessions.status === 'recent';
+const events = sessions.status === 'none' ? [] : sessions.events;
+const [featured, ...rest] = events;
 
-/* The "first time here?" footnote points at the Onboarding call, so it takes
-   that call's title rather than repeating it. */
-const onboardingCall = tc.items.onboarding;
+/* Every string that would otherwise claim a past session is still ahead. */
+const badge = isRecent ? tc.badge.recent : tc.badge.upcoming;
+const ctaLabel = isRecent ? tc.cta.recent : tc.cta.upcoming;
+const ctaNote = isRecent ? tc.ctaNote.recent : tc.ctaNote.upcoming;
+const lead = isRecent ? tc.leadRecent : tc.lead;
+const scheduleLabel = isRecent ? tc.labels.scheduleRecent : tc.labels.scheduleUpcoming;
+
+const scheduleCount =
+  rest.length === 1
+    ? tc.labels.scheduleCountOne
+    : format(tc.labels.scheduleCountMany, { count: rest.length });
+
+/* Hosts on one line, with the tail Luma collapsed into "& 4 others" folded back
+   in as a count in the site's own language. An event with no host line at all
+   falls back to the community itself, which is true of every event on this
+   calendar and reads better than an empty slot. */
+const hostLine = (event: ScheduledEvent): string => {
+  const names = event.hosts.length > 0 ? event.hosts.join(', ') : tc.hostsUnknown;
+  return event.unnamedHosts > 0
+    ? `${names} ${format(tc.hostsMore, { count: event.unnamedHosts })}`
+    : names;
+};
+
+/* The feed always carries a link, but it passes a scheme check on the way in.
+   The profile is a working destination either way. */
+const eventHref = (event: ScheduledEvent): string => event.url ?? lumaProfileUrl;
+
+/* "MIÉ 29 JUL · 20:00", or "MAR–MIÉ 11–12 AGO · 19:30" for one that runs over
+   two days. Both halves range together, so the row cannot claim a single day
+   for an event the featured card shows as two. */
+const whenLine = (event: ScheduledEvent): string =>
+  `${formatEventWeekdayRange(event.startsAt, event.endsAt)} ` +
+  `${formatEventDateRange(event.startsAt, event.endsAt)} · ${formatEventTime(event.startsAt)}`;
 ---
 
-<section
-  id="community-calls"
-  data-nav-theme="blue"
-  class="relative isolate flex flex-col min-h-[100svh] overflow-hidden bg-ec-blue pt-[clamp(7rem,12vh,9rem)] [@media(min-aspect-ratio:2/1)]:!pt-20 pb-[clamp(2rem,4vh,4rem)] [@media(min-aspect-ratio:2/1)]:!pb-4 text-ec-bone"
->
-  <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
-    <div class="blob absolute -left-[12%] top-[20%] h-[36vw] w-[36vw] bg-ec-yellow/10 blur-3xl"></div>
-    <div class="blob absolute -right-[8%] bottom-[10%] h-[30vw] w-[30vw] bg-ec-red/10 blur-3xl" style="animation-delay:-6s"></div>
-  </div>
-
-  <div class="my-auto mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10">
-    <div>
-      <div class="flex flex-wrap items-end justify-between gap-6" data-reveal>
-        <div>
-          <p class="kicker text-ec-yellow mb-3">{tc.kicker}</p>
-          <h3 class="display text-[clamp(2.5rem,7.5vw,6.5rem)] [@media(min-aspect-ratio:2/1)]:!text-[clamp(2rem,6vh,4rem)] leading-[0.9]">
-            {tc.heading.line1}<br class="sm:hidden" /> {tc.heading.line2}
-          </h3>
-        </div>
-        <p class="max-w-sm text-ec-bone/65 leading-relaxed [@media(min-aspect-ratio:2/1)]:!text-sm">
-          {tc.lead}
-        </p>
+{
+  (featured || showOpenCalls) && (
+    <section
+      id="community-calls"
+      data-nav-theme="blue"
+      class="relative isolate flex flex-col min-h-[100svh] overflow-hidden bg-ec-blue pt-[clamp(7rem,12vh,9rem)] [@media(min-aspect-ratio:2/1)]:!pt-20 pb-[clamp(2rem,4vh,4rem)] [@media(min-aspect-ratio:2/1)]:!pb-4 text-ec-bone"
+    >
+      <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+        <div class="blob absolute -left-[12%] top-[20%] h-[36vw] w-[36vw] bg-ec-yellow/10 blur-3xl" />
+        <div class="blob absolute -right-[8%] bottom-[10%] h-[30vw] w-[30vw] bg-ec-red/10 blur-3xl" style="animation-delay:-6s" />
       </div>
 
-      <div class="mt-[max(1.75rem,4vh)] [@media(min-aspect-ratio:2/1)]:!mt-4 grid gap-5 lg:grid-cols-12 lg:gap-6 lg:items-stretch">
-        <!-- Featured call — primary action -->
-        <article
-          class="call-featured relative flex flex-col overflow-hidden rounded-[1.75rem] border border-ec-bone/15 bg-ec-blue-deep/60 p-6 sm:p-8 lg:col-span-7 lg:p-10"
-          data-reveal
-          style="--reveal-delay:80ms"
-        >
-          <div class="absolute inset-y-0 left-0 w-1.5 bg-ec-yellow" aria-hidden="true"></div>
-
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="sticker bg-ec-yellow text-ec-ink" style="transform: rotate(-3deg)">
-              {tc.featuredBadge}
-            </span>
-            <span class={`sticker ${TONE_STYLES[featuredCall.tone].sticker}`}>
-              {featuredCall.cadence}
-            </span>
-          </div>
-
-          <h4 class="display mt-6 text-[clamp(2rem,4.5vw,3.5rem)] leading-[0.9] text-ec-bone">
-            {featuredCall.title}
-          </h4>
-          <p class="mt-4 max-w-lg text-ec-bone/65 leading-relaxed sm:text-lg">
-            {featuredCall.body}
-          </p>
-
-          <div class="mt-8 flex flex-wrap items-end gap-5 sm:gap-8">
-            <div
-              class="flex items-stretch gap-3"
-              aria-label={format(tc.labels.whenSummary, {
-                day: featuredCall.day,
-                time: featuredCall.time,
-              })}
-            >
-              <div class="grid min-w-[4.5rem] place-items-center rounded-2xl bg-ec-yellow px-3 py-3 text-ec-ink">
-                <span class="kicker text-ec-ink/55">{tc.labels.day}</span>
-                <span class="display text-2xl leading-none sm:text-3xl">{featuredCall.day}</span>
+      <div class="my-auto mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10">
+        {featured && (
+          <div>
+            <div class="flex flex-wrap items-end justify-between gap-6" data-reveal>
+              <div>
+                <p class="kicker text-ec-yellow mb-3">{tc.kicker}</p>
+                <h3 class="display text-[clamp(2.5rem,7.5vw,6.5rem)] [@media(min-aspect-ratio:2/1)]:!text-[clamp(2rem,6vh,4rem)] leading-[0.9]">
+                  {tc.heading.line1}
+                  <br class="sm:hidden" /> {tc.heading.line2}
+                </h3>
               </div>
-              <div class="flex flex-col justify-center">
-                <span class="kicker text-ec-bone/40">{tc.labels.time}</span>
-                <span class="display-wide mt-1 text-2xl tabular text-ec-bone sm:text-3xl">{featuredCall.time}</span>
-                <span class="mt-1 text-sm text-ec-bone/50">{featuredCall.where}</span>
-              </div>
+              <p class="max-w-sm text-ec-bone/65 leading-relaxed [@media(min-aspect-ratio:2/1)]:!text-sm">
+                {lead}
+              </p>
             </div>
 
-            <div class="hidden h-12 w-px bg-ec-bone/15 sm:block" aria-hidden="true"></div>
+            <div class="mt-[max(1.75rem,4vh)] [@media(min-aspect-ratio:2/1)]:!mt-4 grid gap-5 lg:grid-cols-12 lg:gap-6 lg:items-stretch">
+              {/* Featured session — primary action */}
+              <article
+                class="call-featured relative flex flex-col overflow-hidden rounded-[1.75rem] border border-ec-bone/15 bg-ec-blue-deep/60 lg:col-span-7"
+                data-reveal
+                style="--reveal-delay:80ms"
+              >
+                <div class="flex flex-1 flex-col p-6 sm:p-8 lg:p-10">
+                <div class="flex items-start gap-4 sm:gap-6">
+                  {/* Cover art, downloaded and re-encoded at build time rather
+                      than hotlinked: Luma serves the originals at up to 1254px
+                      and 2 MB and ignores every resize parameter it is asked
+                      for. Kept square and modest rather than run full-bleed,
+                      because these posters are usually the event title set as an
+                      image: cropping one to a banner cuts the words in half, and
+                      showing it large repeats the heading right beneath it.
+                      `alt=""` for that same reason, the title being adjacent.
 
-            <div>
-              <span class="kicker text-ec-bone/40">{tc.labels.audience}</span>
-              <p class="mt-1 text-ec-bone/80">{featuredCall.audience}</p>
-            </div>
-          </div>
+                      `widths` rather than a bare `width`: pairing `inferSize`
+                      with `width` sets the output width but leaves height at the
+                      original, which squashed every square poster into a 1254px
+                      tall sliver. `widths` scales both. */}
+                  {featured.coverUrl && (
+                    <Image
+                      src={featured.coverUrl}
+                      inferSize
+                      widths={[160, 224, 336]}
+                      sizes="(min-width: 640px) 112px, 80px"
+                      alt=""
+                      class="h-20 w-20 shrink-0 rounded-2xl object-cover sm:h-28 sm:w-28"
+                    />
+                  )}
 
-          <div class="mt-auto flex flex-wrap items-center gap-4 pt-8">
-            <a
-              href={featuredCall.href}
-              class="btn bg-ec-yellow text-ec-ink hover:bg-ec-bone"
-              data-magnetic="0.2"
-            >
-              {tc.cta}
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </a>
-            <p class="text-sm text-ec-bone/45">{tc.ctaNote}</p>
-          </div>
-        </article>
+                  <div class="min-w-0 flex-1">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <span class="sticker bg-ec-yellow text-ec-ink">{badge}</span>
+                      {featured.isVirtual && (
+                        <span class={`sticker ${TONE_STYLES.red.sticker}`}>{tc.labels.online}</span>
+                      )}
+                    </div>
 
-        <!-- Secondary schedule — scannable list, not twin cards -->
-        <div
-          class="flex flex-col rounded-[1.75rem] border border-ec-bone/15 bg-ec-ink/25 lg:col-span-5"
-          data-reveal
-          style="--reveal-delay:160ms"
-        >
-          <div class="flex items-center justify-between gap-3 border-b border-ec-bone/10 px-5 py-4 sm:px-6">
-            <h4 class="kicker text-ec-bone/50">{tc.labels.schedule}</h4>
-            <span class="text-xs text-ec-bone/35">
-              {format(tc.labels.scheduleCount, { count: otherCalls.length })}
-            </span>
-          </div>
+                    <h4 class="display mt-4 text-[clamp(1.75rem,3.6vw,2.75rem)] leading-[0.95] text-ec-bone">
+                      {featured.title}
+                    </h4>
+                  </div>
+                </div>
 
-          <ul class="flex flex-1 flex-col">
-            {
-              otherCalls.map((call, i) => (
-                <li class="flex-1 border-b border-ec-bone/10 last:border-b-0">
-                  <a
-                    href={call.href}
-                    class="call-row group flex h-full items-stretch gap-4 px-5 py-5 transition-colors duration-300 hover:bg-ec-bone/[0.06] sm:px-6 sm:py-6"
-                    data-reveal
-                    style={`--reveal-delay:${200 + i * 70}ms`}
+                <div class="mt-8 flex flex-wrap items-end gap-5 sm:gap-8">
+                  <div
+                    class="flex items-stretch gap-3"
+                    aria-label={format(tc.labels.whenSummary, {
+                      day: formatEventDateRange(featured.startsAt, featured.endsAt),
+                      time: formatEventTime(featured.startsAt),
+                    })}
                   >
-                    <div class="grid w-14 shrink-0 place-content-center rounded-xl border border-ec-bone/15 bg-ec-blue-deep/80 text-center transition-colors duration-300 group-hover:border-ec-yellow/40">
-                      <span class="kicker text-ec-yellow/80">{call.day}</span>
-                      <span class="display-wide mt-0.5 text-sm tabular text-ec-bone">{call.time}</span>
+                    {/* Date and weekday stack in one cell. Both are ranges, so a
+                        workshop running over two evenings reads "11–12 AGO" over
+                        "MAR–MIÉ" rather than claiming a single day. */}
+                    <div class="grid min-w-[5.5rem] place-items-center rounded-2xl bg-ec-yellow px-3 py-3 text-ec-ink">
+                      <span class="kicker text-ec-ink/55">{tc.labels.day}</span>
+                      <span class="display mt-0.5 text-2xl leading-none whitespace-nowrap sm:text-3xl">
+                        {formatEventDateRange(featured.startsAt, featured.endsAt)}
+                      </span>
+                      <span class="kicker mt-1 text-ec-ink/55">
+                        {formatEventWeekdayRange(featured.startsAt, featured.endsAt)}
+                      </span>
                     </div>
-
-                    <div class="min-w-0 flex-1">
-                      <div class="flex flex-wrap items-center gap-2">
-                        <h5 class="display-wide text-lg leading-tight text-ec-bone transition-colors group-hover:text-ec-yellow sm:text-xl">
-                          {call.title}
-                        </h5>
-                        <span class={`sticker scale-90 ${TONE_STYLES[call.tone].sticker}`}>
-                          {call.cadence}
-                        </span>
-                      </div>
-                      <p class="mt-1.5 line-clamp-2 text-sm leading-snug text-ec-bone/55">
-                        {call.body}
-                      </p>
-                      <div class="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-ec-bone/40">
-                        <span>{call.where}</span>
-                        <span aria-hidden="true">·</span>
-                        <span>{call.audience}</span>
-                      </div>
+                    <div class="flex flex-col justify-center">
+                      <span class="kicker text-ec-bone/40">{tc.labels.time}</span>
+                      <span class="display-wide mt-1 text-2xl tabular text-ec-bone sm:text-3xl">
+                        {formatEventTime(featured.startsAt)}
+                      </span>
                     </div>
+                  </div>
 
+                  <div class="hidden h-12 w-px bg-ec-bone/15 sm:block" aria-hidden="true" />
+
+                  <div class="min-w-0">
+                    <span class="kicker text-ec-bone/40">{tc.labels.hosts}</span>
+                    <p class="mt-1 text-ec-bone/80">{hostLine(featured)}</p>
+                  </div>
+                </div>
+
+                <div class="mt-auto flex flex-wrap items-center gap-4 pt-8">
+                  <a
+                    href={eventHref(featured)}
+                    class="btn bg-ec-yellow text-ec-ink hover:bg-ec-bone"
+                    data-magnetic="0.2"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {ctaLabel}
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                      <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </a>
+                  <p class="text-sm text-ec-bone/45">{ctaNote}</p>
+                </div>
+                </div>
+              </article>
+
+              {/* Secondary schedule — scannable list, not twin cards */}
+              {rest.length > 0 && (
+                <div
+                  class="flex flex-col rounded-[1.75rem] border border-ec-bone/15 bg-ec-ink/25 lg:col-span-5"
+                  data-reveal
+                  style="--reveal-delay:160ms"
+                >
+                  <div class="flex items-center justify-between gap-3 border-b border-ec-bone/10 px-5 py-4 sm:px-6">
+                    <h4 class="kicker text-ec-bone/50">{scheduleLabel}</h4>
+                    <span class="text-xs text-ec-bone/35">{scheduleCount}</span>
+                  </div>
+
+                  {/* Rows size to their content. Stretching them to fill the
+                      panel left an arrow floating in the middle of nothing
+                      whenever the list was shorter than the card beside it. */}
+                  <ul class="flex flex-col">
+                    {rest.map((session, i) => (
+                      <li class="border-b border-ec-bone/10 last:border-b-0">
+                        <a
+                          href={eventHref(session)}
+                          class="call-row group flex h-full items-stretch gap-4 px-5 py-5 transition-colors duration-300 hover:bg-ec-bone/[0.06] sm:px-6 sm:py-6"
+                          data-reveal
+                          style={`--reveal-delay:${200 + i * 70}ms`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {/* The cover carries the identity here, so the date
+                              moves into the line under the title rather than
+                              competing with it for the same 64px. */}
+                          {session.coverUrl ? (
+                            <Image
+                              src={session.coverUrl}
+                              inferSize
+                              widths={[128, 160, 240]}
+                              sizes="(min-width: 640px) 80px, 64px"
+                              alt=""
+                              class="h-16 w-16 shrink-0 rounded-xl object-cover sm:h-20 sm:w-20"
+                            />
+                          ) : (
+                            <div class="grid h-16 w-16 shrink-0 place-content-center rounded-xl border border-ec-bone/15 bg-ec-blue-deep/80 text-center transition-colors duration-300 group-hover:border-ec-yellow/40 sm:h-20 sm:w-20">
+                              <span class="kicker text-ec-yellow/80">
+                                {formatEventWeekday(session.startsAt)}
+                              </span>
+                              <span class="display-wide mt-0.5 text-sm tabular whitespace-nowrap text-ec-bone">
+                                {formatEventDateShort(session.startsAt)}
+                              </span>
+                            </div>
+                          )}
+
+                          <div class="min-w-0 flex-1">
+                            <div class="flex flex-wrap items-center gap-2">
+                              <h5 class="display-wide text-lg leading-tight text-ec-bone transition-colors group-hover:text-ec-yellow sm:text-xl">
+                                {session.title}
+                              </h5>
+                              {session.isVirtual && (
+                                <span class={`sticker scale-90 ${TONE_STYLES.red.sticker}`}>
+                                  {tc.labels.online}
+                                </span>
+                              )}
+                            </div>
+                            <p class="display-wide mt-1.5 text-xs tabular text-ec-yellow/80">
+                              {whenLine(session)}
+                            </p>
+                            <p class="mt-1 line-clamp-2 text-sm leading-snug text-ec-bone/55">
+                              {hostLine(session)}
+                            </p>
+                          </div>
+
+                          <span
+                            class="mt-1 grid h-8 w-8 shrink-0 place-items-center self-center rounded-full border border-ec-bone/20 text-ec-bone/40 transition-all duration-400 group-hover:border-ec-yellow group-hover:text-ec-yellow group-hover:translate-x-0.5"
+                            aria-hidden="true"
+                          >
+                            <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+                              <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                          </span>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            <p
+              class="mt-6 text-center text-sm text-ec-bone/40 [@media(min-aspect-ratio:2/1)]:!mt-3"
+              data-reveal
+              style="--reveal-delay:320ms"
+            >
+              {tc.firstTime.before}
+              <a href="#unete" class="text-ec-yellow underline-offset-4 hover:underline">
+                {tc.firstTime.link}
+              </a>
+              {tc.firstTime.after}
+            </p>
+          </div>
+        )}
+
+        {/* ===== Open calls — hidden behind showOpenCalls in src/data/site.ts ===== */}
+        {showOpenCalls && (
+          <div id="convocatorias" class="mt-24 scroll-mt-28">
+            <h3 class="display text-[clamp(1.75rem,4vw,3rem)]" data-reveal>
+              {copy.openCalls.heading}
+            </h3>
+
+            <ul class="mt-8 border-t border-ec-bone/15">
+              {openCalls.map((item, i) => (
+                <li data-reveal style={`--reveal-delay:${i * 70}ms`}>
+                  <a
+                    href="#unete"
+                    class="group flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-ec-bone/15 py-6 transition-colors duration-400 hover:bg-ec-bone hover:text-ec-ink"
+                  >
+                    <span class="kicker w-10 shrink-0 text-ec-yellow group-hover:text-ec-red">
+                      0{i + 1}
+                    </span>
+                    <span class="display-wide flex-1 text-[clamp(1.15rem,2.6vw,1.85rem)] transition-transform duration-500 [transition-timing-function:var(--ease-out-expo)] group-hover:translate-x-3">
+                      {item.title}
+                    </span>
+                    <span class="kicker text-ec-bone/45 group-hover:text-ec-ink/50">{item.meta}</span>
                     <span
-                      class="mt-1 grid h-8 w-8 shrink-0 place-items-center self-center rounded-full border border-ec-bone/20 text-ec-bone/40 transition-all duration-400 group-hover:border-ec-yellow group-hover:text-ec-yellow group-hover:translate-x-0.5"
-                      aria-hidden="true"
+                      class={`sticker ${
+                        item.status === 'open' ? 'bg-ec-yellow text-ec-ink' : 'bg-ec-red text-ec-bone'
+                      }`}
                     >
-                      <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-                        <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
+                      {copy.openCalls.status[item.status]}
                     </span>
                   </a>
                 </li>
-              ))
-            }
-          </ul>
-        </div>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
-
-      <p class="mt-6 text-center text-sm text-ec-bone/40 [@media(min-aspect-ratio:2/1)]:!mt-3" data-reveal style="--reveal-delay:320ms">
-        {tc.firstTime.before}<a
-          href="#unete"
-          class="text-ec-yellow underline-offset-4 hover:underline">{onboardingCall.title}</a
-        >{tc.firstTime.after}
-      </p>
-    </div>
-
-    <!-- ===== Open calls — hidden behind showOpenCalls in src/data/site.ts ===== -->
-    {showOpenCalls && (
-    <div id="convocatorias" class="mt-24 scroll-mt-28">
-      <h3 class="display text-[clamp(1.75rem,4vw,3rem)]" data-reveal>{copy.openCalls.heading}</h3>
-
-      <ul class="mt-8 border-t border-ec-bone/15">
-        {
-          openCalls.map((item, i) => (
-            <li data-reveal style={`--reveal-delay:${i * 70}ms`}>
-              <a
-                href="#unete"
-                class="group flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-ec-bone/15 py-6 transition-colors duration-400 hover:bg-ec-bone hover:text-ec-ink"
-              >
-                <span class="kicker w-10 shrink-0 text-ec-yellow group-hover:text-ec-red">
-                  0{i + 1}
-                </span>
-                <span class="display-wide flex-1 text-[clamp(1.15rem,2.6vw,1.85rem)] transition-transform duration-500 [transition-timing-function:var(--ease-out-expo)] group-hover:translate-x-3">
-                  {item.title}
-                </span>
-                <span class="kicker text-ec-bone/45 group-hover:text-ec-ink/50">{item.meta}</span>
-                <span
-                  class={`sticker ${
-                    item.status === 'open' ? 'bg-ec-yellow text-ec-ink' : 'bg-ec-red text-ec-bone'
-                  }`}
-                >
-                  {copy.openCalls.status[item.status]}
-                </span>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-    )}
-  </div>
-</section>
+    </section>
+  )
+}

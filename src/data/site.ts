@@ -7,16 +7,26 @@
  * stitches the two together into the shapes the components consume. A second
  * language means one new JSON file and no edits here.
  *
- * Figures, dates, logos and links marked PLACEHOLDER need real data before
- * launch.
+ * Figures, logos and links marked PLACEHOLDER need real data before launch. The
+ * event schedule no longer does: it comes from the Luma calendar via `luma.ts`.
  *
  * This module holds values only. Anything that computes — seat curves, date
- * formatting, logo geometry — lives in `src/lib/` so it can be tested without
- * dragging the whole content tree along.
+ * formatting, logo geometry, which event is next — lives in `src/lib/` so it can
+ * be tested without dragging the whole content tree along, and the one thing
+ * that reaches the network lives in `luma.ts` so there is a single place to look
+ * for it.
  */
 import { copy } from '../i18n';
+import {
+  sessionsFrom,
+  upcomingFrom,
+  type CalendarState,
+  type SessionsState,
+} from '../lib/lumaCalendar';
 import type { SeatCurve } from '../lib/seats';
 import type { Tone } from '../lib/tone';
+import { lumaEvents } from './luma';
+import { placeholderEvents, placeholderSeats } from './placeholderEvent';
 
 export const brand = copy.brand;
 
@@ -47,50 +57,75 @@ export const pillars: {
 ];
 
 /**
- * Next public event — Workshop: Web3 desde Cero (Luma).
+ * Next public event, read from the Luma calendar at build time.
  *
- * Title, hosts, hooks and every label on the ticket are in `copy.event`.
+ * The dates and the sign-up link used to be three hand-written strings here,
+ * which meant the ticket advertised whatever event was current on the day
+ * somebody last edited this file. It went stale exactly as you would expect.
+ * `luma.ts` now fetches the calendar and `upcomingFrom` picks the soonest event
+ * that has not ended, so the section follows the calendar without an edit.
+ *
+ * What Luma does *not* carry is the editorial half — the accent line, the body,
+ * the hooks, the badges and the tutor list are still `copy.event`, and still
+ * describe whichever event was written up last. Worth a pass when a new one
+ * lands: the schedule will be right on its own, the prose will not.
+ *
+ * `status: 'none'` is a real state, not a failure. An empty calendar renders the
+ * ticket's empty variant, which is what the page showed before the placeholder
+ * below was switched on.
  */
-export const nextEvent = {
-  /** The one source for every date the ticket prints. Keep the -05:00 offset
-      explicit so the clock is Ecuador time for every visitor, not the
-      browser's local zone. Display strings are formatted in lib/eventDate. */
-  startsAt: '2026-08-11T19:30:00-05:00',
-  /** End of Día 2 — used for the printed date range on the ticket. */
-  endsAt: '2026-08-12T21:00:00-05:00',
-  ctaHref: 'https://luma.com/s5r5q74x',
-};
+
+/**
+ * PLACEHOLDER: stands a fake event on the ticket while the Luma calendar is
+ * empty. Set to `false` and delete `placeholderEvent.ts` once real events are
+ * scheduled, and the sections go back to reporting the calendar exactly.
+ *
+ * Same shape as `showOpenCalls` below: one boolean, one thing it controls.
+ */
+export const showPlaceholderEvent = false;
+
+/** The calendar as the page sees it, real events first. */
+const calendar = showPlaceholderEvent
+  ? [...lumaEvents, ...placeholderEvents]
+  : lumaEvents;
+
+export const nextEvent: CalendarState = upcomingFrom(calendar, Date.now());
+
+/** Where the ticket's empty state points, since the profile has no calendar slug. */
+export { lumaProfileUrl } from './luma';
 
 /**
  * PLACEHOLDER demand curve for the ticket's seat meter — see `lib/seats` for
  * what the numbers mean. Swap for the real Luma registration count when wired.
+ *
+ * While the placeholder event is up the curve is anchored to the build instead
+ * of a fixed past date, which otherwise ran the meter to capacity and printed
+ * "cupos agotados" over an event nobody had registered for at all.
  */
-export const seats: SeatCurve = {
-  capacity: 50,
-  anchorAt: '2026-08-09T00:00:00-05:00',
-  anchorReserved: 36,
-  perDay: 3,
-};
+export const seats: SeatCurve = showPlaceholderEvent
+  ? placeholderSeats
+  : {
+      capacity: 50,
+      anchorAt: '2026-08-09T00:00:00-05:00',
+      anchorReserved: 36,
+      perDay: 3,
+    };
 
-export const calls: {
-  title: string;
-  cadence: string;
-  /** Three-letter day label for the calendar cell, e.g. "Jue". */
-  day: string;
-  time: string;
-  where: string;
-  /** Who this call is for — one short line. */
-  audience: string;
-  body: string;
-  href: string;
-  featured?: boolean;
-  tone: Tone;
-}[] = [
-  { ...copy.calls.items.community, href: '#unete', featured: true, tone: 'yellow' },
-  { ...copy.calls.items.dev, href: '#unete', tone: 'red' },
-  { ...copy.calls.items.onboarding, href: '#unete', tone: 'bone' },
-  { ...copy.calls.items.art, href: '#unete', tone: 'yellow' },
-];
+/**
+ * The community sessions section, also read from the Luma calendar.
+ *
+ * This used to be four hand-written formats (Community Call, Builder Clinic,
+ * Web3 desde Cero, Research & Payments Lab), each with its day and time set to
+ * "Por confirmar" because none of them had a confirmed slot. Four cards that all
+ * say "to be confirmed" tell a visitor nothing, and there was no mechanism by
+ * which they would ever start saying anything else.
+ *
+ * The section now shows the calendar itself: what is scheduled beyond the event
+ * already on the ticket, or the most recent sessions when nothing is left
+ * ahead. Every event on the calendar reaches the page through one of the two,
+ * so nothing scheduled is invisible.
+ */
+export const sessions: SessionsState = sessionsFrom(calendar, Date.now());
 
 /**
  * Convocatorias are hidden for now. Flip to true to bring back the section,
