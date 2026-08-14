@@ -1,73 +1,32 @@
 ---
 /**
- * The next public event, rendered as a ticket, plus the equator strip that
- * seals the section.
+ * The next public event, plus the equator strip that seals the section.
+ *
+ * The section has two shapes. With something on the Luma calendar it renders
+ * `EventTicket`; with an empty calendar it renders a card that says so and
+ * points at the calendar, which is the honest answer and the state the site is
+ * actually in today. Neither is a special case of the other, so `nextEvent` is
+ * a discriminated state rather than an event with empty fields.
  *
  * Split from the Community Calls section it used to share a file with: the two
  * have no shared state, and one 600-line component made it hard to see that.
  */
-import { nextEvent, seats, showOpenCalls } from '../data/site';
-import { copy, derived, format } from '../i18n';
-import { ticketCopy } from '../i18n/ticketCopy';
+import { lumaProfileUrl, nextEvent, showOpenCalls } from '../data/site';
+import { copy, derived } from '../i18n';
+import EventTicket from './EventTicket.astro';
 import Marquee from './Marquee.astro';
-import { countdownFrom, padUnit } from '../lib/countdown';
-import { formatEventDateRange, formatEventTime } from '../lib/eventDate';
-import { seatsAt } from '../lib/seats';
 
 const t = copy.events;
-const ev = copy.event;
+const empty = copy.event.empty;
 
-/* Seat meter and countdown are rendered server-side as the no-JS fallback and
-   recomputed by the inline script on load — on a static build these values are
-   only as fresh as the last deploy. */
-const seatState = seatsAt(seats, Date.now());
-const countdown = countdownFrom(nextEvent.startsAt, Date.now());
-
-const ctaLabel = seatState.soldOut
-  ? ev.cta.soldOut
-  : format(ev.cta.withRemaining, { label: ev.cta.label, remaining: seatState.remaining });
+/* Narrowed once here so the template branches on a value rather than a tag. */
+const scheduled = nextEvent.status === 'scheduled' ? nextEvent.event : null;
 
 /* Repeated so the strip reads dense; Marquee duplicates again for the loop. */
 const equatorTicker = [...derived.equatorTicker, ...derived.equatorTicker];
 
 // The lead promises convocatorias, so it has to follow the section in and out.
 const lead = showOpenCalls ? t.leadWithOpenCalls : t.lead;
-
-const eventDateLabel = formatEventDateRange(nextEvent.startsAt, nextEvent.endsAt);
-
-/* The modality leads the badge row, so it is not spelled a second time in the
-   copy file just to appear there. */
-const badges = [ev.modality, ...ev.badges];
-
-const seatCount = format(ev.seats.count, {
-  reserved: seatState.reserved,
-  capacity: seats.capacity,
-});
-const seatMeterLabel = format(ev.seats.meterLabel, {
-  reserved: seatState.reserved,
-  capacity: seats.capacity,
-});
-
-/* Conversion copy next to the meter: social proof until scarcity kicks in. */
-const seatProof = seatState.soldOut
-  ? ev.seats.proofSoldOut
-  : seatState.remaining <= 15
-    ? format(ev.seats.proofLast, { remaining: seatState.remaining })
-    : format(ev.seats.proofReserved, { reserved: seatState.reserved });
-
-/* The inline script repaints all of the above once the clock moves, so it needs
-   the same strings. They travel as one JSON attribute rather than an import,
-   keeping the client bundle clear of the whole copy file; `TicketCopy` is what
-   keeps the two ends of that hop agreeing on the keys. */
-const ticketStrings = JSON.stringify(ticketCopy(ev));
-
-/* Badge tints, applied in the order the badges render. Extra badges fall back
-   to the last tint rather than rendering unstyled. */
-const BADGE_STYLES = [
-  'bg-ec-blue/10 text-ec-blue',
-  'bg-ec-yellow/25 text-ec-ink/70',
-  'bg-ec-red/10 text-ec-red',
-];
 ---
 
 <section
@@ -93,327 +52,58 @@ const BADGE_STYLES = [
       </p>
     </div>
 
-    <!-- ===== Next event: ticket ===== -->
+    <!-- ===== Next event ===== -->
     <div class="mt-10 sm:mt-12 lg:mt-16 [@media(min-aspect-ratio:2/1)]:!mt-6 mx-auto w-full max-w-xl md:max-w-3xl lg:max-w-4xl relative">
-      <div data-reveal="scale" class="relative">
-        <span
-          class="sticker absolute -top-3 left-5 z-10 bg-ec-yellow text-ec-ink text-[0.65rem] md:left-8 md:text-[0.7rem]"
-          style="transform: rotate(-6deg)"
-        >
-          {ev.accent}
-        </span>
-
-        <!-- Notches anchor to the card bottom, not a percentage: the stub below
-             the perforation keeps a fixed height while the body above reflows. -->
-        <div
-          class="ticket ticket--workshop relative overflow-hidden rounded-[1.35rem] md:rounded-[1.75rem] bg-ec-bone text-ec-ink [--notch-y:calc(100%-148px)] sm:[--notch-y:calc(100%-108px)] md:[--notch-y:calc(100%-120px)] lg:[--notch-y:calc(100%-128px)] shadow-xl lg:shadow-2xl"
-          data-ticket
-          data-starts-at={nextEvent.startsAt}
-          data-capacity={seats.capacity}
-          data-anchor-at={seats.anchorAt}
-          data-anchor-reserved={seats.anchorReserved}
-          data-per-day={seats.perDay}
-          data-copy={ticketStrings}
-        >
-          <!-- Flag stripe: yellow / blue / red -->
-          <div class="ticket-stripe absolute inset-y-0 left-0 w-[9px] md:w-3" aria-hidden="true">
-            <span class="block h-1/3 bg-ec-yellow"></span>
-            <span class="block h-1/3 bg-ec-blue"></span>
-            <span class="block h-1/3 bg-ec-red"></span>
-          </div>
-
-          <div class="relative px-5 py-5 pl-7 sm:px-7 sm:py-6 sm:pl-9 md:px-10 md:py-8 md:pl-12 lg:px-12 lg:py-10 lg:pl-14">
-            <div class="flex items-start justify-between gap-3">
-              <div class="flex flex-wrap items-center gap-1.5 md:gap-2">
-                <span class="kicker text-ec-ink/45 md:text-[0.7rem]">{ev.code}</span>
-                {
-                  badges.map((badge, i) => (
-                    <span
-                      class={`rounded-full px-2 py-0.5 text-[0.6rem] font-medium tracking-wide md:px-2.5 md:text-[0.65rem] ${
-                        BADGE_STYLES[i] ?? BADGE_STYLES[BADGE_STYLES.length - 1]
-                      }`}
-                    >
-                      {badge}
-                    </span>
-                  ))
-                }
-              </div>
-              <span class="kicker text-ec-red tabular whitespace-nowrap md:text-[0.7rem]" data-seat-label>
-                <span data-seat-count>{seatCount}</span><span
-                  class="hidden sm:inline"
-                  data-seat-suffix>{ev.seats.countSuffix}</span
-                >
-              </span>
-            </div>
-
-            <div
-              class="mt-3 md:mt-4 h-[5px] md:h-1.5 w-full overflow-hidden rounded-full bg-ec-ink/10"
-              role="img"
-              aria-label={seatMeterLabel}
-              data-seat-track
+      {
+        scheduled ? (
+          <EventTicket event={scheduled} />
+        ) : (
+          /* Outlined rather than the bone ticket card: an empty calendar should
+             read as a quieter state, not as a ticket with the details missing. */
+          <div data-reveal="scale" class="relative">
+            <span
+              class="sticker absolute -top-3 left-5 z-10 bg-ec-yellow text-ec-ink text-[0.65rem] md:left-8 md:text-[0.7rem]"
+              style="transform: rotate(-6deg)"
             >
-              <div
-                class="h-full rounded-full bg-gradient-to-r from-ec-yellow via-ec-blue to-ec-red transition-[width] duration-1000 [transition-timing-function:var(--ease-out-expo)]"
-                style={`width:${seatState.filledPercent}%`}
-                data-seat-bar
-              >
-              </div>
-            </div>
-            <p class="mt-1.5 text-[0.7rem] font-medium text-ec-red md:text-sm" data-seat-proof>
-              {seatProof}
-            </p>
+              {empty.accent}
+            </span>
 
-            <h3 class="display mt-4 md:mt-6 text-[clamp(1.65rem,7vw,2.15rem)] md:text-[clamp(2.5rem,4.2vw,3.6rem)] leading-[0.9]">
-              {ev.title}
-              <span class="block text-ec-blue">{ev.accent}</span>
-            </h3>
+            <div class="relative overflow-hidden rounded-[1.35rem] border border-ec-bone/25 bg-ec-blue-deep/40 md:rounded-[1.75rem]">
+              <div class="relative px-5 py-8 sm:px-7 md:px-10 md:py-12 lg:px-12">
+                <h3 class="display text-[clamp(1.65rem,7vw,2.15rem)] leading-[0.9] md:text-[clamp(2.5rem,4.2vw,3.6rem)]">
+                  {empty.title}
+                  <span class="block text-ec-yellow">{empty.titleAccent}</span>
+                </h3>
 
-            <p class="mt-3 max-w-prose text-sm leading-snug text-ec-ink/60 md:mt-4 md:text-base md:leading-relaxed lg:text-lg">
-              {ev.body}
-            </p>
+                <p class="mt-4 max-w-prose text-sm leading-snug text-ec-bone/65 md:text-base md:leading-relaxed lg:text-lg">
+                  {empty.body}
+                </p>
 
-            <!-- Motivation hooks: benefits, not decoration -->
-            <ul class="mt-4 flex flex-wrap gap-x-3 gap-y-1.5 md:mt-5 md:gap-x-5" aria-label={ev.hooksLabel}>
-              {
-                ev.hooks.map((hook) => (
-                  <li class="flex items-center gap-1.5 text-[0.7rem] font-medium text-ec-ink/70 md:text-sm">
-                    <span class="h-1.5 w-1.5 shrink-0 rounded-full bg-ec-yellow" aria-hidden="true"></span>
-                    {hook}
-                  </li>
-                ))
-              }
-            </ul>
-
-            <dl class="mt-5 md:mt-7 grid grid-cols-2 gap-x-4 gap-y-3 md:grid-cols-4 md:gap-5">
-              <div>
-                <dt class="kicker text-ec-yellow-deep/80">{ev.labels.date}</dt>
-                <dd class="display-wide mt-1 text-base md:text-xl lg:text-2xl">{eventDateLabel}</dd>
+                <div class="mt-6 flex flex-col items-stretch gap-1.5 sm:flex-row sm:items-center sm:gap-4 md:mt-8">
+                  <a
+                    href={lumaProfileUrl}
+                    class="btn w-full justify-center bg-ec-yellow text-ec-ink hover:bg-ec-bone sm:w-auto md:px-8 md:py-4 md:text-base"
+                    data-magnetic="0.2"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {empty.cta}
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                      <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </a>
+                  <p class="text-center text-[0.65rem] text-ec-bone/50 sm:text-left md:text-xs">
+                    {empty.note}
+                  </p>
+                </div>
               </div>
-              <div>
-                <dt class="kicker text-ec-blue">{ev.labels.time}</dt>
-                <dd class="display-wide mt-1 text-base md:text-xl lg:text-2xl">{formatEventTime(nextEvent.startsAt)}</dd>
-              </div>
-              <div>
-                <dt class="kicker text-ec-red">{ev.labels.modality}</dt>
-                <dd class="display-wide mt-1 text-base md:text-xl lg:text-2xl">{ev.modality}</dd>
-              </div>
-              <div>
-                <dt class="kicker text-ec-ink/40">{ev.labels.hosts}</dt>
-                <dd class="mt-1 space-y-0.5 text-sm leading-tight md:text-base lg:text-lg">
-                  {ev.hosts.map((host) => (
-                    <div class="display-wide">{host}</div>
-                  ))}
-                </dd>
-              </div>
-            </dl>
-          </div>
-
-          <div class="dashed-rule mx-5 sm:mx-7 md:mx-10 lg:mx-12 h-[2px] text-ec-ink/20" aria-hidden="true"></div>
-
-          <div class="relative flex flex-col gap-3 px-5 py-4 pl-7 sm:flex-row sm:items-center sm:justify-between sm:px-7 sm:pl-9 md:px-10 md:pl-12 md:py-5 lg:px-12 lg:pl-14 lg:py-6">
-            <div class="min-w-0">
-              <div class="kicker text-ec-ink/40" data-countdown-label>
-                {countdown.status === 'counting' ? ev.countdown.counting : ev.countdown.started}
-              </div>
-              <div
-                class="display-wide tabular mt-0.5 text-sm md:text-lg lg:text-xl"
-                data-countdown
-              >
-                {countdown.status === 'counting' ? (
-                  <Fragment>
-                    {/* Explicit {' '} throughout: Astro drops a literal space
-                        that sits between an expression and the next tag. */}
-                    <span data-cd-days>{countdown.days}</span>{ev.countdown.days}{' '}<span class="text-ec-ink/30">·</span>
-                    {' '}<span data-cd-hours>{padUnit(countdown.hours)}</span>{ev.countdown.hours}{' '}<span class="text-ec-ink/30">·</span>
-                    {' '}<span data-cd-minutes>{padUnit(countdown.minutes)}</span>{ev.countdown.minutes}
-                  </Fragment>
-                ) : (
-                  ev.countdown.today
-                )}
-              </div>
-            </div>
-
-            <div class="flex w-full flex-col items-stretch gap-1.5 sm:w-auto sm:items-end">
-              <a
-                href={nextEvent.ctaHref}
-                class="btn ticket-cta w-full justify-center bg-ec-red text-ec-bone hover:bg-ec-ink sm:w-auto md:px-8 md:py-4 md:text-base"
-                data-magnetic="0.2"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <span data-seat-cta>{ctaLabel}</span>
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                  <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </a>
-              <p class="text-center text-[0.65rem] text-ec-ink/45 sm:text-right md:text-xs">
-                {ev.cta.note}
-              </p>
             </div>
           </div>
-        </div>
-      </div>
+        )
+      }
     </div>
   </div>
 </section>
-
-<script>
-  /* Ticket urgency: countdown to the event + the seat meter.
-
-     The maths lives in src/lib so it is testable and shared with the
-     server-rendered pass; this file only moves the results into the DOM.
-     Config and copy still arrive on the element as data attributes rather than
-     by importing the modules, so the client bundle carries the four numbers and
-     eleven strings it needs instead of the whole site content tree. */
-  import { formatLoose } from '../i18n/format';
-  import { EMPTY_TICKET_COPY, type TicketCopy } from '../i18n/ticketCopy';
-  import { countdownFrom, padUnit } from '../lib/countdown';
-  import { seatsAt, type SeatCurve } from '../lib/seats';
-
-  const ticket = document.querySelector<HTMLElement>('[data-ticket]');
-
-  if (ticket) {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    const startsAtIso = ticket.dataset.startsAt ?? '';
-    const curve: SeatCurve = {
-      capacity: Number(ticket.dataset.capacity ?? 0),
-      anchorAt: ticket.dataset.anchorAt ?? '',
-      anchorReserved: Number(ticket.dataset.anchorReserved ?? 0),
-      perDay: Number(ticket.dataset.perDay ?? 0),
-    };
-
-    /* Resolved once here rather than guarded at all eleven read sites: a
-       payload that arrived short falls back to blanks, and everything below
-       can treat every key as present. */
-    const parsed: Partial<TicketCopy> = JSON.parse(ticket.dataset.copy ?? '{}');
-    const strings: TicketCopy = { ...EMPTY_TICKET_COPY, ...parsed };
-
-    const daysEl = ticket.querySelector('[data-cd-days]');
-    const hoursEl = ticket.querySelector('[data-cd-hours]');
-    const minutesEl = ticket.querySelector('[data-cd-minutes]');
-    const countdownEl = ticket.querySelector('[data-countdown]');
-    const countdownLabel = ticket.querySelector('[data-countdown-label]');
-    const seatLabel = ticket.querySelector('[data-seat-label]');
-    const seatCount = ticket.querySelector('[data-seat-count]');
-    const seatSuffix = ticket.querySelector<HTMLElement>('[data-seat-suffix]');
-    const seatTrack = ticket.querySelector('[data-seat-track]');
-    const seatBar = ticket.querySelector<HTMLElement>('[data-seat-bar]');
-    const seatCta = ticket.querySelector('[data-seat-cta]');
-    const seatProof = ticket.querySelector('[data-seat-proof]');
-
-    /* --- Countdown ----------------------------------------------------- */
-    /* Returns false once the event has started, which stops the interval. */
-    const paintCountdown = () => {
-      const state = countdownFrom(startsAtIso, Date.now());
-
-      if (state.status === 'started') {
-        if (countdownLabel) countdownLabel.textContent = strings.countdownStarted;
-        if (countdownEl) countdownEl.textContent = strings.countdownToday;
-        return false;
-      }
-
-      if (daysEl) daysEl.textContent = String(state.days);
-      if (hoursEl) hoursEl.textContent = padUnit(state.hours);
-      if (minutesEl) minutesEl.textContent = padUnit(state.minutes);
-      return true;
-    };
-
-    if (paintCountdown()) {
-      /* 15s keeps the minute digit honest without a per-second repaint. */
-      const clock = window.setInterval(() => {
-        if (!paintCountdown()) window.clearInterval(clock);
-      }, 15_000);
-    }
-
-    /* --- Seat meter ---------------------------------------------------- */
-    const reservedNow = () => seatsAt(curve, Date.now()).reserved;
-
-    const paintSeats = (value: number) => {
-      const remaining = curve.capacity - value;
-      const soldOut = remaining <= 0;
-      if (seatCount) {
-        seatCount.textContent = soldOut
-          ? strings.seatCountSoldOut
-          : formatLoose(strings.seatCount, { reserved: value, capacity: curve.capacity });
-      }
-      /* Inline style rather than a class: the suffix has to disappear at every
-         breakpoint once the room is full, and `hidden sm:inline` would win. */
-      if (seatSuffix) seatSuffix.style.display = soldOut ? 'none' : '';
-      if (seatBar) seatBar.style.width = `${(value / curve.capacity) * 100}%`;
-      if (seatTrack) {
-        seatTrack.setAttribute(
-          'aria-label',
-          formatLoose(strings.seatMeterLabel, { reserved: value, capacity: curve.capacity }),
-        );
-      }
-      if (seatProof) {
-        seatProof.textContent = soldOut
-          ? strings.seatProofSoldOut
-          : remaining <= 15
-            ? formatLoose(strings.seatProofLast, { remaining })
-            : formatLoose(strings.seatProofReserved, { reserved: value });
-      }
-      if (seatCta) {
-        seatCta.textContent = soldOut
-          ? strings.ctaSoldOut
-          : formatLoose(strings.ctaWithRemaining, { label: strings.ctaLabel, remaining });
-      }
-    };
-
-    /* Starts level with what the server rendered. */
-    let shown = reservedNow();
-
-    const animateSeats = (to: number, duration: number) => {
-      const from = shown;
-      shown = to;
-      if (reduced || from === to) {
-        paintSeats(to);
-        return;
-      }
-      const start = performance.now();
-      const step = (now: number) => {
-        const t = Math.min((now - start) / duration, 1);
-        const eased = 1 - Math.pow(1 - t, 4);
-        paintSeats(Math.round(from + (to - from) * eased));
-        if (t < 1) requestAnimationFrame(step);
-      };
-      requestAnimationFrame(step);
-    };
-
-    const revealMeter = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          revealMeter.unobserve(entry.target);
-          /* Empty the meter here rather than at load: a browser that never
-             delivers this callback then keeps the server-rendered count
-             instead of being stuck advertising an empty room. */
-          if (!reduced) {
-            shown = 0;
-            paintSeats(0);
-          }
-          animateSeats(reservedNow(), 1400);
-        });
-      },
-      { threshold: 0.4 },
-    );
-    revealMeter.observe(ticket);
-
-    /* The curve moves about once every 18 hours at the shipped `perDay`, so
-       this rarely fires inside one visit — it exists so the number is right
-       on a page left open, and so a real feed drops straight in here. */
-    window.setInterval(() => {
-      if (reservedNow() === shown) return;
-      animateSeats(reservedNow(), 600);
-      if (seatLabel instanceof HTMLElement) {
-        seatLabel.classList.remove('seat-tick');
-        void seatLabel.offsetWidth; /* reflow, so the animation restarts */
-        seatLabel.classList.add('seat-tick');
-      }
-    }, 20_000);
-  }
-</script>
 
 <!-- Equator slider (Marquee) -->
 <div class="border-y border-ec-bone/20 bg-ec-blue-deep text-ec-yellow relative z-20">
