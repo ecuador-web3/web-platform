@@ -45,16 +45,6 @@ const { lang, intl, og } = copy.locale;
       {copy.a11y.skipToContent}
     </a>
 
-    {/* Scroll progress in flag order: yellow, blue, red */}
-    <div class="pointer-events-none fixed inset-x-0 top-0 z-[70] h-1">
-      <div
-        id="progress"
-        class="h-full w-0 origin-left"
-        style="background: linear-gradient(90deg, #fdba0f 0 33.33%, #0544b0 33.33% 66.66%, #db2227 66.66% 100%); background-size: 100vw 100%; background-attachment: fixed;"
-      >
-      </div>
-    </div>
-
     <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
     <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
 
@@ -105,27 +95,6 @@ const { lang, intl, og } = copy.locale;
         sweep();
       }
 
-      /* --- Scroll progress bar ------------------------------------------ */
-      const progress = document.getElementById('progress');
-      let progressQueued = false;
-
-      const paintProgress = () => {
-        progressQueued = false;
-        if (!progress) return;
-        const max = document.documentElement.scrollHeight - window.innerHeight;
-        const pct = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
-        progress.style.width = `${pct * 100}%`;
-      };
-
-      const queueProgress = () => {
-        if (progressQueued) return;
-        progressQueued = true;
-        requestAnimationFrame(paintProgress);
-      };
-
-      window.addEventListener('scroll', queueProgress, { passive: true });
-      window.addEventListener('resize', queueProgress);
-      paintProgress();
 
       /* --- Nav colour follows the section underneath it ------------------ */
       const navEl = document.getElementById('site-nav');
