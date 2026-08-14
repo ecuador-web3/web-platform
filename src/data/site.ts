@@ -26,6 +26,7 @@ import {
 import type { SeatCurve } from '../lib/seats';
 import type { Tone } from '../lib/tone';
 import { lumaEvents } from './luma';
+import { placeholderEvents, placeholderSeats } from './placeholderEvent';
 
 export const brand = copy.brand;
 
@@ -69,10 +70,26 @@ export const pillars: {
  * describe whichever event was written up last. Worth a pass when a new one
  * lands: the schedule will be right on its own, the prose will not.
  *
- * `status: 'none'` is a real state, not a failure. There are no upcoming events
- * on the calendar as things stand, and the ticket renders its empty variant.
+ * `status: 'none'` is a real state, not a failure. An empty calendar renders the
+ * ticket's empty variant, which is what the page showed before the placeholder
+ * below was switched on.
  */
-export const nextEvent: CalendarState = upcomingFrom(lumaEvents, Date.now());
+
+/**
+ * PLACEHOLDER: stands a fake event on the ticket while the Luma calendar is
+ * empty. Set to `false` and delete `placeholderEvent.ts` once real events are
+ * scheduled, and the sections go back to reporting the calendar exactly.
+ *
+ * Same shape as `showOpenCalls` below: one boolean, one thing it controls.
+ */
+export const showPlaceholderEvent = false;
+
+/** The calendar as the page sees it, real events first. */
+const calendar = showPlaceholderEvent
+  ? [...lumaEvents, ...placeholderEvents]
+  : lumaEvents;
+
+export const nextEvent: CalendarState = upcomingFrom(calendar, Date.now());
 
 /** Where the ticket's empty state points, since the profile has no calendar slug. */
 export { lumaProfileUrl } from './luma';
@@ -80,13 +97,19 @@ export { lumaProfileUrl } from './luma';
 /**
  * PLACEHOLDER demand curve for the ticket's seat meter — see `lib/seats` for
  * what the numbers mean. Swap for the real Luma registration count when wired.
+ *
+ * While the placeholder event is up the curve is anchored to the build instead
+ * of a fixed past date, which otherwise ran the meter to capacity and printed
+ * "cupos agotados" over an event nobody had registered for at all.
  */
-export const seats: SeatCurve = {
-  capacity: 50,
-  anchorAt: '2026-08-09T00:00:00-05:00',
-  anchorReserved: 36,
-  perDay: 3,
-};
+export const seats: SeatCurve = showPlaceholderEvent
+  ? placeholderSeats
+  : {
+      capacity: 50,
+      anchorAt: '2026-08-09T00:00:00-05:00',
+      anchorReserved: 36,
+      perDay: 3,
+    };
 
 /**
  * The community sessions section, also read from the Luma calendar.
@@ -102,7 +125,7 @@ export const seats: SeatCurve = {
  * ahead. Every event on the calendar reaches the page through one of the two,
  * so nothing scheduled is invisible.
  */
-export const sessions: SessionsState = sessionsFrom(lumaEvents, Date.now());
+export const sessions: SessionsState = sessionsFrom(calendar, Date.now());
 
 /**
  * Convocatorias are hidden for now. Flip to true to bring back the section,
