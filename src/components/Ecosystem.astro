@@ -13,12 +13,14 @@ const t = copy.ecosystem;
 <section
   id="ecosistema"
   data-nav-theme="light"
-  class="relative isolate flex flex-col min-h-[100svh] overflow-hidden bg-ec-bone pt-[clamp(7rem,12vh,9rem)] [@media(min-aspect-ratio:2/1)]:!pt-20 pb-[clamp(3rem,6vh,5rem)] [@media(min-aspect-ratio:2/1)]:!pb-6 text-ec-ink"
+  class="relative isolate flex flex-col justify-center min-h-[100svh] overflow-hidden bg-ec-bone pt-[clamp(7rem,12vh,9rem)] [@media(min-aspect-ratio:2/1)]:!pt-20 pb-[clamp(3rem,6vh,5rem)] [@media(min-aspect-ratio:2/1)]:!pb-6 text-ec-ink"
   data-ecosystem
 >
-  <div class="pointer-events-none absolute inset-0 -z-10 text-ec-ink/[0.05] grid-lines" aria-hidden="true"></div>
+  <div class="pointer-events-none absolute inset-0 -z-10 text-ec-ink/[0.05] grid-lines" aria-hidden="true">
+    <div class="blob absolute -right-[15%] top-[10%] h-[50vw] w-[50vw] bg-ec-blue/15 blur-3xl opacity-60"></div>
+  </div>
 
-  <div class="my-auto mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10">
+  <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10">
     <h2 class="display text-[clamp(2.5rem,7.5vw,6.5rem)] [@media(min-aspect-ratio:2/1)]:!text-[clamp(2rem,6vh,4rem)]" data-reveal>
       {t.heading.line1}<br /><span class="text-ec-red">{t.heading.line2}</span>
     </h2>
