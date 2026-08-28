@@ -9,6 +9,19 @@ interface Props {
 
 const { title, description } = Astro.props;
 const { lang, intl, og } = copy.locale;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+// Imagen por defecto para previsualizaciones sociales (deberán subir un seo-banner.jpg a public/)
+const socialImageURL = new URL('/seo-banner.jpg', Astro.site);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Ecuador Web3",
+  "url": Astro.site?.toString(),
+  "logo": new URL('/logo.svg', Astro.site).toString(),
+  "description": description
+};
 ---
 
 <!doctype html>
@@ -23,11 +36,22 @@ const { lang, intl, og } = copy.locale;
 
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
+    <link rel="canonical" href={canonicalURL} />
+
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
+    <meta property="og:image" content={socialImageURL} />
     <meta property="og:locale" content={og} />
+
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImageURL} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
