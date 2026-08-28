@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { copy } from '../i18n';
 
 interface Props {
   title: string;
@@ -7,10 +8,11 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+const { lang, intl, og } = copy.locale;
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={lang} data-intl-locale={intl}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -24,7 +26,7 @@ const { title, description } = Astro.props;
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:locale" content="es_EC" />
+    <meta property="og:locale" content={og} />
     <meta name="twitter:card" content="summary_large_image" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -42,18 +44,8 @@ const { title, description } = Astro.props;
       href="#contenido"
       class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[80] focus:rounded-full focus:bg-ec-yellow focus:px-5 focus:py-3 focus:font-bold focus:text-ec-ink"
     >
-      Saltar al contenido
+      {copy.a11y.skipToContent}
     </a>
-
-    {/* Scroll progress in flag order: yellow, blue, red */}
-    <div class="pointer-events-none fixed inset-x-0 top-0 z-[70] h-1">
-      <div
-        id="progress"
-        class="h-full w-0 origin-left"
-        style="background: linear-gradient(90deg, #fdba0f 0 33.33%, #0544b0 33.33% 66.66%, #db2227 66.66% 100%); background-size: 100vw 100%; background-attachment: fixed;"
-      >
-      </div>
-    </div>
 
     <div class="cursor-ring" id="cursor-ring" aria-hidden="true"></div>
     <div class="cursor-dot" id="cursor-dot" aria-hidden="true"></div>
@@ -105,27 +97,6 @@ const { title, description } = Astro.props;
         sweep();
       }
 
-      /* --- Scroll progress bar ------------------------------------------ */
-      const progress = document.getElementById('progress');
-      let progressQueued = false;
-
-      const paintProgress = () => {
-        progressQueued = false;
-        if (!progress) return;
-        const max = document.documentElement.scrollHeight - window.innerHeight;
-        const pct = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
-        progress.style.width = `${pct * 100}%`;
-      };
-
-      const queueProgress = () => {
-        if (progressQueued) return;
-        progressQueued = true;
-        requestAnimationFrame(paintProgress);
-      };
-
-      window.addEventListener('scroll', queueProgress, { passive: true });
-      window.addEventListener('resize', queueProgress);
-      paintProgress();
 
       /* --- Nav colour follows the section underneath it ------------------ */
       const navEl = document.getElementById('site-nav');
@@ -178,7 +149,9 @@ const { title, description } = Astro.props;
 
       /* --- Count-up statistics ------------------------------------------ */
       const counters = document.querySelectorAll<HTMLElement>('[data-count]');
-      const formatter = new Intl.NumberFormat('es-EC');
+      /* Read off <html> rather than importing the copy module: this script is
+         shipped to the browser, and the locale tag is the only thing it needs. */
+      const formatter = new Intl.NumberFormat(document.documentElement.dataset.intlLocale);
 
       const runCount = (el: HTMLElement) => {
         const target = Number(el.dataset.count ?? '0');

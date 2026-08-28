@@ -7,7 +7,7 @@
  * deploy at the point the typo was introduced instead of shipping a page that
  * renders `NaN` or an empty countdown to visitors.
  */
-export type ConfigErrorCode = 'invalid-date' | 'invalid-seat-curve';
+export type ConfigErrorCode = 'invalid-date' | 'invalid-seat-curve' | 'missing-placeholder';
 
 export class ConfigError extends Error {
   readonly code: ConfigErrorCode;

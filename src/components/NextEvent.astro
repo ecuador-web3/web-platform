@@ -1,0 +1,115 @@
+---
+/**
+ * The next public event, plus the equator strip that seals the section.
+ *
+ * The section has two shapes. With something on the Luma calendar it renders
+ * `EventTicket`; with an empty calendar it renders a card that says so and
+ * points at the calendar, which is the honest answer and the state the site is
+ * actually in today. Neither is a special case of the other, so `nextEvent` is
+ * a discriminated state rather than an event with empty fields.
+ *
+ * Split from the Community Calls section it used to share a file with: the two
+ * have no shared state, and one 600-line component made it hard to see that.
+ */
+import { lumaProfileUrl, nextEvent, showOpenCalls } from '../data/site';
+import { copy, derived } from '../i18n';
+import EventTicket from './EventTicket.astro';
+import Marquee from './Marquee.astro';
+
+const t = copy.events;
+const empty = copy.event.empty;
+
+/* Narrowed once here so the template branches on a value rather than a tag. */
+const scheduled = nextEvent.status === 'scheduled' ? nextEvent.event : null;
+
+/* Repeated so the strip reads dense; Marquee duplicates again for the loop. */
+const equatorTicker = [...derived.equatorTicker, ...derived.equatorTicker];
+
+// The lead promises convocatorias, so it has to follow the section in and out.
+const lead = showOpenCalls ? t.leadWithOpenCalls : t.lead;
+---
+
+<section
+  id="eventos"
+  data-nav-theme="blue"
+  class="relative isolate flex flex-col min-h-[100svh] overflow-hidden bg-ec-blue pt-[clamp(7rem,12vh,9rem)] pb-[clamp(2rem,4vh,4rem)] text-ec-bone"
+>
+  <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+    <div class="blob absolute -right-[10%] top-[6%] h-[36vw] w-[36vw] bg-ec-blue-deep/60 blur-2xl"></div>
+  </div>
+
+  <div class="my-auto mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10">
+    <!-- Section head -->
+    <div class="flex flex-wrap items-end justify-between gap-8 [@media(min-aspect-ratio:2/1)]:!gap-4">
+      <div>
+        <h2 class="display text-[clamp(2.5rem,7.5vw,6.5rem)] [@media(min-aspect-ratio:2/1)]:!text-[clamp(2rem,6vh,4rem)]" data-reveal style="--reveal-delay:80ms">
+          {t.heading}
+        </h2>
+      </div>
+      <p class="max-w-md leading-relaxed text-ec-bone/65 [@media(min-aspect-ratio:2/1)]:!text-sm" data-reveal style="--reveal-delay:160ms">
+        {lead}
+      </p>
+    </div>
+
+    <!-- ===== Next event ===== -->
+    <div class="mt-10 sm:mt-12 lg:mt-16 [@media(min-aspect-ratio:2/1)]:!mt-6 mx-auto w-full max-w-xl md:max-w-3xl lg:max-w-4xl relative">
+      {
+        scheduled ? (
+          <EventTicket event={scheduled} />
+        ) : (
+          /* Outlined rather than the bone ticket card: an empty calendar should
+             read as a quieter state, not as a ticket with the details missing. */
+          <div data-reveal="scale" class="relative">
+            <span
+              class="sticker absolute -top-3 left-5 z-10 bg-ec-yellow text-ec-ink text-[0.65rem] md:left-8 md:text-[0.7rem]"
+              style="transform: rotate(-6deg)"
+            >
+              {empty.accent}
+            </span>
+
+            <div class="relative overflow-hidden rounded-[1.35rem] border border-ec-bone/25 bg-ec-blue-deep/40 md:rounded-[1.75rem]">
+              <div class="relative px-5 py-8 sm:px-7 md:px-10 md:py-12 lg:px-12">
+                <h3 class="display text-[clamp(1.65rem,7vw,2.15rem)] leading-[0.9] md:text-[clamp(2.5rem,4.2vw,3.6rem)]">
+                  {empty.title}
+                  <span class="block text-ec-yellow">{empty.titleAccent}</span>
+                </h3>
+
+                <p class="mt-4 max-w-prose text-sm leading-snug text-ec-bone/65 md:text-base md:leading-relaxed lg:text-lg">
+                  {empty.body}
+                </p>
+
+                <div class="mt-6 flex flex-col items-stretch gap-1.5 sm:flex-row sm:items-center sm:gap-4 md:mt-8">
+                  <a
+                    href={lumaProfileUrl}
+                    class="btn w-full justify-center bg-ec-yellow text-ec-ink hover:bg-ec-bone sm:w-auto md:px-8 md:py-4 md:text-base"
+                    data-magnetic="0.2"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {empty.cta}
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                      <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </a>
+                  <p class="text-center text-[0.65rem] text-ec-bone/50 sm:text-left md:text-xs">
+                    {empty.note}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Equator slider (Marquee) -->
+<div class="border-y border-ec-bone/20 bg-ec-blue-deep text-ec-yellow relative z-20">
+  <Marquee
+    items={equatorTicker}
+    duration={35}
+    separator="·"
+    class="display py-5 text-[clamp(1.2rem,2.5vw,1.8rem)] tracking-widest uppercase"
+  />
+</div>

@@ -3,23 +3,22 @@ import Base from '../layouts/Base.astro';
 import Nav from '../components/Nav.astro';
 import Hero from '../components/Hero.astro';
 import HappeningNow from '../components/HappeningNow.astro';
-import WhatsHappening from '../components/WhatsHappening.astro';
+import NextEvent from '../components/NextEvent.astro';
+import CommunityCalls from '../components/CommunityCalls.astro';
 import Ecosystem from '../components/Ecosystem.astro';
 import JoinMovement from '../components/JoinMovement.astro';
 import Footer from '../components/Footer.astro';
-import { brand } from '../data/site';
+import { copy, derived } from '../i18n';
 ---
 
-<Base
-  title="Ecuador Web3 — El hogar del Ecosistema Web3 Ecuatoriano"
-  description={`${brand.promise} ${brand.motto}`}
->
+<Base title={copy.meta.title} description={derived.metaDescription}>
   <Nav />
 
   <main id="contenido">
     <Hero />
     <HappeningNow />
-    <WhatsHappening />
+    <NextEvent />
+    <CommunityCalls />
     <Ecosystem />
     <JoinMovement />
   </main>

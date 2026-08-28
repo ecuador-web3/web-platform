@@ -1,11 +1,13 @@
 ---
 import { ecosystem } from '../data/site';
+import { copy } from '../i18n';
 import { logoHeight, LOGO_BOX } from '../lib/logoSize';
 import { TONE_STYLES } from '../lib/tone';
 import { safeExternalUrl } from '../lib/url';
 
 /* Partner strips use CSS marquees (GPU transform, no rAF). The pause control
    and off-screen freeze only toggle `animation-play-state` via a data attr. */
+const t = copy.ecosystem;
 ---
 
 <section
@@ -18,13 +20,12 @@ import { safeExternalUrl } from '../lib/url';
 
   <div class="my-auto mx-auto w-full max-w-[1400px] px-4 sm:px-6 lg:px-10">
     <h2 class="display text-[clamp(2.5rem,7.5vw,6.5rem)] [@media(min-aspect-ratio:2/1)]:!text-[clamp(2rem,6vh,4rem)]" data-reveal>
-      Quiénes<br /><span class="text-ec-red">construyen</span>
+      {t.heading.line1}<br /><span class="text-ec-red">{t.heading.line2}</span>
     </h2>
 
     <div class="mt-8 [@media(min-aspect-ratio:2/1)]:!mt-4 flex flex-wrap items-end justify-between gap-4" data-reveal style="--reveal-delay:120ms">
       <p class="max-w-2xl text-[clamp(1.05rem,1.5vw,1.3rem)] [@media(min-aspect-ratio:2/1)]:!text-sm leading-relaxed text-ec-ink/70">
-        Nadie hace esto solo. Estas son las comunidades, universidades, cadenas y equipos que
-        sostienen el ecosistema y le ponen el hombro cada mes.
+        {t.lead}
       </p>
 
       {/* Continuous motion needs a stop for WCAG 2.2.2. Also the play control
@@ -33,12 +34,14 @@ import { safeExternalUrl } from '../lib/url';
         type="button"
         class="kicker inline-flex shrink-0 items-center gap-2 rounded-full border-2 border-ec-ink/15 px-4 py-2 text-ec-ink/55 transition-all duration-300 hover:border-ec-ink hover:text-ec-ink"
         data-ecosystem-toggle
+        data-label-pause={t.toggle.pause}
+        data-label-resume={t.toggle.resume}
       >
         <span class="grid h-2.5 w-2.5 place-items-center" aria-hidden="true">
           <svg viewBox="0 0 10 10" fill="currentColor" data-toggle-pause><rect x="1" y="1" width="3" height="8" rx="1"/><rect x="6" y="1" width="3" height="8" rx="1"/></svg>
           <svg viewBox="0 0 10 10" fill="currentColor" class="hidden" data-toggle-play><path d="M2 1l7 4-7 4z"/></svg>
         </span>
-        <span data-toggle-label>Pausar</span>
+        <span data-toggle-label>{t.toggle.pause}</span>
       </button>
     </div>
   </div>
@@ -171,8 +174,13 @@ import { safeExternalUrl } from '../lib/url';
     const pauseIcon = section.querySelector('[data-toggle-pause]');
     const playIcon = section.querySelector('[data-toggle-play]');
 
+    /* Labels ride in on the button rather than being imported, so the client
+       bundle carries two words instead of the whole copy file. */
+    const labelPause = toggle?.dataset.labelPause ?? '';
+    const labelResume = toggle?.dataset.labelResume ?? '';
+
     const paintToggle = () => {
-      if (label) label.textContent = userPaused ? 'Reanudar' : 'Pausar';
+      if (label) label.textContent = userPaused ? labelResume : labelPause;
       pauseIcon?.classList.toggle('hidden', userPaused);
       playIcon?.classList.toggle('hidden', !userPaused);
     };
