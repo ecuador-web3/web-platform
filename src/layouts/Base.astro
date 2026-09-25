@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { copy } from '../i18n';
+import { socials } from '../data/site';
 
 interface Props {
   title: string;
@@ -20,7 +21,8 @@ const jsonLd = {
   "name": "Ecuador Web3",
   "url": Astro.site?.toString(),
   "logo": new URL('/logo.svg', Astro.site).toString(),
-  "description": description
+  "description": description,
+  "sameAs": socials.map((s) => s.href)
 };
 ---
 
