@@ -45,7 +45,8 @@ const motto = `${copy.brand.motto.lead} ${copy.brand.motto.tail}`;
 export const derived = {
   /** The motto on one line. `join.closing` sets the halves on separate lines. */
   motto,
-  metaDescription: `${copy.brand.promise} ${motto}`,
+  /** Same two lines as the social profiles' bio, so every preview reads alike. */
+  metaDescription: `${copy.brand.tagline} ${motto}`,
   /** The equator strip: who we are, where, and the latitude that names it. */
   equatorTicker: [copy.brand.name, copy.brand.place, copy.brand.coords],
 };

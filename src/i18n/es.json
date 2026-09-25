@@ -5,7 +5,7 @@
     "placeholders": "Values in {braces} are filled in at render time. Keep them spelled exactly as they appear; you may move them inside the sentence.",
     "leaveAlone": "locale.*, and proper nouns under ecosystem.partners, footer.socials and event.hosts. Those are brand and people names.",
     "notHere": "Colours, links, ISO dates, seat counts and logo files are not copy. They live in src/data/site.ts and are shared by every language.",
-    "derived": "A few strings are built from others and so have no key here: the meta description (brand.promise + brand.motto), the equator strip (brand.name / place / coords), and the ticket's first badge (event.modality). Edit the source key and every use follows."
+    "derived": "A few strings are built from others and so have no key here: the meta description (brand.tagline + brand.motto, matching the social profiles' bio), the equator strip (brand.name / place / coords), and the ticket's first badge (event.modality). Edit the source key and every use follows."
   },
 
   "locale": {
