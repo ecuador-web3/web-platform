@@ -25,7 +25,7 @@ import {
 } from '../lib/lumaCalendar';
 import type { SeatCurve } from '../lib/seats';
 import type { Tone } from '../lib/tone';
-import { lumaEvents } from './luma';
+import { lumaEvents, lumaProfileUrl } from './luma';
 import { placeholderEvents, placeholderSeats } from './placeholderEvent';
 
 export const brand = copy.brand;
@@ -225,15 +225,14 @@ export const paths: {
   { num: '04', ...copy.join.paths.core, href: '#', tone: 'ink' },
 ];
 
-/** PLACEHOLDER: swap the # for real profile URLs. */
+/** Official profiles. Also emitted as the Organization's `sameAs` in `Base.astro`. */
 export const socials = [
-  { label: copy.footer.socials.x, href: '#' },
-  { label: copy.footer.socials.telegram, href: '#' },
-  { label: copy.footer.socials.discord, href: '#' },
-  { label: copy.footer.socials.instagram, href: '#' },
-  { label: copy.footer.socials.linkedin, href: '#' },
-  { label: copy.footer.socials.github, href: '#' },
-  { label: copy.footer.socials.luma, href: '#' },
+  { label: copy.footer.socials.x, href: 'https://x.com/ecuadorweb3' },
+  { label: copy.footer.socials.telegram, href: 'https://t.me/+Vmd6cwdvvCsxNjIx' },
+  { label: copy.footer.socials.whatsapp, href: 'https://chat.whatsapp.com/ILax1I3uS7p7c5dnkeohyt' },
+  { label: copy.footer.socials.instagram, href: 'https://www.instagram.com/ecuadorweb3/' },
+  { label: copy.footer.socials.linkedin, href: 'https://www.linkedin.com/company/ecuadorweb3' },
+  { label: copy.footer.socials.luma, href: lumaProfileUrl },
 ];
 
 export const footerLinks = [
