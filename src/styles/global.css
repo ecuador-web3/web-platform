@@ -441,6 +441,13 @@
     transform: translateY(0) scale(0.98);
   }
 
+  /* A way in that is not open yet. It stays on the page so the card still
+     reads as a path, but it takes no hover, lift or click. */
+  .btn[aria-disabled="true"] {
+    pointer-events: none;
+    opacity: 0.55;
+  }
+
   /* Underline that wipes in from the left */
   .link-wipe {
     position: relative;

@@ -1,5 +1,5 @@
 ---
-import { paths } from '../data/site';
+import { paths, telegramUrl } from '../data/site';
 import { copy, format } from '../i18n';
 import { TONE_STYLES } from '../lib/tone';
 
@@ -33,6 +33,7 @@ const t = copy.join;
       {
         paths.map((path, i) => {
           const tone = TONE_STYLES[path.tone];
+          const cta = `btn mt-6 xl:mt-8 [@media(min-aspect-ratio:2/1)]:!mt-4 justify-between px-5 xl:px-6 py-3 xl:py-3.5 [@media(min-aspect-ratio:2/1)]:!px-4 [@media(min-aspect-ratio:2/1)]:!py-2 text-sm [@media(min-aspect-ratio:2/1)]:!text-xs ${tone.surfaceAction}`;
           return (
             <article
               class={`card-lift group relative flex flex-col overflow-hidden rounded-[2rem] p-5 xl:p-6 [@media(min-aspect-ratio:2/1)]:!p-4 ${tone.surface}`}
@@ -49,18 +50,24 @@ const t = copy.join;
                 {path.body}
               </p>
 
-              <a
-                href={path.href}
-                class={`btn mt-6 xl:mt-8 [@media(min-aspect-ratio:2/1)]:!mt-4 justify-between px-5 xl:px-6 py-3 xl:py-3.5 [@media(min-aspect-ratio:2/1)]:!px-4 [@media(min-aspect-ratio:2/1)]:!py-2 text-sm [@media(min-aspect-ratio:2/1)]:!text-xs ${tone.surfaceAction}`}
-              >
-                {path.cta}
-                <svg
-                  width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"
-                  class="transition-transform duration-500 [transition-timing-function:var(--ease-out-expo)] group-hover:translate-x-1"
-                >
-                  <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </a>
+              {path.href ? (
+                <a href={path.href} target="_blank" rel="noopener noreferrer" class={cta}>
+                  {path.cta}
+                  <svg
+                    width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"
+                    class="transition-transform duration-500 [transition-timing-function:var(--ease-out-expo)] group-hover:translate-x-1"
+                  >
+                    <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              ) : (
+                /* No href, so it is out of the tab order; role and aria-disabled
+                   keep it announced as a link that is not available yet. */
+                <a role="link" aria-disabled="true" class={cta}>
+                  {path.cta}{' '}
+                  <span class="kicker">{t.soon}</span>
+                </a>
+              )}
             </article>
           );
         })
@@ -76,7 +83,13 @@ const t = copy.join;
     </div>
 
     <div class="mt-6 [@media(min-aspect-ratio:2/1)]:!mt-6 flex flex-wrap justify-center gap-3 [@media(min-aspect-ratio:2/1)]:!gap-2" data-reveal style="--reveal-delay:180ms">
-      <a href="#" class="btn bg-ec-bone text-ec-ink hover:bg-ec-yellow" data-magnetic="0.24">
+      <a
+        href={telegramUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn bg-ec-bone text-ec-ink hover:bg-ec-yellow"
+        data-magnetic="0.24"
+      >
         {t.ctaPrimary}
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
           <path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

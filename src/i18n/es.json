@@ -5,7 +5,7 @@
     "placeholders": "Values in {braces} are filled in at render time. Keep them spelled exactly as they appear; you may move them inside the sentence.",
     "leaveAlone": "locale.*, and proper nouns under ecosystem.partners, footer.socials and event.hosts. Those are brand and people names.",
     "notHere": "Colours, links, ISO dates, seat counts and logo files are not copy. They live in src/data/site.ts and are shared by every language.",
-    "derived": "A few strings are built from others and so have no key here: the meta description (brand.promise + brand.motto), the equator strip (brand.name / place / coords), and the ticket's first badge (event.modality). Edit the source key and every use follows."
+    "derived": "A few strings are built from others and so have no key here: the meta description (brand.tagline + brand.motto, matching the social profiles' bio), the equator strip (brand.name / place / coords), and the ticket's first badge (event.modality). Edit the source key and every use follows."
   },
 
   "locale": {
@@ -15,13 +15,14 @@
   },
 
   "meta": {
-    "title": "Ecuador Web3 — El hogar del Ecosistema Web3 Ecuatoriano"
+    "title": "Ecuador Web3 — El hogar del Ecosistema Web3 Ecuatoriano",
+    "imageAlt": "Logo de Ecuador Web3 con el texto: El hogar del Ecosistema Web3 Ecuatoriano. Construimos con propósito, crecemos juntos."
   },
 
   "brand": {
     "name": "Ecuador Web3",
     "tagline": "El hogar del Ecosistema Web3 Ecuatoriano.",
-    "promise": "Un espacio abierto para aprender, investigar, construir y conectar. Todos son bienvenidos",
+    "promise": "Un espacio abierto para aprender, investigar, construir y conectar. Todos son bienvenidos.",
     "motto": {
       "lead": "Construimos con propósito,",
       "tail": "crecemos juntos."
@@ -93,7 +94,7 @@
     "stats": {
       "members": "Miembros en la comunidad",
       "events": "Eventos realizados",
-      "universities": "Universidades aliadas"
+      "universities": "Partners aliados"
     },
     "pillars": {
       "opportunity": {
@@ -299,6 +300,7 @@
       "line1": "Construimos con propósito,",
       "line2": "crecemos juntos."
     },
+    "soon": "Próximamente",
     "ctaPrimary": "Entrar a la comunidad",
     "ctaSecondary": "Ver el calendario"
   },
@@ -307,41 +309,12 @@
     "socials": {
       "x": "X",
       "telegram": "Telegram",
-      "discord": "Discord",
+      "whatsapp": "WhatsApp",
       "instagram": "Instagram",
       "linkedin": "LinkedIn",
-      "github": "GitHub",
       "luma": "Luma"
     },
-    "columns": {
-      "ecosistema": {
-        "title": "Ecosistema",
-        "links": {
-          "comunidades": "Comunidades",
-          "universidades": "Universidades",
-          "blockchains": "Blockchains",
-          "partners": "Partners"
-        }
-      },
-      "comunidad": {
-        "title": "Comunidad",
-        "links": {
-          "nextEvent": "Próximo evento",
-          "calls": "Community Calls",
-          "openCalls": "Convocatorias",
-          "core": "Core Members"
-        }
-      },
-      "recursos": {
-        "title": "Recursos",
-        "links": {
-          "playbook": "Playbook de eventos",
-          "brandKit": "Kit de marca",
-          "codeOfConduct": "Código de convivencia",
-          "press": "Prensa"
-        }
-      }
-    },
+    "navTitle": "Comunidad",
     "madeIn": "Hecho en la mitad del mundo · Lat {coords}",
     "copyright": "© {year} {brand}"
   }

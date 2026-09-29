@@ -25,7 +25,7 @@ import {
 } from '../lib/lumaCalendar';
 import type { SeatCurve } from '../lib/seats';
 import type { Tone } from '../lib/tone';
-import { lumaEvents } from './luma';
+import { lumaEvents, lumaProfileUrl } from './luma';
 import { placeholderEvents, placeholderSeats } from './placeholderEvent';
 
 export const brand = copy.brand;
@@ -40,9 +40,9 @@ export const nav = [
 export const heroTicker = copy.hero.ticker;
 
 export const stats = [
-  { value: 2400, suffix: '+', label: copy.happeningNow.stats.members },
-  { value: 40, suffix: '', label: copy.happeningNow.stats.events },
-  { value: 9, suffix: '', label: copy.happeningNow.stats.universities },
+  { value: 250, suffix: '+', label: copy.happeningNow.stats.members },
+  { value: 5, suffix: '+', label: copy.happeningNow.stats.events },
+  { value: 10, suffix: '+', label: copy.happeningNow.stats.universities },
 ];
 
 export const pillars: {
@@ -128,8 +128,8 @@ export const seats: SeatCurve = showPlaceholderEvent
 export const sessions: SessionsState = sessionsFrom(calendar, Date.now());
 
 /**
- * Convocatorias are hidden for now. Flip to true to bring back the section,
- * its footer link, and the mention of it in the What's Happening lead.
+ * Convocatorias are hidden for now. Flip to true to bring back the section
+ * and the mention of it in the What's Happening lead.
  */
 export const showOpenCalls = false;
 
@@ -211,57 +211,40 @@ export const ecosystem: {
   },
 ];
 
+/** The community's Telegram group: the footer pill and every way in on the Join section. */
+export const telegramUrl = 'https://t.me/+Vmd6cwdvvCsxNjIx';
+
+/**
+ * The Join section's four ways in. An `href` of `null` renders the CTA
+ * disabled, for a path that is not open yet.
+ */
 export const paths: {
   num: string;
   title: string;
   body: string;
   cta: string;
-  href: string;
+  href: string | null;
   tone: Tone;
 }[] = [
-  { num: '01', ...copy.join.paths.join, href: '#', tone: 'yellow' },
-  { num: '02', ...copy.join.paths.organize, href: '#', tone: 'bone' },
-  { num: '03', ...copy.join.paths.partner, href: '#', tone: 'blue' },
-  { num: '04', ...copy.join.paths.core, href: '#', tone: 'ink' },
+  { num: '01', ...copy.join.paths.join, href: telegramUrl, tone: 'yellow' },
+  { num: '02', ...copy.join.paths.organize, href: telegramUrl, tone: 'bone' },
+  { num: '03', ...copy.join.paths.partner, href: telegramUrl, tone: 'blue' },
+  // Applications open with a form; until then the card stays, the button does not lead anywhere.
+  { num: '04', ...copy.join.paths.core, href: null, tone: 'ink' },
 ];
 
-/** PLACEHOLDER: swap the # for real profile URLs. */
+/** The X account, without the @. The footer link and the `twitter:site` card tag. */
+export const xHandle = 'ecuadorweb3';
+
+/** Official profiles. Also emitted as the Organization's `sameAs` in `Base.astro`. */
 export const socials = [
-  { label: copy.footer.socials.x, href: '#' },
-  { label: copy.footer.socials.telegram, href: '#' },
-  { label: copy.footer.socials.discord, href: '#' },
-  { label: copy.footer.socials.instagram, href: '#' },
-  { label: copy.footer.socials.linkedin, href: '#' },
-  { label: copy.footer.socials.github, href: '#' },
-  { label: copy.footer.socials.luma, href: '#' },
+  { label: copy.footer.socials.x, href: `https://x.com/${xHandle}` },
+  { label: copy.footer.socials.telegram, href: telegramUrl },
+  { label: copy.footer.socials.whatsapp, href: 'https://chat.whatsapp.com/ILax1I3uS7p7c5dnkeohyt' },
+  { label: copy.footer.socials.instagram, href: 'https://www.instagram.com/ecuadorweb3/' },
+  { label: copy.footer.socials.linkedin, href: 'https://www.linkedin.com/company/ecuadorweb3' },
+  { label: copy.footer.socials.luma, href: lumaProfileUrl },
 ];
 
-export const footerLinks = [
-  {
-    title: copy.footer.columns.ecosistema.title,
-    links: [
-      { label: copy.footer.columns.ecosistema.links.comunidades, href: '#ecosistema' },
-      { label: copy.footer.columns.ecosistema.links.universidades, href: '#ecosistema' },
-      { label: copy.footer.columns.ecosistema.links.blockchains, href: '#ecosistema' },
-      { label: copy.footer.columns.ecosistema.links.partners, href: '#unete' },
-    ],
-  },
-  {
-    title: copy.footer.columns.comunidad.title,
-    links: [
-      { label: copy.footer.columns.comunidad.links.nextEvent, href: '#eventos' },
-      { label: copy.footer.columns.comunidad.links.calls, href: '#eventos' },
-      { label: copy.footer.columns.comunidad.links.openCalls, href: '#convocatorias' },
-      { label: copy.footer.columns.comunidad.links.core, href: '#unete' },
-    ],
-  },
-  {
-    title: copy.footer.columns.recursos.title,
-    links: [
-      { label: copy.footer.columns.recursos.links.playbook, href: '#' },
-      { label: copy.footer.columns.recursos.links.brandKit, href: '#' },
-      { label: copy.footer.columns.recursos.links.codeOfConduct, href: '#' },
-      { label: copy.footer.columns.recursos.links.press, href: '#' },
-    ],
-  },
-];
+/** The footer's link column: the header menu again, so both list the same sections. */
+export const footerNav = { title: copy.footer.navTitle, links: nav };

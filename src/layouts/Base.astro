@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { copy } from '../i18n';
+import { socials, xHandle } from '../data/site';
 
 interface Props {
   title: string;
@@ -11,8 +12,14 @@ const { title, description } = Astro.props;
 const { lang, intl, og } = copy.locale;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-// Imagen por defecto para previsualizaciones sociales (deberán subir un seo-banner.jpg a public/)
-const socialImageURL = new URL('/seo-banner.jpg', Astro.site);
+// Link-preview card, exported from comuna (ecuador-web3/og-preview). Regenerate
+// it there when the tagline or motto changes; the size below must follow it.
+const socialImage = {
+  url: new URL('/seo-banner.png', Astro.site),
+  width: '1200',
+  height: '627',
+  alt: copy.meta.imageAlt,
+};
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -20,7 +27,8 @@ const jsonLd = {
   "name": "Ecuador Web3",
   "url": Astro.site?.toString(),
   "logo": new URL('/logo.svg', Astro.site).toString(),
-  "description": description
+  "description": description,
+  "sameAs": socials.map((s) => s.href)
 };
 ---
 
@@ -39,17 +47,24 @@ const jsonLd = {
     <link rel="canonical" href={canonicalURL} />
 
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={copy.brand.name} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={socialImageURL} />
+    <meta property="og:image" content={socialImage.url} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content={socialImage.width} />
+    <meta property="og:image:height" content={socialImage.height} />
+    <meta property="og:image:alt" content={socialImage.alt} />
     <meta property="og:locale" content={og} />
 
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content={`@${xHandle}`} />
     <meta name="twitter:url" content={canonicalURL} />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={socialImageURL} />
+    <meta name="twitter:image" content={socialImage.url} />
+    <meta name="twitter:image:alt" content={socialImage.alt} />
 
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
