@@ -40,9 +40,9 @@ export const nav = [
 export const heroTicker = copy.hero.ticker;
 
 export const stats = [
-  { value: 2400, suffix: '+', label: copy.happeningNow.stats.members },
-  { value: 40, suffix: '', label: copy.happeningNow.stats.events },
-  { value: 9, suffix: '', label: copy.happeningNow.stats.universities },
+  { value: 250, suffix: '+', label: copy.happeningNow.stats.members },
+  { value: 5, suffix: '+', label: copy.happeningNow.stats.events },
+  { value: 10, suffix: '+', label: copy.happeningNow.stats.universities },
 ];
 
 export const pillars: {
