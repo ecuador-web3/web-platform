@@ -214,18 +214,23 @@ export const ecosystem: {
 /** The community's Telegram group: the footer pill and every way in on the Join section. */
 export const telegramUrl = 'https://t.me/+Vmd6cwdvvCsxNjIx';
 
+/**
+ * The Join section's four ways in. An `href` of `null` renders the CTA
+ * disabled, for a path that is not open yet.
+ */
 export const paths: {
   num: string;
   title: string;
   body: string;
   cta: string;
-  href: string;
+  href: string | null;
   tone: Tone;
 }[] = [
   { num: '01', ...copy.join.paths.join, href: telegramUrl, tone: 'yellow' },
   { num: '02', ...copy.join.paths.organize, href: telegramUrl, tone: 'bone' },
   { num: '03', ...copy.join.paths.partner, href: telegramUrl, tone: 'blue' },
-  { num: '04', ...copy.join.paths.core, href: '#', tone: 'ink' },
+  // Applications open with a form; until then the card stays, the button does not lead anywhere.
+  { num: '04', ...copy.join.paths.core, href: null, tone: 'ink' },
 ];
 
 /** Official profiles. Also emitted as the Organization's `sameAs` in `Base.astro`. */
