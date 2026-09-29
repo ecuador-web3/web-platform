@@ -7,7 +7,9 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://ecuadorweb3.org', // Dominio temporal para generar sitemap y canonicals
+  // Production domain. Canonicals, og:url, the preview image URL, the JSON-LD
+  // and the sitemap are all built from it.
+  site: 'https://ecuadorweb3.org',
   integrations: [sitemap()],
   image: {
     /* Event cover art lives on Luma's CDN, which serves the originals at up to
