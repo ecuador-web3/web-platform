@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 import { copy } from '../i18n';
-import { socials } from '../data/site';
+import { socials, xHandle } from '../data/site';
 
 interface Props {
   title: string;
@@ -47,6 +47,7 @@ const jsonLd = {
     <link rel="canonical" href={canonicalURL} />
 
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={copy.brand.name} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
@@ -58,6 +59,7 @@ const jsonLd = {
     <meta property="og:locale" content={og} />
 
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content={`@${xHandle}`} />
     <meta name="twitter:url" content={canonicalURL} />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />

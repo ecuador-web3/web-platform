@@ -233,9 +233,12 @@ export const paths: {
   { num: '04', ...copy.join.paths.core, href: null, tone: 'ink' },
 ];
 
+/** The X account, without the @. The footer link and the `twitter:site` card tag. */
+export const xHandle = 'ecuadorweb3';
+
 /** Official profiles. Also emitted as the Organization's `sameAs` in `Base.astro`. */
 export const socials = [
-  { label: copy.footer.socials.x, href: 'https://x.com/ecuadorweb3' },
+  { label: copy.footer.socials.x, href: `https://x.com/${xHandle}` },
   { label: copy.footer.socials.telegram, href: telegramUrl },
   { label: copy.footer.socials.whatsapp, href: 'https://chat.whatsapp.com/ILax1I3uS7p7c5dnkeohyt' },
   { label: copy.footer.socials.instagram, href: 'https://www.instagram.com/ecuadorweb3/' },
