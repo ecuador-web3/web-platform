@@ -211,6 +211,9 @@ export const ecosystem: {
   },
 ];
 
+/** The community's Telegram group: the footer pill and every way in on the Join section. */
+export const telegramUrl = 'https://t.me/+Vmd6cwdvvCsxNjIx';
+
 export const paths: {
   num: string;
   title: string;
@@ -219,16 +222,16 @@ export const paths: {
   href: string;
   tone: Tone;
 }[] = [
-  { num: '01', ...copy.join.paths.join, href: '#', tone: 'yellow' },
-  { num: '02', ...copy.join.paths.organize, href: '#', tone: 'bone' },
-  { num: '03', ...copy.join.paths.partner, href: '#', tone: 'blue' },
+  { num: '01', ...copy.join.paths.join, href: telegramUrl, tone: 'yellow' },
+  { num: '02', ...copy.join.paths.organize, href: telegramUrl, tone: 'bone' },
+  { num: '03', ...copy.join.paths.partner, href: telegramUrl, tone: 'blue' },
   { num: '04', ...copy.join.paths.core, href: '#', tone: 'ink' },
 ];
 
 /** Official profiles. Also emitted as the Organization's `sameAs` in `Base.astro`. */
 export const socials = [
   { label: copy.footer.socials.x, href: 'https://x.com/ecuadorweb3' },
-  { label: copy.footer.socials.telegram, href: 'https://t.me/+Vmd6cwdvvCsxNjIx' },
+  { label: copy.footer.socials.telegram, href: telegramUrl },
   { label: copy.footer.socials.whatsapp, href: 'https://chat.whatsapp.com/ILax1I3uS7p7c5dnkeohyt' },
   { label: copy.footer.socials.instagram, href: 'https://www.instagram.com/ecuadorweb3/' },
   { label: copy.footer.socials.linkedin, href: 'https://www.linkedin.com/company/ecuadorweb3' },
