@@ -128,8 +128,8 @@ export const seats: SeatCurve = showPlaceholderEvent
 export const sessions: SessionsState = sessionsFrom(calendar, Date.now());
 
 /**
- * Convocatorias are hidden for now. Flip to true to bring back the section,
- * its footer link, and the mention of it in the What's Happening lead.
+ * Convocatorias are hidden for now. Flip to true to bring back the section
+ * and the mention of it in the What's Happening lead.
  */
 export const showOpenCalls = false;
 
@@ -235,32 +235,5 @@ export const socials = [
   { label: copy.footer.socials.luma, href: lumaProfileUrl },
 ];
 
-export const footerLinks = [
-  {
-    title: copy.footer.columns.ecosistema.title,
-    links: [
-      { label: copy.footer.columns.ecosistema.links.comunidades, href: '#ecosistema' },
-      { label: copy.footer.columns.ecosistema.links.universidades, href: '#ecosistema' },
-      { label: copy.footer.columns.ecosistema.links.blockchains, href: '#ecosistema' },
-      { label: copy.footer.columns.ecosistema.links.partners, href: '#unete' },
-    ],
-  },
-  {
-    title: copy.footer.columns.comunidad.title,
-    links: [
-      { label: copy.footer.columns.comunidad.links.nextEvent, href: '#eventos' },
-      { label: copy.footer.columns.comunidad.links.calls, href: '#eventos' },
-      { label: copy.footer.columns.comunidad.links.openCalls, href: '#convocatorias' },
-      { label: copy.footer.columns.comunidad.links.core, href: '#unete' },
-    ],
-  },
-  {
-    title: copy.footer.columns.recursos.title,
-    links: [
-      { label: copy.footer.columns.recursos.links.playbook, href: '#' },
-      { label: copy.footer.columns.recursos.links.brandKit, href: '#' },
-      { label: copy.footer.columns.recursos.links.codeOfConduct, href: '#' },
-      { label: copy.footer.columns.recursos.links.press, href: '#' },
-    ],
-  },
-];
+/** The footer's link column: the header menu again, so both list the same sections. */
+export const footerNav = { title: copy.footer.navTitle, links: nav };

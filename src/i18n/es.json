@@ -313,35 +313,7 @@
       "linkedin": "LinkedIn",
       "luma": "Luma"
     },
-    "columns": {
-      "ecosistema": {
-        "title": "Ecosistema",
-        "links": {
-          "comunidades": "Comunidades",
-          "universidades": "Universidades",
-          "blockchains": "Blockchains",
-          "partners": "Partners"
-        }
-      },
-      "comunidad": {
-        "title": "Comunidad",
-        "links": {
-          "nextEvent": "Próximo evento",
-          "calls": "Community Calls",
-          "openCalls": "Convocatorias",
-          "core": "Core Members"
-        }
-      },
-      "recursos": {
-        "title": "Recursos",
-        "links": {
-          "playbook": "Playbook de eventos",
-          "brandKit": "Kit de marca",
-          "codeOfConduct": "Código de convivencia",
-          "press": "Prensa"
-        }
-      }
-    },
+    "navTitle": "Comunidad",
     "madeIn": "Hecho en la mitad del mundo · Lat {coords}",
     "copyright": "© {year} {brand}"
   }
