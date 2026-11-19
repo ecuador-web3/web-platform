@@ -105,10 +105,11 @@ export { lumaProfileUrl } from './luma';
 export const seats: SeatCurve = showPlaceholderEvent
   ? placeholderSeats
   : {
-      capacity: 50,
-      anchorAt: '2026-08-09T00:00:00-05:00',
-      anchorReserved: 36,
-      perDay: 3,
+      // Stellar Local - Cuenca: Luma showed 14 spots left on Nov 18; the capacity is a guess.
+      capacity: 30,
+      anchorAt: '2026-11-18T23:00:00-05:00',
+      anchorReserved: 16,
+      perDay: 1,
     };
 
 /**

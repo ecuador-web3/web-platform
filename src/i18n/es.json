@@ -125,23 +125,23 @@
   },
 
   "event": {
-    "code": "WS-001",
-    "title": "Web3 desde Cero",
-    "accent": "Primer curso",
-    "body": "Dos sesiones para entender blockchain y Web3, sin conocimientos previos.",
+    "code": "ST-001",
+    "title": "Stellar Local - Cuenca",
+    "accent": "Descubre Stellar",
+    "body": "Un evento práctico para conocer Stellar, usar una wallet y enviar tus primeros pagos digitales. Con comida y networking.",
     "modality": {
       "virtual": "Virtual",
       "inPerson": "Presencial"
     },
-    "badges": ["2 sesiones", "Gratis"],
-    "hosts": ["Elizabeth Pacheco", "Gelois o7"],
-    "hooks": ["Sin experiencia previa", "Exclusivo Ecuador", "Cupos limitados"],
+    "badges": ["Cuenca", "Gratis"],
+    "hosts": ["Meta Pool", "Gelois o7", "Ecuador Web3"],
+    "hooks": ["Sin experiencia previa", "Wallet y pagos en vivo", "Cupos limitados"],
     "hooksLabel": "Por qué inscribirte",
     "labels": {
       "date": "Fecha",
       "time": "Hora",
       "modality": "Modalidad",
-      "hosts": "Tutores"
+      "hosts": "Anfitriones"
     },
     "cta": {
       "label": "Asegura tu cupo",
