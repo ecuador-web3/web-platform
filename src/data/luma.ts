@@ -40,6 +40,7 @@
 import { parseIcs } from '../lib/ics';
 import { fromIcs, type ScheduledEvent } from '../lib/lumaCalendar';
 import { parseLumaEntries } from '../lib/lumaJson';
+import { coHostedEvents } from './coHostedEvents';
 
 /**
  * The calendar behind luma.com/user/ecuadorweb3. The profile has no slug set,
@@ -85,6 +86,26 @@ function dedupe(events: ScheduledEvent[]): ScheduledEvent[] {
     seen.add(key);
     return true;
   });
+}
+
+/**
+ * The calendar plus `coHostedEvents`, matched on the event link.
+ *
+ * An event on both keeps every field the calendar sent, and takes from the
+ * hand-written entry only what the calendar left out. On the ICS path that is
+ * the cover and whether the event is virtual, which the feed never carries.
+ */
+function withCoHosted(calendar: ScheduledEvent[]): ScheduledEvent[] {
+  const byUrl = new Map(coHostedEvents.map((event) => [event.url, event]));
+
+  const merged = calendar.map((event) => {
+    const own = event.url ? byUrl.get(event.url) : undefined;
+    if (!own) return event;
+    byUrl.delete(event.url);
+    return { ...own, ...event };
+  });
+
+  return [...merged, ...byUrl.values()];
 }
 
 /** Events from the JSON endpoint, or `null` when it could not be read at all. */
@@ -158,7 +179,8 @@ async function withReachableCovers(events: ScheduledEvent[]): Promise<ScheduledE
  * blip at Luma could block an unrelated copy fix from shipping.
  */
 async function loadCalendar(): Promise<ScheduledEvent[]> {
-  const events = await withReachableCovers((await loadJson()) ?? (await loadIcs()));
+  const fromCalendar = (await loadJson()) ?? (await loadIcs());
+  const events = await withReachableCovers(withCoHosted(fromCalendar));
 
   if (events.length === 0) {
     console.warn('[luma] calendar has no readable events; rendering empty states');
